@@ -1,21 +1,35 @@
 package model;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * Created by Ovidiu on 15-May-18.
  */
+@Entity
 public class Expense {
-    private String title;
-    private String description;
-    private boolean recurrent;
-    private Date createdOn;
-    private Date dueDate;
-    private Double amount;
-    private Category category;
-    private ArrayList<Tag> tags;
-    private ArrayList<Rate> payedRates;
+    @Column
+    public String title;
+    @Column
+    public String description;
+    @Column
+    public boolean recurrent;
+    @Column
+    public Date createdOn;
+    @Column
+    public Date dueDate;
+    @Column
+    public Double amount;
+   /* @Column*/
+    public Category category;
+    @Column
+    public ArrayList<Tag> tags;
+    @Column
+    public ArrayList<Rate> payedRates;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int id;
 
     public Expense(String title,
                    String description,
@@ -34,8 +48,31 @@ public class Expense {
         this.payedRates = new ArrayList<>();
     }
 
+    public Expense(String title,
+                   String description,
+                   boolean recurrent,
+                   Date dueDate,
+                   Double amount) {
+        this.title = title;
+        this.description = description;
+        this.recurrent = recurrent;
+        this.createdOn = new Date();
+        this.dueDate = dueDate;
+        this.amount = amount;
+        this.tags = new ArrayList<>();
+        this.payedRates = new ArrayList<>();
+    }
+
     public Expense() {
         this.createdOn = new Date();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {

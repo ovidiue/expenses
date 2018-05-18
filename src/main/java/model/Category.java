@@ -1,12 +1,21 @@
 package model;
 
+import javax.persistence.*;
+
 /**
  * Created by Ovidiu on 15-May-18.
  */
+@Entity
 public class Category {
-    private String name;
-    private String description;
-    private String color;
+    @Column
+    public String name;
+    @Column
+    public String description;
+    @Column
+    public String color;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int id;
 
     public Category(String name, String description) {
         this.name = name;
@@ -18,6 +27,16 @@ public class Category {
         this.description = description;
         this.color = color;
     }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 
     public String getName() {
         return name;

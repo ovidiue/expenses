@@ -1,0 +1,22 @@
+<hibernate-configuration>
+    <session-factory>
+        <!--Database connection string-->
+        <property name="connection.driver_class">org.apache.derby.jdbc.EmbeddedDriver</property>
+        <property name="connection.url">jdbc:derby:test_db;create=true</property>
+
+        <!--DERBY Dialect-->
+        <property name="dialect">org.hibernate.dialect.DerbyDialect</property>
+
+        <!--Update the database schema on startup-->
+        <property name="hbm2ddl.auto">update</property>
+
+        <!--Show the queries prepared by Hibernate-->
+        <property name="show_sql">true</property>
+
+        <!--Names the annotated entity classes-->
+        <mapping class="model.Expense"/>
+        <mapping class="model.Category"/>
+        <mapping class="model.Rate"/>
+        <mapping class="model.Tag"/>
+    </session-factory>
+</hibernate-configuration>
