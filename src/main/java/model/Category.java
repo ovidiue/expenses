@@ -5,7 +5,7 @@ import javax.persistence.*;
 /**
  * Created by Ovidiu on 15-May-18.
  */
-@Entity
+/*@Entity*/
 public class Category {
     @Column
     public String name;

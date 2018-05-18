@@ -21,11 +21,11 @@ public class Expense {
     public Date dueDate;
     @Column
     public Double amount;
-   /* @Column*/
+   /* @Column*/@Transient
     public Category category;
-    @Column
+    /*@Column*/
     public ArrayList<Tag> tags;
-    @Column
+    /*@Column*/
     public ArrayList<Rate> payedRates;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -123,13 +123,13 @@ public class Expense {
         this.amount = amount;
     }
 
-    public Category getCategory() {
+   /* public Category getCategory() {
         return category;
     }
 
     public void setCategory(Category category) {
         this.category = category;
-    }
+    }*/
 
     public ArrayList<Tag> getTags() {
         return tags;

@@ -37,5 +37,14 @@ public class AddExpenseController {
     public void saveExpense() {
         Expense e = getExpense();
         HibernateHelper.save(e);
+        clearFieldSelections();
+    }
+
+    private void clearFieldSelections() {
+        title.setText("");
+        description.setText("");
+        amount.setText("");
+        dueDate.getEditor().setText("");
+        recurrent.setSelected(false);
     }
 }

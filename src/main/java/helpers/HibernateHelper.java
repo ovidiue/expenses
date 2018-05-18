@@ -59,7 +59,7 @@ public class HibernateHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static List<Expense> fetchAllContacts() {
+    public static List<Expense> fetchAllExpenses() {
         Session session = sessionFactory.openSession();
 
         Criteria criteria = session.createCriteria(Expense.class);
