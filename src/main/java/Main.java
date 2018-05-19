@@ -1,24 +1,34 @@
+import com.sun.javafx.css.Style;
+import helpers.CategoryDBHelper;
+import helpers.HibernateHlp;
+import helpers.TagDBHelper;
 import javafx.application.Application;
-import javafx.event.EventHandler;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.util.Pair;
+import model.Category;
+import model.Tag;
 
-import javax.swing.border.Border;
-import javax.swing.text.TableView;
 import java.io.IOException;
+import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
  * Created by Ovidiu on 15-May-18.
  */
-public class Main extends Application {
+public class Main extends Application implements Initializable{
     @FXML
     BorderPane root;
 
@@ -30,19 +40,17 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-         loader = new FXMLLoader();
+        loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml_views/main_screen.fxml"));
         loader.setResources(ResourceBundle.getBundle("translations"));
         root = loader.load();
 
         Scene scene = new Scene(root);
-        //scene.getStylesheets().add("css/main_css.css");
+        //scene.getStylesheets().add("css/style.css");
 
-        //primaryStage.setTitle("FXML Welcome");
         primaryStage.setScene(scene);
 
         primaryStage.setOnCloseRequest(event -> System.exit(1));
-
 
         primaryStage.show();
     }
@@ -55,5 +63,80 @@ public class Main extends Application {
     public void addExpense() throws IOException {
         AnchorPane table = loader.load(getClass().getResource("fxml_views/add_expense.fxml"));
         root.setCenter(table);
+    }
+
+    public void viewAllTags() throws IOException {
+        AnchorPane table = loader.load(getClass().getResource("fxml_views/all_tags.fxml"));
+        root.setCenter(table);
+    }
+
+    public void viewAllCategories() throws IOException {
+        AnchorPane table = loader.load(getClass().getResource("fxml_views/all_categories.fxml"));
+        root.setCenter(table);
+    }
+
+    public void displayAddTagDialog() {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Add new tag");
+        dialog.setHeaderText("Enter at least title in order to add a new tag");
+
+
+        // Set the button types.
+        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
+
+        // Create the username and password labels and fields.
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField tagName = new TextField();
+        tagName.setPromptText("name");
+        tagName.setPrefWidth(200);
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setPrefWidth(200);
+        colorPicker.setPromptText("choose color");
+
+        grid.add(new Label("Name *:"), 0, 0);
+        grid.add(tagName, 1, 0);
+        grid.add(new Label("Color:"), 0, 1);
+        grid.add(colorPicker, 1,1);
+
+        // Enable/Disable login button depending on whether a username was entered.
+        Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
+        saveBtn.setDisable(true);
+
+        // Do some validation (using the Java 8 lambda syntax).
+        tagName.textProperty().addListener((observable, oldValue, newValue) -> {
+            saveBtn.setDisable(newValue.trim().isEmpty());
+        });
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the username field by default.
+        Platform.runLater(() -> tagName.requestFocus());
+
+        // Convert the result to a username-password-pair when the login button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == confirmBtn) {
+                return new Pair<String, String>(tagName.getText(), colorPicker.getValue().toString());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        result.ifPresent(usernamePassword -> {
+            System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
+            TagDBHelper tagDBHelper = new TagDBHelper();
+            tagDBHelper.save(new Tag(tagName.getText(), colorPicker.getValue().toString()));
+        });
+
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        HibernateHlp.buildSessionFactory();
     }
 }
