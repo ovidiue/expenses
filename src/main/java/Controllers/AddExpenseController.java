@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+
 import javafx.util.Pair;
 import model.Category;
 import model.Expense;
@@ -66,8 +67,8 @@ public class AddExpenseController implements Initializable {
 
 
         // Set the button types.
-        ButtonType loginButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
 
         // Create the username and password labels and fields.
         GridPane grid = new GridPane();
@@ -86,7 +87,7 @@ public class AddExpenseController implements Initializable {
         grid.add(catDescription, 1, 1);
 
         // Enable/Disable login button depending on whether a username was entered.
-        Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
+        Node loginButton = dialog.getDialogPane().lookupButton(confirmBtn);
         loginButton.setDisable(true);
 
         // Do some validation (using the Java 8 lambda syntax).
@@ -101,7 +102,7 @@ public class AddExpenseController implements Initializable {
 
         // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == loginButtonType) {
+            if (dialogButton == confirmBtn) {
                 return new Pair<>(categoryTitle.getText(), catDescription.getText());
             }
             return null;
