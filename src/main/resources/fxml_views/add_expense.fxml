@@ -132,10 +132,16 @@
                         </ChoiceBox>
                      </children>
                   </VBox>
-                  <CheckBox fx:id="recurrent" mnemonicParsing="false" text="Recurent" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                     <tooltip>
-                        <Tooltip text="repeating expense or not" />
-                     </tooltip></CheckBox>
+                  <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Recurrent pay" />
+                        <CheckBox fx:id="recurrent" mnemonicParsing="false">
+                           <tooltip>
+                              <Tooltip text="repeating expense or not" />
+                           </tooltip>
+                        </CheckBox>
+                     </children>
+                  </VBox>
                   <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Pay progress" />
