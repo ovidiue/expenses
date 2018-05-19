@@ -49,38 +49,103 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <TextField fx:id="title" minHeight="40.0" promptText="title">
-                     <tooltip>
-                        <Tooltip contentDisplay="TOP" maxWidth="1.7976931348623157E308" text="Title" />
-                     </tooltip></TextField>
-                  <TextArea fx:id="description" prefHeight="200.0" prefRowCount="3" prefWidth="200.0" promptText="description" wrapText="true" GridPane.rowIndex="1">
-                     <tooltip>
-                        <Tooltip text="description" />
-                     </tooltip></TextArea>
-                  <TextField fx:id="amount" minHeight="40.0" promptText="amount" GridPane.rowIndex="2">
-                     <tooltip>
-                        <Tooltip text="amount to pay" />
-                     </tooltip></TextField>
-                  <DatePicker fx:id="dueDate" maxWidth="1.7976931348623157E308" minHeight="40.0" promptText="due date" GridPane.rowIndex="3">
-                     <tooltip>
-                        <Tooltip text="date until it must be paid" />
-                     </tooltip></DatePicker>
-                  <ChoiceBox maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0" GridPane.rowIndex="4">
-                     <tooltip>
-                        <Tooltip text="category" />
-                     </tooltip></ChoiceBox>
-                  <ChoiceBox maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0" GridPane.columnIndex="1">
-                     <tooltip>
-                        <Tooltip text="tags" />
-                     </tooltip></ChoiceBox>
+                  <VBox>
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Title" />
+                        <TextField fx:id="title" minHeight="40.0" promptText="title">
+                           <tooltip>
+                              <Tooltip contentDisplay="TOP" maxWidth="1.7976931348623157E308" text="Title" />
+                           </tooltip>
+                           <font>
+                              <Font name="System Italic" size="15.0" />
+                           </font>
+                        </TextField>
+                     </children>
+                  </VBox>
+                  <VBox GridPane.rowIndex="1">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+                        <TextArea fx:id="description" prefHeight="200.0" prefRowCount="3" prefWidth="200.0" promptText="description" wrapText="true">
+                           <tooltip>
+                              <Tooltip text="description" />
+                           </tooltip>
+                           <font>
+                              <Font name="System Italic" size="15.0" />
+                           </font>
+                        </TextArea>
+                     </children>
+                  </VBox>
+                  <VBox GridPane.rowIndex="2">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Amount" />
+                        <TextField fx:id="amount" minHeight="40.0" promptText="amount">
+                           <tooltip>
+                              <Tooltip text="amount to pay" />
+                           </tooltip>
+                           <font>
+                              <Font name="System Italic" size="15.0" />
+                           </font>
+                        </TextField>
+                     </children>
+                  </VBox>
+                  <VBox GridPane.rowIndex="3">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Due date" />
+                        <DatePicker fx:id="dueDate" maxWidth="1.7976931348623157E308" minHeight="40.0">
+                           <tooltip>
+                              <Tooltip text="date until it must be paid" />
+                           </tooltip>
+                        </DatePicker>
+                     </children>
+                  </VBox>
+                  <HBox maxWidth="1.7976931348623157E308" GridPane.rowIndex="4">
+                     <children>
+                        <VBox prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Category" />
+                              <ChoiceBox maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0">
+                                 <tooltip>
+                                    <Tooltip text="category" />
+                                 </tooltip>
+                              </ChoiceBox>
+                           </children>
+                        </VBox>
+                        <VBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Text>
+                              <Button minHeight="40.0" minWidth="40.0" mnemonicParsing="false" text="+" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <VBox GridPane.columnIndex="1">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tags" />
+                        <ChoiceBox maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0">
+                           <tooltip>
+                              <Tooltip text="tags" />
+                           </tooltip>
+                        </ChoiceBox>
+                     </children>
+                  </VBox>
                   <CheckBox fx:id="recurrent" mnemonicParsing="false" text="Recurent" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <tooltip>
                         <Tooltip text="repeating expense or not" />
                      </tooltip></CheckBox>
-                  <ProgressBar maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="200.0" progress="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                     <tooltip>
-                        <Tooltip text="already paid percent" />
-                     </tooltip></ProgressBar>
+                  <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Pay progress" />
+                        <ProgressBar maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="200.0" progress="0.0">
+                           <tooltip>
+                              <Tooltip text="already paid percent" />
+                           </tooltip>
+                        </ProgressBar>
+                     </children>
+                  </VBox>
                </children>
                <padding>
                   <Insets left="20.0" right="20.0" />
