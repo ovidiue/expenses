@@ -117,7 +117,7 @@
                                     <Insets />
                                  </VBox.margin>
                               </Text>
-                              <Button minHeight="40.0" minWidth="40.0" mnemonicParsing="false" text="+" />
+                              <Button minHeight="40.0" minWidth="40.0" mnemonicParsing="false" onAction="#displayAddCategoryDialog" text="+" />
                            </children>
                         </VBox>
                      </children>
