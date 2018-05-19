@@ -5,17 +5,20 @@ import javax.persistence.*;
 /**
  * Created by Ovidiu on 15-May-18.
  */
-/*@Entity*/
+@Entity
 public class Category {
     @Column
-    public String name;
+    private String name;
     @Column
-    public String description;
+    private String description;
     @Column
-    public String color;
+    private String color;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int id;
+    private int id;
+
+    public Category() {
+    }
 
     public Category(String name, String description) {
         this.name = name;
@@ -60,5 +63,10 @@ public class Category {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

@@ -103,7 +103,7 @@
                         <VBox prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Category" />
-                              <ChoiceBox maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0">
+                              <ChoiceBox fx:id="catCtrl" maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0">
                                  <tooltip>
                                     <Tooltip text="category" />
                                  </tooltip>

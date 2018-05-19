@@ -10,26 +10,26 @@ import java.util.Date;
 @Entity
 public class Expense {
     @Column
-    public String title;
+    private String title;
     @Column
-    public String description;
+    private String description;
     @Column
-    public boolean recurrent;
+    private boolean recurrent;
     @Column
-    public Date createdOn;
+    private Date createdOn;
     @Column
-    public Date dueDate;
+    private Date dueDate;
     @Column
-    public Double amount;
+    private Double amount;
    /* @Column*/@Transient
-    public Category category;
+    private Category category;
     /*@Column*/
-    public ArrayList<Tag> tags;
+    private ArrayList<Tag> tags;
     /*@Column*/
-    public ArrayList<Rate> payedRates;
+    private ArrayList<Rate> payedRates;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int id;
+    private int id;
 
     public Expense(String title,
                    String description,

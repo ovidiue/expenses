@@ -1,8 +1,12 @@
 package Controllers;
 
+import helpers.CategoryDBHelper;
 import helpers.HibernateHelper;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -11,13 +15,15 @@ import javafx.util.Pair;
 import model.Category;
 import model.Expense;
 
+import java.net.URL;
 import java.util.Date;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 /**
  * Created by Ovidiu on 18-May-18.
  */
-public class AddExpenseController {
+public class AddExpenseController implements Initializable {
     @FXML
     TextField title;
     @FXML
@@ -27,7 +33,7 @@ public class AddExpenseController {
     @FXML
     DatePicker dueDate;
     @FXML
-    ChoiceBox<Category> category;
+    ChoiceBox<Category> catCtrl;
     @FXML
     CheckBox recurrent;
 
@@ -60,7 +66,7 @@ public class AddExpenseController {
 
 
         // Set the button types.
-        ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
+        ButtonType loginButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
 
         // Create the username and password labels and fields.
@@ -90,10 +96,10 @@ public class AddExpenseController {
 
         dialog.getDialogPane().setContent(grid);
 
-// Request focus on the username field by default.
+        // Request focus on the username field by default.
         Platform.runLater(() -> categoryTitle.requestFocus());
 
-// Convert the result to a username-password-pair when the login button is clicked.
+        // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == loginButtonType) {
                 return new Pair<>(categoryTitle.getText(), catDescription.getText());
@@ -105,6 +111,20 @@ public class AddExpenseController {
 
         result.ifPresent(usernamePassword -> {
             System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
+            CategoryDBHelper categoryDBHelper = new CategoryDBHelper();
+            categoryDBHelper.save(new Category(categoryTitle.getText(), catDescription.getText()));
+            populateCategories();
         });
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        populateCategories();
+    }
+
+    private void populateCategories() {
+        CategoryDBHelper c = new CategoryDBHelper();
+        ObservableList<Category> list = FXCollections.observableArrayList(c.fetchAll());
+        catCtrl.setItems(list);
     }
 }
