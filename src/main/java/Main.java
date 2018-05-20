@@ -1,5 +1,3 @@
-import com.sun.javafx.css.Style;
-import helpers.CategoryDBHelper;
 import helpers.HibernateHlp;
 import helpers.TagDBHelper;
 import javafx.application.Application;
@@ -17,7 +15,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import model.Category;
 import model.Tag;
 
 import java.io.IOException;
@@ -28,7 +25,7 @@ import java.util.ResourceBundle;
 /**
  * Created by Ovidiu on 15-May-18.
  */
-public class Main extends Application implements Initializable{
+public class Main extends Application implements Initializable {
     @FXML
     BorderPane root;
 
@@ -101,7 +98,7 @@ public class Main extends Application implements Initializable{
         grid.add(new Label("Name *:"), 0, 0);
         grid.add(tagName, 1, 0);
         grid.add(new Label("Color:"), 0, 1);
-        grid.add(colorPicker, 1,1);
+        grid.add(colorPicker, 1, 1);
 
         // Enable/Disable login button depending on whether a username was entered.
         Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
@@ -128,17 +125,38 @@ public class Main extends Application implements Initializable{
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
         result.ifPresent(usernamePassword -> {
-            System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
-            TagDBHelper tagDBHelper = new TagDBHelper();
+           String color = extractRGB(colorPicker.getValue());
+            System.out.println(color);
+
+            new TagDBHelper().save(new Tag(tagName.getText(), color));
+
+           /* TagDBHelper tagDBHelper = new TagDBHelper();
             Color col = colorPicker.getValue();
             Double red = col.getRed();
             Double green = col.getGreen();
             Double blue = col.getBlue();
             String resultCol = String.valueOf(red)+","+String.valueOf(green)+","+String.valueOf(blue);
             //tagDBHelper.save(new Tag(tagName.getText(), colorPicker.getStyle().toString()));
-            tagDBHelper.save(new Tag(tagName.getText(), resultCol));
+            tagDBHelper.save(new Tag(tagName.getText(), resultCol));*/
         });
 
+    }
+
+    private String extractRGB(Color color) {
+        int red,
+                green,
+                blue;
+
+        double opacity;
+
+        String result;
+
+        red = (int)(color.getRed()*255);
+        blue = (int)(color.getBlue()*255);
+        green = (int)(color.getGreen()*255);
+        opacity = color.getOpacity();
+
+        return "rgb("+red+","+green+","+blue+","+opacity+")";
     }
 
     @Override

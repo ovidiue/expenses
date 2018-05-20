@@ -9,7 +9,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.paint.Color;
 import model.Tag;
 
 import java.net.URL;
@@ -36,11 +35,13 @@ public class AllTagsController implements Initializable {
                 @Override
                 protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
-                    if(empty)
+                    if (empty)
                         setText(null);
-                    else{
-                        //Color color = getColor(item);
-                        this.setStyle("-fx-background-color: "+getColor(item));
+                    else {
+                        this.setStyle("-fx-background-color: " + item + ";" +
+                                "-fx-border-color: gray;" +
+                                "-fx-border-radius:3px;" +
+                                "-fx-padding: 1px 1px 1px 1px");
                     }
 
                 }
@@ -64,11 +65,11 @@ public class AllTagsController implements Initializable {
 
     private String getColor(String c) {
         String values[] = c.split(",");
-       // Color s = new Color(Double.parseDouble(values[0]), Double.parseDouble(values[1]), Double.parseDouble(values[2]) ,1);
-        String col = "rgb("+String.valueOf(Math.ceil(Double.parseDouble(values[0])*100))+
-                ","+String.valueOf(Math.ceil(Double.parseDouble(values[1])*100))+
-                ","+String.valueOf(Math.ceil(Double.parseDouble(values[2])*100))+")";
-        System.out.println("COLOR: "+col);
+        // Color s = new Color(Double.parseDouble(values[0]), Double.parseDouble(values[1]), Double.parseDouble(values[2]) ,1);
+        String col = "rgb(" + String.valueOf(Math.ceil(Double.parseDouble(values[0]) * 100)) +
+                "," + String.valueOf(Math.ceil(Double.parseDouble(values[1]) * 100)) +
+                "," + String.valueOf(Math.ceil(Double.parseDouble(values[2]) * 100)) + ")";
+        System.out.println("COLOR: " + col);
         return col;
     }
 }
