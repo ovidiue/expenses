@@ -130,7 +130,13 @@ public class Main extends Application implements Initializable{
         result.ifPresent(usernamePassword -> {
             System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
             TagDBHelper tagDBHelper = new TagDBHelper();
-            tagDBHelper.save(new Tag(tagName.getText(), colorPicker.getValue().toString()));
+            Color col = colorPicker.getValue();
+            Double red = col.getRed();
+            Double green = col.getGreen();
+            Double blue = col.getBlue();
+            String resultCol = String.valueOf(red)+","+String.valueOf(green)+","+String.valueOf(blue);
+            //tagDBHelper.save(new Tag(tagName.getText(), colorPicker.getStyle().toString()));
+            tagDBHelper.save(new Tag(tagName.getText(), resultCol));
         });
 
     }

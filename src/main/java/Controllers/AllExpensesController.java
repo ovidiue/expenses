@@ -30,12 +30,21 @@ public class AllExpensesController implements Initializable {
     }
 
     private void initTable() {
-        TableColumn<Expense, String> titleCol = new TableColumn<>("Title");
-        TableColumn<Expense, String> descriptionCol = new TableColumn<>("Description");
-        TableColumn<Expense, Boolean> recurrentCol = new TableColumn<>("Is recurrent");
-        TableColumn<Expense, Date> createdOnCol = new TableColumn<>("Created on");
-        TableColumn<Expense, Date> dueDateCol = new TableColumn<>("Due date");
-        TableColumn<Expense, Double> amountCol = new TableColumn<>("Amount");
+        TableColumn<Expense, String> titleCol,
+                descriptionCol;
+
+        TableColumn<Expense, Date> createdOnCol,
+                dueDateCol;
+
+        TableColumn<Expense, Double> amountCol;
+        TableColumn<Expense, Boolean> recurrentCol;
+
+        titleCol = new TableColumn<>("Title");
+        descriptionCol = new TableColumn<>("Description");
+        recurrentCol = new TableColumn<>("Is recurrent");
+        createdOnCol = new TableColumn<>("Created on");
+        dueDateCol = new TableColumn<>("Due date");
+        amountCol = new TableColumn<>("Amount");
 
         createdOnCol.setCellFactory(column -> {
             TableCell<Expense, Date> cell = new TableCell<Expense, Date>() {
@@ -44,12 +53,11 @@ public class AllExpensesController implements Initializable {
                 @Override
                 protected void updateItem(Date item, boolean empty) {
                     super.updateItem(item, empty);
-                    if(empty) {
+                    if (empty) {
                         setText(null);
-                    }
-                    else {
+                    } else {
                         this.setText(format.format(item));
-                        this.setTooltip(new Tooltip("Time\n"+item.getHours()+":"+item.getMinutes()));
+                        this.setTooltip(new Tooltip("Time\n" + item.getHours() + ":" + item.getMinutes()));
                     }
                 }
             };
@@ -64,10 +72,9 @@ public class AllExpensesController implements Initializable {
                 @Override
                 protected void updateItem(Date item, boolean empty) {
                     super.updateItem(item, empty);
-                    if(empty) {
+                    if (empty) {
                         setText(null);
-                    }
-                    else {
+                    } else {
                         this.setText(format.format(item));
                     }
                 }
