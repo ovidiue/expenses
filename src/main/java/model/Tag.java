@@ -51,4 +51,13 @@ public class Tag {
     public void setColor(String color) {
         this.color = color;
     }
+
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

@@ -5,10 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import model.Tag;
@@ -29,8 +27,15 @@ public class AllTagsController implements Initializable {
     }
 
     private void initTable() {
-        TableColumn<Tag, String> nameCol = new TableColumn<>("Name");
-        TableColumn<Tag, String> colorCol = new TableColumn<>("Color");
+        TableColumn<Tag, String> nameCol,
+                colorCol;
+        TableColumn<Tag, Integer> idCol;
+
+        nameCol = new TableColumn<>("Name");
+        colorCol = new TableColumn<>("Color");
+        idCol = new TableColumn<>("id");
+
+        idCol.setVisible(false);
 
         colorCol.setCellFactory((TableColumn<Tag, String> column) -> {
             TableCell<Tag, String> cell = new TableCell<Tag, String>() {
@@ -49,6 +54,12 @@ public class AllTagsController implements Initializable {
                                     "-fx-border-color:grey;" +
                                     "-fx-border-radius:3px;" +
                                     "-fx-padding: 1px 1px 1px 1px");
+
+                            Tag t = table.getSelectionModel().getSelectedItem();
+                            System.out.println(t.toString());
+                            t.setColor(newColor);
+                            new TagDBHelper().update(t);
+
                         });
                         cp.setVisible(false);
                         this.setStyle("-fx-background-color: " + item + ";" +
@@ -70,7 +81,8 @@ public class AllTagsController implements Initializable {
         colorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
 
         table.getColumns().addAll(nameCol,
-                colorCol);
+                colorCol,
+                idCol);
 
         table.setItems(getAllTags());
     }
