@@ -64,7 +64,6 @@ public class AddExpenseController implements Initializable {
         dialog.setTitle("Add new category");
         dialog.setHeaderText("Enter at least title in order to add a new category");
 
-
         // Set the button types.
         ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);

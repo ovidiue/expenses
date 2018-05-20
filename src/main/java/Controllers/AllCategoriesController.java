@@ -1,14 +1,12 @@
 package Controllers;
 
 import helpers.CategoryDBHelper;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.paint.Color;
@@ -36,20 +34,23 @@ public class AllCategoriesController implements Initializable {
                 colorCol;
 
         TableColumn<Category, Integer> idCol;
+        TableColumn<Category, String> deleteCol;
 
         nameCol = new TableColumn<>("Name");
         descriptionCol = new TableColumn<>("Description");
         colorCol = new TableColumn<>("Color");
         idCol = new TableColumn<>("id");
+        deleteCol = new TableColumn<>("Delete");
 
         idCol.setVisible(false);
 
         table.setEditable(true);
         table.getSelectionModel().cellSelectionEnabledProperty().set(true);
 
-        nameCol.prefWidthProperty().bind(table.widthProperty().divide(3));
-        descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(3));
-        colorCol.prefWidthProperty().bind(table.widthProperty().divide(3));
+        nameCol.prefWidthProperty().bind(table.widthProperty().divide(3.4));
+        descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(3.4));
+        colorCol.prefWidthProperty().bind(table.widthProperty().divide(3.4));
+        deleteCol.prefWidthProperty().bind(table.widthProperty().divide(8));
 
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -61,7 +62,8 @@ public class AllCategoriesController implements Initializable {
         table.getColumns().addAll(nameCol,
                 descriptionCol,
                 colorCol,
-                idCol);
+                idCol,
+                deleteCol);
 
         colorCol.setCellFactory((TableColumn<Category, String> column) -> {
             TableCell<Category, String> cell = new TableCell<Category, String>() {
@@ -104,6 +106,33 @@ public class AllCategoriesController implements Initializable {
             };
             return cell;
         });
+
+        deleteCol.setCellFactory((TableColumn<Category, String> column) -> {
+            TableCell<Category, String> cell = new TableCell<Category, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText(null);
+                    } else {
+                        final Button deleteBtn = new Button("delete");
+                        deleteBtn.setMaxWidth(Double.MAX_VALUE);
+                        deleteBtn.setOnAction(e -> {
+                            this.setFocused(true);
+                            Category t = getTableView().getItems().get(getIndex());
+                            System.out.println(t.toString());
+                            new CategoryDBHelper().delete(t);
+                            table.getItems().remove(t);
+                            table.refresh();
+                        });
+
+                        setGraphic(deleteBtn);
+                    }
+                }
+            };
+            return cell;
+        });
+
 
         nameCol.setOnEditCommit(event -> {
             final String value = event.getNewValue() != null ? event.getNewValue() :
