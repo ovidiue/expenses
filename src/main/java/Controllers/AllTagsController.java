@@ -5,9 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.paint.Color;
 import model.Tag;
 
@@ -36,6 +39,17 @@ public class AllTagsController implements Initializable {
         idCol = new TableColumn<>("id");
 
         idCol.setVisible(false);
+
+        table.setEditable(true);
+        table.getSelectionModel().cellSelectionEnabledProperty().set(true);
+
+        nameCol.prefWidthProperty().bind(table.widthProperty().divide(2));
+        colorCol.prefWidthProperty().bind(table.widthProperty().divide(2));
+
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
+
+        nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
 
         colorCol.setCellFactory((TableColumn<Tag, String> column) -> {
             TableCell<Tag, String> cell = new TableCell<Tag, String>() {
@@ -77,8 +91,18 @@ public class AllTagsController implements Initializable {
             return cell;
         });
 
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        colorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
+        nameCol.setOnEditCommit(event -> {
+            final String value = event.getNewValue() != null ? event.getNewValue() :
+                    event.getOldValue();
+            (event.getTableView().getItems()
+                    .get(event.getTablePosition().getRow()))
+                    .setName(value);
+            Tag t = table.getSelectionModel().getSelectedItem();
+            System.out.println(t.toString());
+            t.setName(value);
+            new TagDBHelper().update(t);
+            table.refresh();
+        });
 
         table.getColumns().addAll(nameCol,
                 colorCol,
