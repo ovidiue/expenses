@@ -81,6 +81,7 @@ public class AddExpenseController implements Initializable {
         TextArea catDescription = new TextArea();
         catDescription.setPromptText("description");
 
+
         grid.add(new Label("Title *:"), 0, 0);
         grid.add(categoryTitle, 1, 0);
         grid.add(new Label("Description:"), 0, 1);

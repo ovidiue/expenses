@@ -1,5 +1,7 @@
 package model;
 
+import javafx.scene.paint.Color;
+
 import javax.persistence.*;
 
 /**
@@ -7,6 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 public class Category {
+    private final String DEFAULT_COLOR = Color.WHITE.toString();
     @Column
     private String name;
     @Column
@@ -23,6 +26,7 @@ public class Category {
     public Category(String name, String description) {
         this.name = name;
         this.description = description;
+        this.color = DEFAULT_COLOR;
     }
 
     public Category(String name, String description, String color) {
