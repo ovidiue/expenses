@@ -87,12 +87,13 @@ public class Main extends Application implements Initializable {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setMaxWidth(Double.MAX_VALUE);
 
         TextField tagName = new TextField();
         tagName.setPromptText("name");
-        tagName.setPrefWidth(200);
+        tagName.setMaxWidth(Double.MAX_VALUE);
         ColorPicker colorPicker = new ColorPicker();
-        colorPicker.setPrefWidth(200);
+        colorPicker.setMaxWidth(Double.MAX_VALUE);
         colorPicker.setPromptText("choose color");
 
         grid.add(new Label("Name *:"), 0, 0);

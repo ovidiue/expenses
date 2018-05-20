@@ -11,7 +11,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-
 import javafx.util.Pair;
 import model.Category;
 import model.Expense;
@@ -80,12 +79,16 @@ public class AddExpenseController implements Initializable {
         categoryTitle.setPromptText("title");
         TextArea catDescription = new TextArea();
         catDescription.setPromptText("description");
+        ColorPicker catColor = new ColorPicker();
 
+        catColor.setMaxWidth(Double.MAX_VALUE);
 
         grid.add(new Label("Title *:"), 0, 0);
         grid.add(categoryTitle, 1, 0);
         grid.add(new Label("Description:"), 0, 1);
         grid.add(catDescription, 1, 1);
+        grid.add(new Label("Color:"), 0, 2);
+        grid.add(catColor, 1, 2);
 
         // Enable/Disable login button depending on whether a username was entered.
         Node loginButton = dialog.getDialogPane().lookupButton(confirmBtn);
@@ -114,7 +117,9 @@ public class AddExpenseController implements Initializable {
         result.ifPresent(usernamePassword -> {
             System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
             CategoryDBHelper categoryDBHelper = new CategoryDBHelper();
-            categoryDBHelper.save(new Category(categoryTitle.getText(), catDescription.getText()));
+            categoryDBHelper.save(new Category(categoryTitle.getText(),
+                    catDescription.getText(),
+                    catColor.getValue().toString().replace("0x", "#")));
             populateCategories();
         });
     }
