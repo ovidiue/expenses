@@ -40,12 +40,24 @@ public class AllTagsController implements Initializable {
                     if (empty)
                         setText(null);
                     else {
-                       /* this.setStyle("-fx-background-color: " + item + ";" +
+                        ColorPicker cp = new ColorPicker(Color.web(item));
+                        cp.setOnAction(e -> {
+                            String newColor = cp.getValue()
+                                    .toString()
+                                    .replace("0x", "#");
+                            this.setStyle("-fx-background-color: " + newColor + ";" +
+                                    "-fx-border-color:grey;" +
+                                    "-fx-border-radius:3px;" +
+                                    "-fx-padding: 1px 1px 1px 1px");
+                        });
+                        cp.setVisible(false);
+                        this.setStyle("-fx-background-color: " + item + ";" +
                                 "-fx-border-color: gray;" +
                                 "-fx-border-radius:3px;" +
-                                "-fx-padding: 1px 1px 1px 1px");*/
-                        ColorPicker cp = new ColorPicker(Color.web(item));
-                        cp.getStyleClass().add("button");
+                                "-fx-padding: 1px 1px 1px 1px");
+                        this.setOnMouseClicked(e -> {
+                            cp.show();
+                        });
                         setGraphic(cp);
                     }
 
@@ -68,13 +80,4 @@ public class AllTagsController implements Initializable {
         return list;
     }
 
-    private String getColor(String c) {
-        String values[] = c.split(",");
-        // Color s = new Color(Double.parseDouble(values[0]), Double.parseDouble(values[1]), Double.parseDouble(values[2]) ,1);
-        String col = "rgb(" + String.valueOf(Math.ceil(Double.parseDouble(values[0]) * 100)) +
-                "," + String.valueOf(Math.ceil(Double.parseDouble(values[1]) * 100)) +
-                "," + String.valueOf(Math.ceil(Double.parseDouble(values[2]) * 100)) + ")";
-        System.out.println("COLOR: " + col);
-        return col;
-    }
 }
