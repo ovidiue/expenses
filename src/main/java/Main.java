@@ -125,7 +125,7 @@ public class Main extends Application implements Initializable {
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
         result.ifPresent(usernamePassword -> {
-           String color = extractRGB(colorPicker.getValue());
+            String color = extractRGB(colorPicker.getValue());
             System.out.println(color);
 
             new TagDBHelper().save(new Tag(tagName.getText(), color));
@@ -151,12 +151,13 @@ public class Main extends Application implements Initializable {
 
         String result;
 
-        red = (int)(color.getRed()*255);
-        blue = (int)(color.getBlue()*255);
-        green = (int)(color.getGreen()*255);
-        opacity = color.getOpacity();
+        red = (int) (color.getRed() * 255);
+        blue = (int) (color.getBlue() * 255);
+        green = (int) (color.getGreen() * 255);
+        //opacity = color.getOpacity();
 
-        return "rgb("+red+","+green+","+blue+","+opacity+")";
+        //return "rgb("+red+","+green+","+blue+","+opacity+")";
+        return "rgb(" + red + "," + green + "," + blue + ")";
     }
 
     @Override

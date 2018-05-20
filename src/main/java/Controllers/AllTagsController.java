@@ -5,10 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 import model.Tag;
 
 import java.net.URL;
@@ -38,10 +40,13 @@ public class AllTagsController implements Initializable {
                     if (empty)
                         setText(null);
                     else {
-                        this.setStyle("-fx-background-color: " + item + ";" +
+                       /* this.setStyle("-fx-background-color: " + item + ";" +
                                 "-fx-border-color: gray;" +
                                 "-fx-border-radius:3px;" +
-                                "-fx-padding: 1px 1px 1px 1px");
+                                "-fx-padding: 1px 1px 1px 1px");*/
+                        ColorPicker cp = new ColorPicker(Color.web(item));
+                        cp.getStyleClass().add("button");
+                        setGraphic(cp);
                     }
 
                 }
