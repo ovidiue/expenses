@@ -1,7 +1,6 @@
 package Controllers;
 
 import helpers.CategoryDBHelper;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -79,10 +78,7 @@ public class AllCategoriesController implements Initializable {
                             String newColor = cp.getValue()
                                     .toString()
                                     .replace("0x", "#");
-                            this.setStyle("-fx-background-color: " + newColor + ";" +
-                                    "-fx-border-color:grey;" +
-                                    "-fx-border-radius:3px;" +
-                                    "-fx-padding: 1px 1px 1px 1px");
+                            this.setStyle(getColorCellDefaultStyle(newColor));
 
                             Category t = table.getSelectionModel().getSelectedItem();
                             System.out.println(t.toString());
@@ -91,10 +87,7 @@ public class AllCategoriesController implements Initializable {
 
                         });
                         cp.setVisible(false);
-                        this.setStyle("-fx-background-color: " + item + ";" +
-                                "-fx-border-color: gray;" +
-                                "-fx-border-radius:3px;" +
-                                "-fx-padding: 1px 1px 1px 1px");
+                        this.setStyle(getColorCellDefaultStyle(item));
                         this.setOnMouseClicked(e -> {
                             cp.show();
                         });
@@ -135,11 +128,10 @@ public class AllCategoriesController implements Initializable {
 
 
         nameCol.setOnEditCommit(event -> {
-            final String value = event.getNewValue() != null ? event.getNewValue() :
+            final String value = event.getNewValue() != null ?
+                    event.getNewValue() :
                     event.getOldValue();
-            (event.getTableView().getItems()
-                    .get(event.getTablePosition().getRow()))
-                    .setName(value);
+
             Category t = table.getSelectionModel().getSelectedItem();
             System.out.println(t.toString());
             t.setName(value);
@@ -148,11 +140,10 @@ public class AllCategoriesController implements Initializable {
         });
 
         descriptionCol.setOnEditCommit(event -> {
-            final String value = event.getNewValue() != null ? event.getNewValue() :
+            final String value = event.getNewValue() != null ?
+                    event.getNewValue() :
                     event.getOldValue();
-            (event.getTableView().getItems()
-                    .get(event.getTablePosition().getRow()))
-                    .setName(value);
+
             Category t = table.getSelectionModel().getSelectedItem();
             System.out.println(t.toString());
             t.setDescription(value);
@@ -166,5 +157,12 @@ public class AllCategoriesController implements Initializable {
     private ObservableList<Category> getAllCategories() {
         ObservableList<Category> list = FXCollections.observableArrayList(new CategoryDBHelper().fetchAll());
         return list;
+    }
+
+    private String getColorCellDefaultStyle(String color) {
+        return ("-fx-background-color: " + color + ";" +
+                "-fx-border-color: gray;" +
+                "-fx-border-radius:3px;" +
+                "-fx-padding: 1px 1px 1px 1px");
     }
 }
