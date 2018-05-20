@@ -1,17 +1,23 @@
 package Controllers;
 
 import helpers.CategoryDBHelper;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 import model.Category;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -45,6 +51,7 @@ public class AllCategoriesController implements Initializable {
 
         table.setEditable(true);
         table.getSelectionModel().cellSelectionEnabledProperty().set(true);
+        table.setMaxHeight(Double.MAX_VALUE);
 
         nameCol.prefWidthProperty().bind(table.widthProperty().divide(3.4));
         descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(3.4));
@@ -164,5 +171,71 @@ public class AllCategoriesController implements Initializable {
                 "-fx-border-color: gray;" +
                 "-fx-border-radius:3px;" +
                 "-fx-padding: 1px 1px 1px 1px");
+    }
+
+    public void displayAddCategoryDialog() {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Add new category");
+        dialog.setHeaderText("Enter at least title in order to add a new category");
+
+        // Set the button types.
+        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
+
+        // Create the username and password labels and fields.
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField categoryTitle = new TextField();
+        categoryTitle.setPromptText("title");
+        TextArea catDescription = new TextArea();
+        catDescription.setPromptText("description");
+        ColorPicker catColor = new ColorPicker();
+
+        catColor.setMaxWidth(Double.MAX_VALUE);
+
+        grid.add(new Label("Title *:"), 0, 0);
+        grid.add(categoryTitle, 1, 0);
+        grid.add(new Label("Description:"), 0, 1);
+        grid.add(catDescription, 1, 1);
+        grid.add(new Label("Color:"), 0, 2);
+        grid.add(catColor, 1, 2);
+
+        // Enable/Disable login button depending on whether a username was entered.
+        Node loginButton = dialog.getDialogPane().lookupButton(confirmBtn);
+        loginButton.setDisable(true);
+
+        // Do some validation (using the Java 8 lambda syntax).
+        categoryTitle.textProperty().addListener((observable, oldValue, newValue) -> {
+            loginButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the username field by default.
+        Platform.runLater(() -> categoryTitle.requestFocus());
+
+        // Convert the result to a username-password-pair when the login button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == confirmBtn) {
+                return new Pair<>(categoryTitle.getText(), catDescription.getText());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        result.ifPresent(usernamePassword -> {
+            System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
+            CategoryDBHelper categoryDBHelper = new CategoryDBHelper();
+            Category category = new Category(categoryTitle.getText(),
+                    catDescription.getText(),
+                    catColor.getValue().toString().replace("0x", "#"));
+            categoryDBHelper.save(category);
+            table.getItems().add(category);
+            table.refresh();
+        });
     }
 }

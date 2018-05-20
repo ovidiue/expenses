@@ -43,8 +43,6 @@
                       <Button maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#viewAllExpenses" text="%view_expenses" />
                       <Separator prefWidth="200.0" />
                       <Button maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#addExpense" text="%add_expense" />
-                      <Separator prefWidth="200.0" />
-                      <Button maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" text="%add_category" />
                   <Separator prefWidth="200.0" />
                   <Button maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#viewAllCategories" text="View categories" />
                   <Separator prefWidth="200.0" />
