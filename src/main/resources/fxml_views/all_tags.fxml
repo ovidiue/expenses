@@ -10,7 +10,7 @@
    <children>
       <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="45.0" prefWidth="858.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
-          <Button mnemonicParsing="false" text="Add" />
+          <Button mnemonicParsing="false" onAction="#displayAddTagDialog" text="Add" />
         </items>
       </ToolBar>
       <TableView fx:id="table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="818.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />

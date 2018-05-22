@@ -46,8 +46,6 @@
                   <Separator prefWidth="200.0" />
                   <Button maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#viewAllCategories" text="View categories" />
                   <Separator prefWidth="200.0" />
-                  <Button maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#displayAddTagDialog" text="Add tag" />
-                  <Separator prefWidth="200.0" />
                   <Button maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#viewAllTags" text="View tags" />
                   </children>
                <HBox.margin>
