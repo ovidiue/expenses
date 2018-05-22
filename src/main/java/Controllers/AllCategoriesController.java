@@ -179,7 +179,6 @@ public class AllCategoriesController implements Initializable {
         ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
 
-        // Create the username and password labels and fields.
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -200,21 +199,19 @@ public class AllCategoriesController implements Initializable {
         grid.add(new Label("Color:"), 0, 2);
         grid.add(catColor, 1, 2);
 
-        // Enable/Disable login button depending on whether a username was entered.
+        // Enable/Disable login button depending on whether a title was entered.
         Node loginButton = dialog.getDialogPane().lookupButton(confirmBtn);
         loginButton.setDisable(true);
 
-        // Do some validation (using the Java 8 lambda syntax).
         categoryTitle.textProperty().addListener((observable, oldValue, newValue) -> {
             loginButton.setDisable(newValue.trim().isEmpty());
         });
 
         dialog.getDialogPane().setContent(grid);
 
-        // Request focus on the username field by default.
+        // Request focus on the title field by default.
         Platform.runLater(() -> categoryTitle.requestFocus());
 
-        // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == confirmBtn) {
                 return new Pair<>(categoryTitle.getText(), catDescription.getText());

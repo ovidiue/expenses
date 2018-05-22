@@ -64,6 +64,7 @@ public class Main extends Application implements Initializable {
 
     public void viewAllTags() throws IOException {
         AnchorPane table = loader.load(getClass().getResource("fxml_views/all_tags.fxml"));
+        table.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         root.setCenter(table);
     }
 

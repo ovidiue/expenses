@@ -43,6 +43,8 @@ public class AllTagsController implements Initializable {
         table.setEditable(true);
         table.getSelectionModel().cellSelectionEnabledProperty().set(true);
 
+        table.setMaxHeight(Double.MAX_VALUE);
+
         nameCol.prefWidthProperty().bind(table.widthProperty().divide(2));
         colorCol.prefWidthProperty().bind(table.widthProperty().divide(2));
 
