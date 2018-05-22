@@ -90,13 +90,12 @@ public class AllExpensesController implements Initializable {
             return cell;
         });
 
-
-        titleCol.setCellValueFactory(new PropertyValueFactory<Expense, String>("title"));
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<Expense, String>("description"));
-        recurrentCol.setCellValueFactory(new PropertyValueFactory<Expense, Boolean>("recurrent"));
-        createdOnCol.setCellValueFactory(new PropertyValueFactory<Expense, Date>("createdOn"));
-        dueDateCol.setCellValueFactory(new PropertyValueFactory<Expense, Date>("dueDate"));
-        amountCol.setCellValueFactory(new PropertyValueFactory<Expense, Double>("amount"));
+        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        recurrentCol.setCellValueFactory(new PropertyValueFactory<>("recurrent"));
+        createdOnCol.setCellValueFactory(new PropertyValueFactory<>("createdOn"));
+        dueDateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+        amountCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
         table.getColumns().addAll(titleCol,
                 descriptionCol,
