@@ -178,9 +178,10 @@ public class AllTagsController implements Initializable {
             String color = extractRGB(colorPicker.getValue());
             System.out.println(color);
 
-            new TagDBHelper().save(new Tag(tagName.getText(), color));
-
-
+            Tag tag = new Tag(tagName.getText(), color);
+            new TagDBHelper().save(tag);
+            table.getItems().add(tag);
+            table.refresh();
         });
 
     }

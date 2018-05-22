@@ -46,6 +46,13 @@ public class AllExpensesController implements Initializable {
         dueDateCol = new TableColumn<>("Due date");
         amountCol = new TableColumn<>("Amount");
 
+        titleCol.prefWidthProperty().bind(table.widthProperty().divide(6));
+        descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(6));
+        recurrentCol.prefWidthProperty().bind(table.widthProperty().divide(6));
+        createdOnCol.prefWidthProperty().bind(table.widthProperty().divide(6));
+        dueDateCol.prefWidthProperty().bind(table.widthProperty().divide(6));
+        amountCol.prefWidthProperty().bind(table.widthProperty().divide(6));
+
         createdOnCol.setCellFactory(column -> {
             TableCell<Expense, Date> cell = new TableCell<Expense, Date>() {
                 private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
