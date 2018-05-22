@@ -120,10 +120,7 @@ public class AllCategoriesController implements Initializable {
                         deleteBtn.setOnAction(e -> {
                             this.setFocused(true);
                             Category t = getTableView().getItems().get(getIndex());
-                            System.out.println(t.toString());
-                            new CategoryDBHelper().delete(t);
-                            table.getItems().remove(t);
-                            table.refresh();
+                            displayDeleteCatConfirmation(t);
                         });
 
                         setGraphic(deleteBtn);
@@ -236,6 +233,27 @@ public class AllCategoriesController implements Initializable {
             categoryDBHelper.save(category);
             table.getItems().add(category);
             table.refresh();
+        });
+    }
+
+    public void displayDeleteCatConfirmation(Category category) {
+        ButtonType okBtn,
+                cancelBtn;
+
+        okBtn = new ButtonType("Confirm");
+        cancelBtn = new ButtonType("Cancel");
+
+        Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
+        alert.setTitle("Delete");
+        alert.setHeaderText("Delete category");
+        alert.setContentText("Are you sure you want to delete " + category.getName() + " category ?");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == okBtn) {
+                new CategoryDBHelper().delete(category);
+                table.getItems().remove(category);
+                table.refresh();
+            }
         });
     }
 }
