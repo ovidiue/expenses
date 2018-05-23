@@ -34,12 +34,14 @@ public class AllTagsController implements Initializable {
 
     private void initTable() {
         TableColumn<Tag, String> nameCol,
-                colorCol;
+                colorCol,
+                deleteCol;
         TableColumn<Tag, Integer> idCol;
 
         nameCol = new TableColumn<>("Name");
         colorCol = new TableColumn<>("Color");
         idCol = new TableColumn<>("id");
+        deleteCol = new TableColumn<>("Delete");
 
         idCol.setVisible(false);
 
@@ -48,8 +50,9 @@ public class AllTagsController implements Initializable {
 
         table.setMaxHeight(Double.MAX_VALUE);
 
-        nameCol.prefWidthProperty().bind(table.widthProperty().divide(2));
-        colorCol.prefWidthProperty().bind(table.widthProperty().divide(2));
+        nameCol.prefWidthProperty().bind(table.widthProperty().divide(2.4));
+        colorCol.prefWidthProperty().bind(table.widthProperty().divide(2.4));
+        deleteCol.prefWidthProperty().bind(table.widthProperty().divide(6));
 
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         colorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
@@ -96,6 +99,30 @@ public class AllTagsController implements Initializable {
             return cell;
         });
 
+        deleteCol.setCellFactory((TableColumn<Tag, String> column) -> {
+            TableCell<Tag, String> cell = new TableCell<Tag, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText(null);
+                    } else {
+                        final Button deleteBtn = new Button("delete");
+                        deleteBtn.setMaxWidth(Double.MAX_VALUE);
+                        deleteBtn.setOnAction(e -> {
+                            this.setFocused(true);
+                            Tag t = getTableView().getItems().get(getIndex());
+                            displayDeleteTagConfirmation(t);
+                        });
+
+                        setGraphic(deleteBtn);
+                    }
+                }
+            };
+            return cell;
+        });
+
+
         nameCol.setOnEditCommit(event -> {
             final String value = event.getNewValue() != null ? event.getNewValue() :
                     event.getOldValue();
@@ -111,7 +138,8 @@ public class AllTagsController implements Initializable {
 
         table.getColumns().addAll(nameCol,
                 colorCol,
-                idCol);
+                idCol,
+                deleteCol);
 
         table.setItems(getAllTags());
     }
@@ -203,5 +231,27 @@ public class AllTagsController implements Initializable {
         //return "rgb("+red+","+green+","+blue+","+opacity+")";
         return "rgb(" + red + "," + green + "," + blue + ")";
     }
+
+    public void displayDeleteTagConfirmation(Tag tag) {
+        ButtonType okBtn,
+                cancelBtn;
+
+        okBtn = new ButtonType("Confirm");
+        cancelBtn = new ButtonType("Cancel");
+
+        Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
+        alert.setTitle("Delete");
+        alert.setHeaderText("Delete tag");
+        alert.setContentText("Are you sure you want to delete " + tag.getName() + " tag ?");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == okBtn) {
+                new TagDBHelper().delete(tag);
+                table.getItems().remove(tag);
+                table.refresh();
+            }
+        });
+    }
+
 
 }
