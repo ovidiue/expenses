@@ -1,7 +1,9 @@
 package Controllers;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import helpers.CategoryDBHelper;
 import helpers.HibernateHelper;
+import helpers.TagDBHelper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,10 +12,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 import javafx.util.Pair;
 import model.Category;
 import model.Expense;
+import model.Tag;
 
 import java.net.URL;
 import java.util.Date;
@@ -37,8 +43,11 @@ public class AddExpenseController implements Initializable {
     ChoiceBox<Category> catCtrl;
     @FXML
     CheckBox recurrent;
+    @FXML
+    ChoiceBox<Tag> tagCtrl;
 
     private ObservableList<Category> categoriesList;
+    private ObservableList<Tag> tagsList;
 
     private Expense getExpense() {
         return new Expense(title.getText(),
@@ -133,6 +142,7 @@ public class AddExpenseController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         populateCategories();
+        populateTags();
     }
 
     private void populateCategories() {
@@ -148,6 +158,12 @@ public class AddExpenseController implements Initializable {
             System.out.println("*****************\n");
         }*/
         catCtrl.setItems(categoriesList);
+
+    }
+
+    private void populateTags() {
+        tagsList = FXCollections.observableArrayList(new TagDBHelper().fetchAll());
+        tagCtrl.setItems(tagsList);
     }
 
     private Category getSelectedCategory(String catName) {
@@ -157,5 +173,9 @@ public class AddExpenseController implements Initializable {
                         cat -> cat.getName().equalsIgnoreCase(catName)
                 ).collect(Collectors.toList())
                 .get(0);
+    }
+
+    public void displayAddTagDialog() {
+        /*TODO to implement add tag dialog*/
     }
 }
