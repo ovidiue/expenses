@@ -20,7 +20,7 @@ public interface HibernateHlp<T> {
         return new MetadataSources(registry).buildMetadata().buildSessionFactory();
     }
 
-    public int save(T t);
+    public  int save(T t);
     public void delete(T t);
     public void update(T t);
     public T findById(int id);

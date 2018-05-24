@@ -21,7 +21,8 @@ public class Expense {
     private Date dueDate;
     @Column
     private Double amount;
-   /* @Column*/@Transient
+    /*@Column*/
+    @OneToOne(fetch = FetchType.LAZY)
     private Category category;
     /*@Column*/
     private ArrayList<Tag> tags;
@@ -123,13 +124,13 @@ public class Expense {
         this.amount = amount;
     }
 
-   /* public Category getCategory() {
+    public Category getCategory() {
         return category;
     }
 
     public void setCategory(Category category) {
         this.category = category;
-    }*/
+    }
 
     public ArrayList<Tag> getTags() {
         return tags;

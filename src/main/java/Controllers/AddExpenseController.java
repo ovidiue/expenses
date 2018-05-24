@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Created by Ovidiu on 18-May-18.
@@ -37,6 +38,8 @@ public class AddExpenseController implements Initializable {
     @FXML
     CheckBox recurrent;
 
+    private ObservableList<Category> categoriesList;
+
     private Expense getExpense() {
         return new Expense(title.getText(),
                 description.getText(),
@@ -47,6 +50,9 @@ public class AddExpenseController implements Initializable {
 
     public void saveExpense() {
         Expense e = getExpense();
+        Category z = catCtrl.getValue();
+        e.setCategory(z);
+
         HibernateHelper.save(e);
         clearFieldSelections();
     }
@@ -57,6 +63,7 @@ public class AddExpenseController implements Initializable {
         amount.setText("");
         dueDate.getEditor().setText("");
         recurrent.setSelected(false);
+        catCtrl.setValue(null);
     }
 
     public void displayAddCategoryDialog() {
@@ -130,7 +137,25 @@ public class AddExpenseController implements Initializable {
 
     private void populateCategories() {
         CategoryDBHelper c = new CategoryDBHelper();
-        ObservableList<Category> list = FXCollections.observableArrayList(c.fetchAll());
-        catCtrl.setItems(list);
+        categoriesList = FXCollections.observableArrayList(c.fetchAll());
+        /*System.out.println("*****************");
+        System.out.println("CATEGORIES in choicebox\n");
+        for (Category a: list) {
+            System.out.println(a.getName());
+            System.out.println(a.getColor());
+            System.out.println(a.getDescription());
+            System.out.println(a.getId());
+            System.out.println("*****************\n");
+        }*/
+        catCtrl.setItems(categoriesList);
+    }
+
+    private Category getSelectedCategory(String catName) {
+        return categoriesList
+                .stream()
+                .filter(
+                        cat -> cat.getName().equalsIgnoreCase(catName)
+                ).collect(Collectors.toList())
+                .get(0);
     }
 }
