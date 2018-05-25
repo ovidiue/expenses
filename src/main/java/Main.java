@@ -1,9 +1,12 @@
 import helpers.HibernateHlp;
+import helpers.Preloader;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -27,19 +30,38 @@ public class Main extends Application implements Initializable {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/fxml_views/main_screen.fxml"));
-        loader.setResources(ResourceBundle.getBundle("translations"));
-        root = loader.load();
 
-        Scene scene = new Scene(root);
-        //scene.getStylesheets().add("css/style.css");
+        Task<Void> taskDB = initializeDBConnection();
+        primaryStage.setScene(new Scene(new Label("Connecting to DB ..."), 600, 600));
+        Preloader preloader = new Preloader();
+        preloader.progressProperty().bind(taskDB.progressProperty());
 
-        primaryStage.setScene(scene);
+        taskDB.setOnSucceeded(e -> {
 
-        primaryStage.setOnCloseRequest(event -> System.exit(1));
+            primaryStage.show();
+            preloader.hide();
 
-        primaryStage.show();
+            loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fxml_views/main_screen.fxml"));
+            loader.setResources(ResourceBundle.getBundle("translations"));
+            try {
+                root = loader.load();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            Scene scene = new Scene(root);
+            //scene.getStylesheets().add("css/style.css");
+
+            primaryStage.setScene(scene);
+            primaryStage.setOnCloseRequest(event -> System.exit(1));
+            primaryStage.show();
+        });
+
+        preloader.show();
+        new Thread(taskDB).start();
+
+
     }
 
     public void viewAllExpenses() throws IOException {
@@ -65,6 +87,17 @@ public class Main extends Application implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        HibernateHlp.buildSessionFactory();
+        /*HibernateHlp.buildSessionFactory();*/
+    }
+
+    private Task<Void> initializeDBConnection() {
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                HibernateHlp.buildSessionFactory();
+                Thread.sleep(3000);
+                return null;
+            }
+        };
     }
 }
