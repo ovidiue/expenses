@@ -11,7 +11,8 @@ import java.util.Date;
 public class Expense {
     @Column
     private String title;
-    @Column
+    @Column(columnDefinition = "clob")
+    @Lob
     private String description;
     @Column
     private boolean recurrent;

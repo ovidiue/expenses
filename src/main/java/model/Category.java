@@ -12,7 +12,8 @@ public class Category {
     private final String DEFAULT_COLOR = Color.WHITE.toString();
     @Column
     private String name;
-    @Column
+    @Column(columnDefinition = "clob")
+    @Lob
     private String description;
     @Column
     private String color;
