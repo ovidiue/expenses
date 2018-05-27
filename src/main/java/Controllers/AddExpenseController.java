@@ -1,6 +1,5 @@
 package Controllers;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import helpers.CategoryDBHelper;
 import helpers.HibernateHelper;
 import helpers.TagDBHelper;
@@ -12,14 +11,12 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
-import javafx.util.Callback;
 import javafx.util.Pair;
 import model.Category;
 import model.Expense;
 import model.Tag;
+import org.controlsfx.control.CheckComboBox;
 
 import java.net.URL;
 import java.util.Date;
@@ -44,7 +41,7 @@ public class AddExpenseController implements Initializable {
     @FXML
     CheckBox recurrent;
     @FXML
-    ChoiceBox<Tag> tagCtrl;
+    CheckComboBox<Tag> newTagsCtrl;
 
     private ObservableList<Category> categoriesList;
     private ObservableList<Tag> tagsList;
@@ -142,7 +139,8 @@ public class AddExpenseController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         populateCategories();
-        populateTags();
+        //populateTags();
+        populateNewTags();
     }
 
     private void populateCategories() {
@@ -161,10 +159,10 @@ public class AddExpenseController implements Initializable {
 
     }
 
-    private void populateTags() {
+   /* private void populateTags() {
         tagsList = FXCollections.observableArrayList(new TagDBHelper().fetchAll());
         tagCtrl.setItems(tagsList);
-    }
+    }*/
 
     private Category getSelectedCategory(String catName) {
         return categoriesList
@@ -173,6 +171,12 @@ public class AddExpenseController implements Initializable {
                         cat -> cat.getName().equalsIgnoreCase(catName)
                 ).collect(Collectors.toList())
                 .get(0);
+    }
+
+    private void populateNewTags() {
+        tagsList = FXCollections.observableArrayList(new TagDBHelper().fetchAll());
+       // newTagsCtrl = new CheckComboBox<>(tagsList);
+        newTagsCtrl.getItems().addAll(tagsList);
     }
 
     public void displayAddTagDialog() {
