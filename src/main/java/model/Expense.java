@@ -29,8 +29,9 @@ public class Expense {
     /*@Column*/
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Tag> tags;
-    /*@Column*/
-    private ArrayList<Rate> payedRates;
+    @OneToMany(cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Rate> payedRates;
     @Id
     @GeneratedValue
     private int id;
@@ -143,11 +144,11 @@ public class Expense {
         this.tags = tags;
     }
 
-    public ArrayList<Rate> getPayedRates() {
+    public List<Rate> getPayedRates() {
         return payedRates;
     }
 
-    public void setPayedRates(ArrayList<Rate> payedRates) {
+    public void setPayedRates(List<Rate> payedRates) {
         this.payedRates = payedRates;
     }
 

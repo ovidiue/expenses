@@ -20,10 +20,9 @@ import model.Rate;
 import model.Tag;
 import org.controlsfx.control.CheckComboBox;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,6 +49,7 @@ public class AddExpenseController implements Initializable {
 
     private ObservableList<Category> categoriesList;
     private ObservableList<Tag> tagsList;
+    private List<Rate> rates = new ArrayList<>();
 
     private Expense getExpense() {
         Expense e = new Expense(title.getText(),
@@ -60,6 +60,7 @@ public class AddExpenseController implements Initializable {
                 catCtrl.getValue());
         List<Tag> tags = new ArrayList<>(newTagsCtrl.getCheckModel().getCheckedItems());
         e.setTags(tags);
+        e.getPayedRates().addAll(rates);
         return e;
     }
 
@@ -80,6 +81,9 @@ public class AddExpenseController implements Initializable {
         recurrent.setSelected(false);
         catCtrl.setValue(null);
         newTagsCtrl.getCheckModel().clearChecks();
+        progressBar.setProgress(0);
+        rates = null;
+        rates = new ArrayList<>();
     }
 
     public void displayAddCategoryDialog() {
@@ -149,7 +153,6 @@ public class AddExpenseController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         populateCategories();
-        //populateTags();
         populateNewTags();
     }
 
@@ -181,12 +184,10 @@ public class AddExpenseController implements Initializable {
         dialog.setTitle("Add new tag");
         dialog.setHeaderText("Enter at least title in order to add a new tag");
 
-
         // Set the button types.
         ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
 
-        // Create the username and password labels and fields.
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -205,7 +206,6 @@ public class AddExpenseController implements Initializable {
         grid.add(new Label("Color:"), 0, 1);
         grid.add(colorPicker, 1, 1);
 
-        // Enable/Disable login button depending on whether a username was entered.
         Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
         saveBtn.setDisable(true);
 
@@ -216,10 +216,8 @@ public class AddExpenseController implements Initializable {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Request focus on the username field by default.
         Platform.runLater(() -> tagName.requestFocus());
 
-        // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == confirmBtn) {
                 return new Pair<String, String>(tagName.getText(), colorPicker.getValue().toString());
@@ -273,21 +271,17 @@ public class AddExpenseController implements Initializable {
         grid.add(new Label("Observations"), 0, 2);
         grid.add(textAreaObserVations, 1, 2);
 
-        // Enable/Disable login button depending on whether a username was entered.
         Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
         saveBtn.setDisable(true);
 
-        // Do some validation (using the Java 8 lambda syntax).
         textFieldAmount.textProperty().addListener((observable, oldValue, newValue) -> {
             saveBtn.setDisable(newValue.trim().isEmpty());
         });
 
         dialog.getDialogPane().setContent(grid);
 
-        // Request focus on the username field by default.
         Platform.runLater(() -> textFieldAmount.requestFocus());
 
-        // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == confirmBtn) {
                 return new Pair<String, String>(textFieldAmount.getText(), datePicker.getValue().toString());
@@ -305,22 +299,51 @@ public class AddExpenseController implements Initializable {
                     new Date(datePicker.getEditor().getText()),
                     textAreaObserVations.getText());
             new RateDBHelper().save(rate);
-            displayPayProgress(Double.parseDouble(textFieldAmount.getText()));
+            rates.add(rate);
+            displayPayProgress();
         });
 
     }
 
-    private void displayPayProgress(double value) {
-        //Double payed = (value / Double.parseDouble(amount.getText())) / 100;
-        Double payed = (value * 100) / Double.parseDouble(amount.getText());
+    private void displayPayProgress() {
+        double amountPayed = getTotalValuePayed();
+        Double payed = (amountPayed * 100) / Double.parseDouble(amount.getText());
         System.out.println("TOTAL: " + Double.parseDouble(amount.getText()));
         System.out.println("PAYED: " + payed);
         progressBar.setProgress(payed / 100);
 
         DecimalFormat df = new DecimalFormat("#.##");
         payed = Double.valueOf(df.format(payed));
+        System.out.println("FORMATED: " + payed);
+        progressBar.getTooltip().setText(getRatesInfoString());
+    }
 
-        progressBar.getTooltip().setText("Payed: "+ payed+"%");
+    private double getTotalValuePayed() {
+        double total = 0;
+        if (rates.size() > 0) {
+            for (Rate r : rates) {
+                total += r.getAmount();
+            }
+        }
+        return total;
+    }
+
+    private String getRatesInfoString() {
+        String info = "";
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+
+        if (rates.size() > 0) {
+            for (Rate r : rates) {
+                info += "\nRate\n" +
+                        "value: " + r.getAmount() + "\n" +
+                        "Date: " + format.format(r.getDate()) + "\n" +
+                        "Info: " + r.getObservations() + "\n" +
+                        "****************************";
+            }
+        }
+
+        info += "\nTotal: \t" + getTotalValuePayed();
+        return info;
     }
 
 }

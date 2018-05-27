@@ -13,19 +13,26 @@ public class Rate {
     @Column
     private Date date;
     @Column
-    private String observations;
+    private String observation;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    public Rate(Double amount, Date date, String observations) {
+    public Rate(Double amount, Date date, String observation) {
         this.amount = amount;
         this.date = date;
-        this.observations = observations;
+        this.observation = observation;
+    }
+
+    public Rate() {
     }
 
     public Double getAmount() {
         return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
     public int getId() {
@@ -34,10 +41,6 @@ public class Rate {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
     }
 
     public Date getDate() {
@@ -49,10 +52,10 @@ public class Rate {
     }
 
     public String getObservations() {
-        return observations;
+        return observation;
     }
 
-    public void setObservations(String observations) {
-        this.observations = observations;
+    public void setObservation(String observation) {
+        this.observation = observation;
     }
 }
