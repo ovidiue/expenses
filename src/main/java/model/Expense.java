@@ -3,6 +3,7 @@ package model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Ovidiu on 15-May-18.
@@ -26,11 +27,12 @@ public class Expense {
     @OneToOne(fetch = FetchType.LAZY)
     private Category category;
     /*@Column*/
-    private ArrayList<Tag> tags;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Tag> tags;
     /*@Column*/
     private ArrayList<Rate> payedRates;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private int id;
 
     public Expense(String title,
@@ -133,11 +135,11 @@ public class Expense {
         this.category = category;
     }
 
-    public ArrayList<Tag> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(ArrayList<Tag> tags) {
+    public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 
@@ -147,5 +149,21 @@ public class Expense {
 
     public void setPayedRates(ArrayList<Rate> payedRates) {
         this.payedRates = payedRates;
+    }
+
+    @Override
+    public String toString() {
+        return "Expense{" +
+                "title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", recurrent=" + recurrent +
+                ", createdOn=" + createdOn +
+                ", dueDate=" + dueDate +
+                ", amount=" + amount +
+                ", category=" + category +
+                ", tags=" + tags +
+                ", payedRates=" + payedRates +
+                ", id=" + id +
+                '}';
     }
 }
