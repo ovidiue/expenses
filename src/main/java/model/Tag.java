@@ -1,7 +1,5 @@
 package model;
 
-import javafx.scene.paint.Color;
-
 import javax.persistence.*;
 
 /**
@@ -17,7 +15,8 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    public Tag() {}
+    public Tag() {
+    }
 
     public Tag(String name) {
         this.name = name;

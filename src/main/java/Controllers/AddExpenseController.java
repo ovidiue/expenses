@@ -2,6 +2,7 @@ package Controllers;
 
 import helpers.CategoryDBHelper;
 import helpers.HibernateHelper;
+import helpers.RateDBHelper;
 import helpers.TagDBHelper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -15,13 +16,15 @@ import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 import model.Category;
 import model.Expense;
+import model.Rate;
 import model.Tag;
 import org.controlsfx.control.CheckComboBox;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
-import java.util.Date;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,16 +45,22 @@ public class AddExpenseController implements Initializable {
     CheckBox recurrent;
     @FXML
     CheckComboBox<Tag> newTagsCtrl;
+    @FXML
+    ProgressBar progressBar;
 
     private ObservableList<Category> categoriesList;
     private ObservableList<Tag> tagsList;
 
     private Expense getExpense() {
-        return new Expense(title.getText(),
+        Expense e = new Expense(title.getText(),
                 description.getText(),
                 recurrent.isSelected(),
                 new Date(dueDate.getEditor().getText()),
-                Double.parseDouble(amount.getText()));
+                Double.parseDouble(amount.getText()),
+                catCtrl.getValue());
+        List<Tag> tags = new ArrayList<>(newTagsCtrl.getCheckModel().getCheckedItems());
+        e.setTags(tags);
+        return e;
     }
 
     public void saveExpense() {
@@ -70,6 +79,7 @@ public class AddExpenseController implements Initializable {
         dueDate.getEditor().setText("");
         recurrent.setSelected(false);
         catCtrl.setValue(null);
+        newTagsCtrl.getCheckModel().clearChecks();
     }
 
     public void displayAddCategoryDialog() {
@@ -143,26 +153,12 @@ public class AddExpenseController implements Initializable {
         populateNewTags();
     }
 
+
     private void populateCategories() {
         CategoryDBHelper c = new CategoryDBHelper();
         categoriesList = FXCollections.observableArrayList(c.fetchAll());
-        /*System.out.println("*****************");
-        System.out.println("CATEGORIES in choicebox\n");
-        for (Category a: list) {
-            System.out.println(a.getName());
-            System.out.println(a.getColor());
-            System.out.println(a.getDescription());
-            System.out.println(a.getId());
-            System.out.println("*****************\n");
-        }*/
         catCtrl.setItems(categoriesList);
-
     }
-
-   /* private void populateTags() {
-        tagsList = FXCollections.observableArrayList(new TagDBHelper().fetchAll());
-        tagCtrl.setItems(tagsList);
-    }*/
 
     private Category getSelectedCategory(String catName) {
         return categoriesList
@@ -175,11 +171,156 @@ public class AddExpenseController implements Initializable {
 
     private void populateNewTags() {
         tagsList = FXCollections.observableArrayList(new TagDBHelper().fetchAll());
-       // newTagsCtrl = new CheckComboBox<>(tagsList);
+        newTagsCtrl.getItems().clear();
         newTagsCtrl.getItems().addAll(tagsList);
     }
 
+    @FXML
     public void displayAddTagDialog() {
-        /*TODO to implement add tag dialog*/
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Add new tag");
+        dialog.setHeaderText("Enter at least title in order to add a new tag");
+
+
+        // Set the button types.
+        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
+
+        // Create the username and password labels and fields.
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setMaxWidth(Double.MAX_VALUE);
+
+        TextField tagName = new TextField();
+        tagName.setPromptText("name");
+        tagName.setMaxWidth(Double.MAX_VALUE);
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setMaxWidth(Double.MAX_VALUE);
+        colorPicker.setPromptText("choose color");
+
+        grid.add(new Label("Name *:"), 0, 0);
+        grid.add(tagName, 1, 0);
+        grid.add(new Label("Color:"), 0, 1);
+        grid.add(colorPicker, 1, 1);
+
+        // Enable/Disable login button depending on whether a username was entered.
+        Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
+        saveBtn.setDisable(true);
+
+        // Do some validation (using the Java 8 lambda syntax).
+        tagName.textProperty().addListener((observable, oldValue, newValue) -> {
+            saveBtn.setDisable(newValue.trim().isEmpty());
+        });
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the username field by default.
+        Platform.runLater(() -> tagName.requestFocus());
+
+        // Convert the result to a username-password-pair when the login button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == confirmBtn) {
+                return new Pair<String, String>(tagName.getText(), colorPicker.getValue().toString());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        result.ifPresent(usernamePassword -> {
+            String color = colorPicker.getValue().toString().replace("0x", "#");
+            System.out.println(color);
+
+            Tag tag = new Tag(tagName.getText(), color);
+            new TagDBHelper().save(tag);
+            populateNewTags();
+        });
+
     }
+
+    @FXML
+    public void displayAddPayedRatesDialog() {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Add payed rate");
+        dialog.setHeaderText("Enter at least amount in order to add a rate");
+
+        // Set the button types.
+        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setMaxWidth(Double.MAX_VALUE);
+
+        TextField textFieldAmount = new TextField();
+        textFieldAmount.setPromptText("amount");
+        textFieldAmount.setMaxWidth(Double.MAX_VALUE);
+        DatePicker datePicker = new DatePicker();
+        datePicker.setMaxWidth(Double.MAX_VALUE);
+        datePicker.setPromptText("set date");
+        TextArea textAreaObserVations = new TextArea();
+        textAreaObserVations.setMaxWidth(Double.MAX_VALUE);
+        textAreaObserVations.setPromptText("observations");
+
+        grid.add(new Label("Amount *:"), 0, 0);
+        grid.add(textFieldAmount, 1, 0);
+        grid.add(new Label("Date:"), 0, 1);
+        grid.add(datePicker, 1, 1);
+        grid.add(new Label("Observations"), 0, 2);
+        grid.add(textAreaObserVations, 1, 2);
+
+        // Enable/Disable login button depending on whether a username was entered.
+        Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
+        saveBtn.setDisable(true);
+
+        // Do some validation (using the Java 8 lambda syntax).
+        textFieldAmount.textProperty().addListener((observable, oldValue, newValue) -> {
+            saveBtn.setDisable(newValue.trim().isEmpty());
+        });
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the username field by default.
+        Platform.runLater(() -> textFieldAmount.requestFocus());
+
+        // Convert the result to a username-password-pair when the login button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == confirmBtn) {
+                return new Pair<String, String>(textFieldAmount.getText(), datePicker.getValue().toString());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        result.ifPresent(usernamePassword -> {
+            String color = datePicker.getValue().toString().replace("0x", "#");
+            System.out.println(color);
+
+            Rate rate = new Rate(Double.parseDouble(textFieldAmount.getText()),
+                    new Date(datePicker.getEditor().getText()),
+                    textAreaObserVations.getText());
+            new RateDBHelper().save(rate);
+            displayPayProgress(Double.parseDouble(textFieldAmount.getText()));
+        });
+
+    }
+
+    private void displayPayProgress(double value) {
+        //Double payed = (value / Double.parseDouble(amount.getText())) / 100;
+        Double payed = (value * 100) / Double.parseDouble(amount.getText());
+        System.out.println("TOTAL: " + Double.parseDouble(amount.getText()));
+        System.out.println("PAYED: " + payed);
+        progressBar.setProgress(payed / 100);
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        payed = Double.valueOf(df.format(payed));
+
+        progressBar.getTooltip().setText("Payed: "+ payed+"%");
+    }
+
 }

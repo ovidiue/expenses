@@ -145,16 +145,31 @@
                               </CheckBox>
                            </children>
                         </VBox>
-                        <VBox>
+                        <VBox />
+                        <HBox maxWidth="1.7976931348623157E308">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Pay progress" />
-                              <ProgressBar maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="200.0" progress="0.0">
-                                 <tooltip>
-                                    <Tooltip text="already paid percent" />
-                                 </tooltip>
-                              </ProgressBar>
+                              <VBox prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Pay progress" />
+                                    <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="200.0" progress="0.0">
+                                       <tooltip>
+                                          <Tooltip text="already paid percent" />
+                                       </tooltip>
+                                    </ProgressBar>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add">
+                                       <VBox.margin>
+                                          <Insets right="10.0" />
+                                       </VBox.margin>
+                                    </Text>
+                                    <Button minHeight="40.0" minWidth="40.0" mnemonicParsing="false" onAction="#displayAddPayedRatesDialog" text="+" />
+                                 </children>
+                              </VBox>
                            </children>
-                        </VBox>
+                        </HBox>
                      </children>
                   </VBox>
                </children>
