@@ -43,7 +43,7 @@ public class Main extends Application implements Initializable {
 
             loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/fxml_views/main_screen.fxml"));
-            loader.setResources(ResourceBundle.getBundle("translations"));
+            loader.setResources(ResourceBundle.getBundle("lang/translations"));
             try {
                 root = loader.load();
             } catch (IOException e1) {
@@ -51,7 +51,7 @@ public class Main extends Application implements Initializable {
             }
 
             Scene scene = new Scene(root);
-            //scene.getStylesheets().add("css/style.css");
+            scene.getStylesheets().add("css/style.css");
 
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(event -> System.exit(1));
@@ -95,7 +95,7 @@ public class Main extends Application implements Initializable {
             @Override
             protected Void call() throws Exception {
                 HibernateHlp.buildSessionFactory();
-                Thread.sleep(3000);
+                //Thread.sleep(3000);
                 return null;
             }
         };

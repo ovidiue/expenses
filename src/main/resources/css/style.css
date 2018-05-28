@@ -1,4 +1,4 @@
-.root {
+/*.root {
     -fx-background-color: black;
     -fx-text-fill: black;
 }
@@ -10,4 +10,9 @@
 .text {
     -fx-text-fill: white;
     -fx-color-label-visible: true;
+}*/
+
+.button:hover {
+    -fx-background-color: black;
+    -fx-text-fill: white;
 }
