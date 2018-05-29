@@ -28,6 +28,9 @@ public class AllExpensesController implements Initializable {
     }
 
     private void initTable() {
+        /*TODO - set display category
+        * TODO - show payed rates per expense
+        * TODO - show tags*/
         TableColumn<Expense, String> titleCol,
                 descriptionCol,
                 deleteCol;
@@ -80,7 +83,7 @@ public class AllExpensesController implements Initializable {
                 @Override
                 protected void updateItem(Date item, boolean empty) {
                     super.updateItem(item, empty);
-                    if (empty) {
+                    if (empty || item == null) {
                         setText(null);
                     } else {
                         this.setText(format.format(item));

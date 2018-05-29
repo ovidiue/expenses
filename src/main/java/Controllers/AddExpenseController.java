@@ -53,10 +53,13 @@ public class AddExpenseController implements Initializable {
     private List<Rate> rates = new ArrayList<>();
 
     private Expense getExpense() {
+        Date dueDateValue = dueDate.getEditor().getText().trim().length() == 0 ?
+                null :
+                new Date(dueDate.getEditor().getText());
         Expense e = new Expense(title.getText(),
                 description.getText(),
                 recurrent.isSelected(),
-                new Date(dueDate.getEditor().getText()),
+                dueDateValue,
                 Double.parseDouble(amount.getText()),
                 catCtrl.getValue());
         List<Tag> tags = new ArrayList<>(newTagsCtrl.getCheckModel().getCheckedItems());
