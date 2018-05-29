@@ -52,6 +52,7 @@ public class Main extends Application implements Initializable {
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add("css/style.css");
+            scene.getStylesheets().add("css/custom_notifications_white.css");
 
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(event -> System.exit(1));
