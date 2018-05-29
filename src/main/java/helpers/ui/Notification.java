@@ -1,6 +1,7 @@
 package helpers.ui;
 
 import javafx.geometry.Pos;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 
@@ -13,7 +14,7 @@ public class Notification {
 
     public static void create(String message, String title, String style) {
         Notifications n = Notifications.create()
-                .position(Pos.TOP_CENTER)
+                .position(Pos.BASELINE_RIGHT)
                 .text(message)
                 .title(title)
                 .hideAfter(Duration.seconds(2));
@@ -22,6 +23,7 @@ public class Notification {
             n.darkStyle();
 
         n.owner(null);
+        n.graphic(new ImageView("images/success.png"));
         n.show();
     }
 }
