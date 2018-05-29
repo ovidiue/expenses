@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
  */
 public class AlertHelper {
 
-    public static void buildAlert(Alert.AlertType type,
+    public static Alert build(Alert.AlertType type,
                                   String title,
                                   String header,
                                   String contentText,
@@ -22,6 +22,8 @@ public class AlertHelper {
         Button cancelBtn = new Button("OK");
         alert.getDialogPane().getChildren().addAll(cancelBtn, okBtn);
 
-        alert.showAndWait();
+        return alert;
+
+//        alert.showAndWait();
     }
 }
