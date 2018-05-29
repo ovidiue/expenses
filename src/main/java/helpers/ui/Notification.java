@@ -16,7 +16,7 @@ public class Notification {
                 .position(Pos.TOP_CENTER)
                 .text(message)
                 .title(title)
-                .hideAfter(new Duration(2000));
+                .hideAfter(Duration.seconds(2));
 
         if (style != null && style.equalsIgnoreCase("dark"))
             n.darkStyle();
