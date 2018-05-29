@@ -27,10 +27,9 @@ public class Expense {
     @OneToOne(fetch = FetchType.LAZY)
     private Category category;
     /*@Column*/
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.DETACH)
     private List<Tag> tags;
-    @OneToMany(cascade = CascadeType.ALL,
-            orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Rate> payedRates;
     @Id
     @GeneratedValue

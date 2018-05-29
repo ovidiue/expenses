@@ -1,14 +1,12 @@
 package Controllers;
 
 import helpers.ExpenseDBHelper;
+import helpers.ui.Notification;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Expense;
 
@@ -31,7 +29,8 @@ public class AllExpensesController implements Initializable {
 
     private void initTable() {
         TableColumn<Expense, String> titleCol,
-                descriptionCol;
+                descriptionCol,
+                deleteCol;
 
         TableColumn<Expense, Date> createdOnCol,
                 dueDateCol;
@@ -45,13 +44,15 @@ public class AllExpensesController implements Initializable {
         createdOnCol = new TableColumn<>("Created on");
         dueDateCol = new TableColumn<>("Due date");
         amountCol = new TableColumn<>("Amount");
+        deleteCol = new TableColumn<>("Delete");
 
-        titleCol.prefWidthProperty().bind(table.widthProperty().divide(6));
-        descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(6));
-        recurrentCol.prefWidthProperty().bind(table.widthProperty().divide(6));
-        createdOnCol.prefWidthProperty().bind(table.widthProperty().divide(6));
-        dueDateCol.prefWidthProperty().bind(table.widthProperty().divide(6));
-        amountCol.prefWidthProperty().bind(table.widthProperty().divide(6));
+        titleCol.prefWidthProperty().bind(table.widthProperty().divide(7));
+        descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(7));
+        recurrentCol.prefWidthProperty().bind(table.widthProperty().divide(7));
+        createdOnCol.prefWidthProperty().bind(table.widthProperty().divide(7));
+        dueDateCol.prefWidthProperty().bind(table.widthProperty().divide(7));
+        amountCol.prefWidthProperty().bind(table.widthProperty().divide(7));
+        deleteCol.prefWidthProperty().bind(table.widthProperty().divide(7));
 
         createdOnCol.setCellFactory(column -> {
             TableCell<Expense, Date> cell = new TableCell<Expense, Date>() {
@@ -90,6 +91,29 @@ public class AllExpensesController implements Initializable {
             return cell;
         });
 
+        deleteCol.setCellFactory((TableColumn<Expense, String> column) -> {
+            TableCell<Expense, String> cell = new TableCell<Expense, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText(null);
+                    } else {
+                        final Button deleteBtn = new Button("delete");
+                        deleteBtn.setMaxWidth(Double.MAX_VALUE);
+                        deleteBtn.setOnAction(e -> {
+                            this.setFocused(true);
+                            Expense expense = getTableView().getItems().get(getIndex());
+                            displayDeleteExpenseConfirmation(expense);
+                        });
+
+                        setGraphic(deleteBtn);
+                    }
+                }
+            };
+            return cell;
+        });
+
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
         recurrentCol.setCellValueFactory(new PropertyValueFactory<>("recurrent"));
@@ -102,9 +126,37 @@ public class AllExpensesController implements Initializable {
                 recurrentCol,
                 createdOnCol,
                 dueDateCol,
-                amountCol);
+                amountCol,
+                deleteCol);
 
         table.setItems(getAllExpenses());
+    }
+
+    private void displayDeleteExpenseConfirmation(Expense e) {
+        ButtonType okBtn,
+                cancelBtn;
+
+        okBtn = new ButtonType("Confirm");
+        cancelBtn = new ButtonType("Cancel");
+
+        Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
+        alert.setTitle("Delete");
+        alert.setHeaderText("Delete expense");
+        alert.setContentText("Are you sure you want to delete " + e.getTitle() + " expense ?");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == okBtn) {
+                new ExpenseDBHelper().delete(e);
+                table.getItems().remove(e);
+                table.refresh();
+
+                Notification.create("Deleted expense:\n" + e.getTitle(),
+                        "Success",
+                        null);
+
+            }
+        });
+
     }
 
     private ObservableList<Expense> getAllExpenses() {
