@@ -1,6 +1,7 @@
 package Controllers;
 
 import helpers.CategoryDBHelper;
+import helpers.ui.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -230,6 +231,10 @@ public class AllCategoriesController implements Initializable {
             categoryDBHelper.save(category);
             table.getItems().add(category);
             table.refresh();
+
+            Notification.create("Added new category:\n" + category.getName(),
+                    "Success",
+                    null);
         });
     }
 
@@ -250,6 +255,11 @@ public class AllCategoriesController implements Initializable {
                 new CategoryDBHelper().delete(category);
                 table.getItems().remove(category);
                 table.refresh();
+
+                Notification.create("Deleted category:\n" + category.getName(),
+                        "Success",
+                        null);
+
             }
         });
     }

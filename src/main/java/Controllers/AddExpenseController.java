@@ -4,6 +4,7 @@ import helpers.CategoryDBHelper;
 import helpers.HibernateHelper;
 import helpers.RateDBHelper;
 import helpers.TagDBHelper;
+import helpers.ui.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -71,6 +72,10 @@ public class AddExpenseController implements Initializable {
 
         HibernateHelper.save(e);
         clearFieldSelections();
+
+        Notification.create("Added new expense:\n" + e.getTitle(),
+                "Success",
+                null);
     }
 
     private void clearFieldSelections() {
@@ -143,10 +148,14 @@ public class AddExpenseController implements Initializable {
         result.ifPresent(usernamePassword -> {
             System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
             CategoryDBHelper categoryDBHelper = new CategoryDBHelper();
-            categoryDBHelper.save(new Category(categoryTitle.getText(),
+            Category category = new Category(categoryTitle.getText(),
                     catDescription.getText(),
-                    catColor.getValue().toString().replace("0x", "#")));
+                    catColor.getValue().toString().replace("0x", "#"));
+            categoryDBHelper.save(category);
             populateCategories();
+
+            Notification.create("Added category: \n" +
+                    category.getName(), "Success", null);
         });
     }
 
@@ -234,6 +243,9 @@ public class AddExpenseController implements Initializable {
             Tag tag = new Tag(tagName.getText(), color);
             new TagDBHelper().save(tag);
             populateNewTags();
+
+            Notification.create("Added new tag:\n" + tag.getName(),
+                    "Success", null);
         });
 
     }
@@ -301,6 +313,9 @@ public class AddExpenseController implements Initializable {
             new RateDBHelper().save(rate);
             rates.add(rate);
             displayPayProgress();
+
+            Notification.create("Added partial pay, amount:\n" + rate.getAmount(),
+                    "Success", null);
         });
 
     }

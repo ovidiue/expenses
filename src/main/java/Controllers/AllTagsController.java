@@ -1,6 +1,7 @@
 package Controllers;
 
 import helpers.TagDBHelper;
+import helpers.ui.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -210,6 +211,11 @@ public class AllTagsController implements Initializable {
             new TagDBHelper().save(tag);
             table.getItems().add(tag);
             table.refresh();
+
+            Notification.create("Added new tag:\n" + tag.getName(),
+                    "Success",
+                    null);
+
         });
 
     }
@@ -249,6 +255,11 @@ public class AllTagsController implements Initializable {
                 new TagDBHelper().delete(tag);
                 table.getItems().remove(tag);
                 table.refresh();
+
+                Notification.create("Deleted tag:\n" + tag.getName(),
+                        "Success",
+                        null);
+
             }
         });
     }
