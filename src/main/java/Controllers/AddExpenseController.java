@@ -33,39 +33,39 @@ import java.util.stream.Collectors;
  */
 public class AddExpenseController implements Initializable {
     @FXML
-    TextField title;
+    TextField textfieldTitle;
     @FXML
-    TextArea description;
+    TextArea textareaDescription;
     @FXML
-    TextField amount;
+    TextField textfieldAmount;
     @FXML
-    DatePicker dueDate;
+    DatePicker datepickerDueDate;
     @FXML
-    ChoiceBox<Category> catCtrl;
+    ChoiceBox<Category> choiceboxCategory;
     @FXML
-    CheckBox recurrent;
+    CheckBox checkboxRecurrent;
     @FXML
-    CheckComboBox<Tag> newTagsCtrl;
+    CheckComboBox<Tag> checkcomboboxTag;
     @FXML
     ProgressBar progressBar;
     @FXML
-    Button saveBtn;
+    Button btnSave;
 
     private ObservableList<Category> categoriesList;
     private ObservableList<Tag> tagsList;
     private List<Rate> rates = new ArrayList<>();
 
     private Expense getExpense() {
-        Date dueDateValue = dueDate.getEditor().getText().trim().length() == 0 ?
+        Date dueDateValue = datepickerDueDate.getEditor().getText().trim().length() == 0 ?
                 null :
-                new Date(dueDate.getEditor().getText());
-        Expense e = new Expense(title.getText(),
-                description.getText(),
-                recurrent.isSelected(),
+                new Date(datepickerDueDate.getEditor().getText());
+        Expense e = new Expense(textfieldTitle.getText(),
+                textareaDescription.getText(),
+                checkboxRecurrent.isSelected(),
                 dueDateValue,
-                Double.parseDouble(amount.getText()),
-                catCtrl.getValue());
-        List<Tag> tags = new ArrayList<>(newTagsCtrl.getCheckModel().getCheckedItems());
+                Double.parseDouble(textfieldAmount.getText()),
+                choiceboxCategory.getValue());
+        List<Tag> tags = new ArrayList<>(checkcomboboxTag.getCheckModel().getCheckedItems());
         e.setTags(tags);
         e.getPayedRates().addAll(rates);
         return e;
@@ -73,7 +73,7 @@ public class AddExpenseController implements Initializable {
 
     public void saveExpense() {
         Expense e = getExpense();
-        Category z = catCtrl.getValue();
+        Category z = choiceboxCategory.getValue();
         e.setCategory(z);
 
         HibernateHelper.save(e);
@@ -84,14 +84,14 @@ public class AddExpenseController implements Initializable {
                 null);
     }
 
-    private void clearFieldSelections() {
-        title.setText("");
-        description.setText("");
-        amount.setText("");
-        dueDate.getEditor().setText("");
-        recurrent.setSelected(false);
-        catCtrl.setValue(null);
-        newTagsCtrl.getCheckModel().clearChecks();
+    public void clearFieldSelections() {
+        textfieldTitle.setText("");
+        textareaDescription.setText("");
+        textfieldAmount.setText("");
+        datepickerDueDate.getEditor().setText("");
+        checkboxRecurrent.setSelected(false);
+        choiceboxCategory.setValue(null);
+        checkcomboboxTag.getCheckModel().clearChecks();
         progressBar.setProgress(0);
         rates = null;
         rates = new ArrayList<>();
@@ -100,7 +100,7 @@ public class AddExpenseController implements Initializable {
     public void displayAddCategoryDialog() {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Add new category");
-        dialog.setHeaderText("Enter at least title in order to add a new category");
+        dialog.setHeaderText("Enter at least textfieldTitle in order to add a new category");
 
         // Set the button types.
         ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
@@ -113,9 +113,9 @@ public class AddExpenseController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField categoryTitle = new TextField();
-        categoryTitle.setPromptText("title");
+        categoryTitle.setPromptText("textfieldTitle");
         TextArea catDescription = new TextArea();
-        catDescription.setPromptText("description");
+        catDescription.setPromptText("textareaDescription");
         ColorPicker catColor = new ColorPicker();
 
         catColor.setMaxWidth(Double.MAX_VALUE);
@@ -176,7 +176,7 @@ public class AddExpenseController implements Initializable {
     private void populateCategories() {
         CategoryDBHelper c = new CategoryDBHelper();
         categoriesList = FXCollections.observableArrayList(c.fetchAll());
-        catCtrl.setItems(categoriesList);
+        choiceboxCategory.setItems(categoriesList);
     }
 
     private Category getSelectedCategory(String catName) {
@@ -190,15 +190,15 @@ public class AddExpenseController implements Initializable {
 
     private void populateNewTags() {
         tagsList = FXCollections.observableArrayList(new TagDBHelper().fetchAll());
-        newTagsCtrl.getItems().clear();
-        newTagsCtrl.getItems().addAll(tagsList);
+        checkcomboboxTag.getItems().clear();
+        checkcomboboxTag.getItems().addAll(tagsList);
     }
 
     @FXML
     public void displayAddTagDialog() {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Add new tag");
-        dialog.setHeaderText("Enter at least title in order to add a new tag");
+        dialog.setHeaderText("Enter at least textfieldTitle in order to add a new tag");
 
         // Set the button types.
         ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
@@ -261,7 +261,7 @@ public class AddExpenseController implements Initializable {
     public void displayAddPayedRatesDialog() {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Add payed rate");
-        dialog.setHeaderText("Enter at least amount in order to add a rate");
+        dialog.setHeaderText("Enter at least textfieldAmount in order to add a rate");
 
         // Set the button types.
         ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
@@ -274,7 +274,7 @@ public class AddExpenseController implements Initializable {
         grid.setMaxWidth(Double.MAX_VALUE);
 
         TextField textFieldAmount = new TextField();
-        textFieldAmount.setPromptText("amount");
+        textFieldAmount.setPromptText("textfieldAmount");
         textFieldAmount.setMaxWidth(Double.MAX_VALUE);
         DatePicker datePicker = new DatePicker();
         datePicker.setMaxWidth(Double.MAX_VALUE);
@@ -293,9 +293,15 @@ public class AddExpenseController implements Initializable {
         Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
         saveBtn.setDisable(true);
 
-        textFieldAmount.textProperty().addListener((observable, oldValue, newValue) -> {
-            saveBtn.setDisable(newValue.trim().isEmpty());
-        });
+        /*textFieldAmount.textProperty().addListener((observable, oldValue, newValue) -> {
+            btnSave.setDisable(newValue.trim().isEmpty());
+        });*/
+
+        saveBtn.disableProperty().bind(
+                Bindings.or(
+                        textFieldAmount.textProperty().isEmpty(),
+                        datePicker.valueProperty().isNull()
+                ));
 
         dialog.getDialogPane().setContent(grid);
 
@@ -321,23 +327,25 @@ public class AddExpenseController implements Initializable {
             rates.add(rate);
             displayPayProgress();
 
-            Notification.create("Added partial pay, amount:\n" + rate.getAmount(),
+            Notification.create("Added partial pay, textfieldAmount:\n" + rate.getAmount(),
                     "Success", null);
         });
 
     }
 
     private void displayPayProgress() {
-        double amountPayed = getTotalValuePayed();
-        Double payed = (amountPayed * 100) / Double.parseDouble(amount.getText());
-        System.out.println("TOTAL: " + Double.parseDouble(amount.getText()));
-        System.out.println("PAYED: " + payed);
-        progressBar.setProgress(payed / 100);
+        if (textfieldAmount.getText().trim().length() != 0) {
+            double amountPayed = getTotalValuePayed();
+            Double payed = (amountPayed * 100) / Double.parseDouble(textfieldAmount.getText());
+            System.out.println("TOTAL: " + Double.parseDouble(textfieldAmount.getText()));
+            System.out.println("PAYED: " + payed);
+            progressBar.setProgress(payed / 100);
 
-        DecimalFormat df = new DecimalFormat("#.##");
-        payed = Double.valueOf(df.format(payed));
-        System.out.println("FORMATED: " + payed);
-        progressBar.getTooltip().setText(getRatesInfoString());
+            DecimalFormat df = new DecimalFormat("#.##");
+            payed = Double.valueOf(df.format(payed));
+            System.out.println("FORMATED: " + payed);
+            progressBar.getTooltip().setText(getRatesInfoString());
+        }
     }
 
     private double getTotalValuePayed() {
@@ -369,13 +377,11 @@ public class AddExpenseController implements Initializable {
     }
 
     private void linkSaveBtnToMandatoryFields() {
-        saveBtn.disableProperty().bind(
+        btnSave.disableProperty().bind(
                 Bindings.or(
-                        title.textProperty().isEmpty(),
-                        amount.textProperty().isEmpty()
+                        textfieldTitle.textProperty().isEmpty(),
+                        textfieldAmount.textProperty().isEmpty()
                 ));
-
-
     }
 
 }
