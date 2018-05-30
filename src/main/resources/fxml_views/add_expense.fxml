@@ -177,7 +177,7 @@
             <HBox alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="103.0" prefWidth="890.0" VBox.vgrow="ALWAYS">
                <children>
                   <Separator prefWidth="200.0" />
-                  <Button minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#saveExpense" text="Save">
+                  <Button fx:id="saveBtn" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#saveExpense" text="Save">
                      <HBox.margin>
                         <Insets bottom="20.0" right="20.0" />
                      </HBox.margin>

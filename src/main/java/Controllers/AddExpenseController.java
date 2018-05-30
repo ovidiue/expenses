@@ -6,6 +6,7 @@ import helpers.RateDBHelper;
 import helpers.TagDBHelper;
 import helpers.ui.Notification;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -47,6 +48,8 @@ public class AddExpenseController implements Initializable {
     CheckComboBox<Tag> newTagsCtrl;
     @FXML
     ProgressBar progressBar;
+    @FXML
+    Button saveBtn;
 
     private ObservableList<Category> categoriesList;
     private ObservableList<Tag> tagsList;
@@ -166,6 +169,7 @@ public class AddExpenseController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         populateCategories();
         populateNewTags();
+        linkSaveBtnToMandatoryFields();
     }
 
 
@@ -362,6 +366,16 @@ public class AddExpenseController implements Initializable {
 
         info += "\nTotal: \t" + getTotalValuePayed();
         return info;
+    }
+
+    private void linkSaveBtnToMandatoryFields() {
+        saveBtn.disableProperty().bind(
+                Bindings.or(
+                        title.textProperty().isEmpty(),
+                        amount.textProperty().isEmpty()
+                ));
+
+
     }
 
 }
