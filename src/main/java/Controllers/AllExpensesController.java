@@ -1,13 +1,17 @@
 package Controllers;
 
+import helpers.CategoryDBHelper;
 import helpers.ExpenseDBHelper;
 import helpers.ui.Notification;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import model.Category;
 import model.Expense;
 
 import java.net.URL;
@@ -35,6 +39,8 @@ public class AllExpensesController implements Initializable {
                 descriptionCol,
                 deleteCol;
 
+        TableColumn<Expense, Category> categoryCol;
+
         TableColumn<Expense, Date> createdOnCol,
                 dueDateCol;
 
@@ -43,19 +49,21 @@ public class AllExpensesController implements Initializable {
 
         titleCol = new TableColumn<>("Title");
         descriptionCol = new TableColumn<>("Description");
-        recurrentCol = new TableColumn<>("Is recurrent");
+        recurrentCol = new TableColumn<>("Is checkboxRecurrent");
         createdOnCol = new TableColumn<>("Created on");
         dueDateCol = new TableColumn<>("Due date");
         amountCol = new TableColumn<>("Amount");
         deleteCol = new TableColumn<>("Delete");
+        categoryCol = new TableColumn<>("Category");
 
-        titleCol.prefWidthProperty().bind(table.widthProperty().divide(7));
-        descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(7));
-        recurrentCol.prefWidthProperty().bind(table.widthProperty().divide(7));
-        createdOnCol.prefWidthProperty().bind(table.widthProperty().divide(7));
-        dueDateCol.prefWidthProperty().bind(table.widthProperty().divide(7));
-        amountCol.prefWidthProperty().bind(table.widthProperty().divide(7));
-        deleteCol.prefWidthProperty().bind(table.widthProperty().divide(7));
+        titleCol.prefWidthProperty().bind(table.widthProperty().divide(8));
+        descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(8));
+        recurrentCol.prefWidthProperty().bind(table.widthProperty().divide(8));
+        createdOnCol.prefWidthProperty().bind(table.widthProperty().divide(8));
+        dueDateCol.prefWidthProperty().bind(table.widthProperty().divide(8));
+        amountCol.prefWidthProperty().bind(table.widthProperty().divide(8));
+        deleteCol.prefWidthProperty().bind(table.widthProperty().divide(8));
+        categoryCol.prefWidthProperty().bind(table.widthProperty().divide(8));
 
         createdOnCol.setCellFactory(column -> {
             TableCell<Expense, Date> cell = new TableCell<Expense, Date>() {
@@ -117,12 +125,46 @@ public class AllExpensesController implements Initializable {
             return cell;
         });
 
+/*
+        categoryCol.setCellFactory((TableColumn<Expense, Category> column) -> {
+            TableCell<Expense, Category> cell = new TableCell<Expense, Category>() {
+                @Override
+                protected void updateItem(Category item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        ChoiceBox<Category> choiceBoxCategory = new ChoiceBox<>();
+                        choiceBoxCategory.setItems(FXCollections.observableList(new CategoryDBHelper().fetchAll()));
+                        Expense expense = getTableView().getItems().get(getIndex());
+
+                        choiceBoxCategory.setMaxWidth(Double.MAX_VALUE);
+
+
+                        Platform.runLater(() -> {
+                            Category c = expense.getCategory();
+                            choiceBoxCategory.getSelectionModel().select(c);
+                            // choiceBoxCategory.setValue(c);
+                        });
+
+                        setGraphic(choiceBoxCategory);
+                    }
+                }
+            };
+            return cell;
+        });
+*/
+
+        categoryCol.setCellFactory(ChoiceBoxTableCell.forTableColumn(FXCollections.observableList(new CategoryDBHelper().fetchAll())));
+
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
         recurrentCol.setCellValueFactory(new PropertyValueFactory<>("recurrent"));
         createdOnCol.setCellValueFactory(new PropertyValueFactory<>("createdOn"));
         dueDateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
         amountCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
 
         table.getColumns().addAll(titleCol,
                 descriptionCol,
@@ -130,9 +172,11 @@ public class AllExpensesController implements Initializable {
                 createdOnCol,
                 dueDateCol,
                 amountCol,
+                categoryCol,
                 deleteCol);
 
         table.setItems(getAllExpenses());
+        table.setEditable(true);
     }
 
     private void displayDeleteExpenseConfirmation(Expense e) {

@@ -24,7 +24,7 @@ public class Expense {
     @Column
     private Double amount;
     /*@Column*/
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     private Category category;
     /*@Column*/
     @ManyToMany(cascade = CascadeType.DETACH)
