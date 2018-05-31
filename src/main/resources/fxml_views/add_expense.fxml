@@ -36,7 +36,7 @@
                         <VBox>
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Title" />
-                              <TextField fx:id="title" minHeight="40.0" promptText="title">
+                              <TextField fx:id="textfieldTitle" minHeight="40.0" promptText="title">
                                  <tooltip>
                                     <Tooltip contentDisplay="TOP" maxWidth="1.7976931348623157E308" text="Title" />
                                  </tooltip>
@@ -49,7 +49,7 @@
                         <VBox>
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
-                              <TextArea fx:id="description" prefHeight="200.0" prefRowCount="3" prefWidth="200.0" promptText="description" wrapText="true">
+                              <TextArea fx:id="textareaDescription" prefHeight="200.0" prefRowCount="3" prefWidth="200.0" promptText="description" wrapText="true">
                                  <tooltip>
                                     <Tooltip text="description" />
                                  </tooltip>
@@ -62,7 +62,7 @@
                         <VBox>
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Amount" />
-                              <TextField fx:id="amount" minHeight="40.0" promptText="amount">
+                              <TextField fx:id="textfieldAmount" minHeight="40.0" promptText="amount">
                                  <tooltip>
                                     <Tooltip text="amount to pay" />
                                  </tooltip>
@@ -75,7 +75,7 @@
                         <VBox>
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Due date" />
-                              <DatePicker fx:id="dueDate" maxWidth="1.7976931348623157E308" minHeight="40.0">
+                              <DatePicker fx:id="datepickerDueDate" maxWidth="1.7976931348623157E308" minHeight="40.0">
                                  <tooltip>
                                     <Tooltip text="date until it must be paid" />
                                  </tooltip>
@@ -96,7 +96,7 @@
                               <VBox prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tags" />
-                                    <CheckComboBox fx:id="newTagsCtrl" maxWidth="1.7976931348623157E308" minHeight="40.0" minWidth="40.0" />
+                                    <CheckComboBox fx:id="checkcomboboxTag" maxWidth="1.7976931348623157E308" minHeight="40.0" minWidth="40.0" />
                                  </children>
                               </VBox>
                               <VBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
@@ -116,7 +116,7 @@
                               <VBox prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Category" />
-                                    <ChoiceBox fx:id="catCtrl" maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0">
+                                    <ChoiceBox fx:id="choiceboxCategory" maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0">
                                        <tooltip>
                                           <Tooltip text="category" />
                                        </tooltip>
@@ -138,7 +138,7 @@
                         <VBox>
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Recurrent pay" />
-                              <CheckBox fx:id="recurrent" mnemonicParsing="false">
+                              <CheckBox fx:id="checkboxRecurrent" mnemonicParsing="false">
                                  <tooltip>
                                     <Tooltip text="repeating expense or not" />
                                  </tooltip>
@@ -177,7 +177,12 @@
             <HBox alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="103.0" prefWidth="890.0" VBox.vgrow="ALWAYS">
                <children>
                   <Separator prefWidth="200.0" />
-                  <Button fx:id="saveBtn" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#saveExpense" text="Save">
+                  <Button fx:id="btnReset" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#clearFieldSelections" text="Reset fields">
+                     <HBox.margin>
+                        <Insets bottom="20.0" right="20.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnSave" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#saveExpense" text="Save">
                      <HBox.margin>
                         <Insets bottom="20.0" right="20.0" />
                      </HBox.margin>
