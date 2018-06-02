@@ -58,4 +58,12 @@ public class Rate {
     public void setObservation(String observation) {
         this.observation = observation;
     }
+
+    @Override
+    public String toString() {
+        return "Rate:" +
+                "\namount:" + amount +
+                "\ndate:" + date +
+                "\nobservation;'" + observation;
+    }
 }
