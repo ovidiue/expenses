@@ -5,6 +5,7 @@ import helpers.HibernateHelper;
 import helpers.RateDBHelper;
 import helpers.TagDBHelper;
 import helpers.ui.Notification;
+import helpers.ui.TextUtils;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -182,6 +183,7 @@ public class AddExpenseController implements Initializable {
         populateNewTags();
         linkSaveBtnToMandatoryFields();
         attachPopOver();
+        textfieldAmount.textProperty().addListener(TextUtils.getDigitListener());
     }
 
     private void attachPopOver() {
@@ -330,9 +332,11 @@ public class AddExpenseController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
         grid.setMaxWidth(Double.MAX_VALUE);
 
-        TextField textFieldAmount = new TextField();
-        textFieldAmount.setPromptText("textfieldAmount");
-        textFieldAmount.setMaxWidth(Double.MAX_VALUE);
+        TextField textFieldAmountRate = new TextField();
+        textFieldAmountRate.setPromptText("rate amount");
+        textFieldAmountRate.setMaxWidth(Double.MAX_VALUE);
+        textFieldAmountRate.textProperty().addListener(TextUtils.getDigitListener());
+
         DatePicker datePicker = new DatePicker();
         datePicker.setMaxWidth(Double.MAX_VALUE);
         datePicker.setPromptText("set date");
@@ -342,7 +346,7 @@ public class AddExpenseController implements Initializable {
         textAreaObserVations.setPromptText("observations");
 
         grid.add(new Label("Amount *:"), 0, 0);
-        grid.add(textFieldAmount, 1, 0);
+        grid.add(textFieldAmountRate, 1, 0);
         grid.add(new Label("Date:"), 0, 1);
         grid.add(datePicker, 1, 1);
         grid.add(new Label("Observations"), 0, 2);
@@ -357,17 +361,17 @@ public class AddExpenseController implements Initializable {
 
         saveBtn.disableProperty().bind(
                 Bindings.or(
-                        textFieldAmount.textProperty().isEmpty(),
+                        textFieldAmountRate.textProperty().isEmpty(),
                         datePicker.valueProperty().isNull()
                 ));
 
         dialog.getDialogPane().setContent(grid);
 
-        Platform.runLater(() -> textFieldAmount.requestFocus());
+        Platform.runLater(() -> textFieldAmountRate.requestFocus());
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == confirmBtn) {
-                return new Pair<String, String>(textFieldAmount.getText(), datePicker.getValue().toString());
+                return new Pair<String, String>(textFieldAmountRate.getText(), datePicker.getValue().toString());
             }
             return null;
         });
@@ -378,7 +382,7 @@ public class AddExpenseController implements Initializable {
             String color = datePicker.getValue().toString().replace("0x", "#");
             System.out.println(color);
 
-            Rate rate = new Rate(Double.parseDouble(textFieldAmount.getText()),
+            Rate rate = new Rate(Double.parseDouble(textFieldAmountRate.getText()),
                     new Date(datePicker.getEditor().getText()),
                     textAreaObserVations.getText());
             // new RateDBHelper().save(rate);
