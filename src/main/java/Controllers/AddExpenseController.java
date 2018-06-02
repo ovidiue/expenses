@@ -213,7 +213,7 @@ public class AddExpenseController implements Initializable {
         if (rates.size() > 0) {
             for (Rate r : rates) {
                 Text rateAmount = new Text(r.getAmount().toString());
-                Text rateDate = new Text(r.getDate().toString());
+                Text rateDate = new Text(new SimpleDateFormat("dd.MM.yyyy").format(r.getDate()));
                 Text rateDesc = new Text(r.getObservations());
                 Button deleteBtn = new Button("Delete");
                 deleteBtn.prefWidth(Double.MAX_VALUE);
@@ -354,10 +354,6 @@ public class AddExpenseController implements Initializable {
 
         Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
         saveBtn.setDisable(true);
-
-        /*textFieldAmount.textProperty().addListener((observable, oldValue, newValue) -> {
-            btnSave.setDisable(newValue.trim().isEmpty());
-        });*/
 
         saveBtn.disableProperty().bind(
                 Bindings.or(
