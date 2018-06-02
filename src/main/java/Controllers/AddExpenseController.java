@@ -15,12 +15,15 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Pair;
 import model.Category;
 import model.Expense;
 import model.Rate;
 import model.Tag;
 import org.controlsfx.control.CheckComboBox;
+import org.controlsfx.control.PopOver;
 
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -55,6 +58,8 @@ public class AddExpenseController implements Initializable {
     private ObservableList<Tag> tagsList;
     private List<Rate> rates = new ArrayList<>();
 
+    private PopOver popOver;
+
     private Expense getExpense() {
         Date dueDateValue = datepickerDueDate.getEditor().getText().trim().length() == 0 ?
                 null :
@@ -67,7 +72,13 @@ public class AddExpenseController implements Initializable {
                 choiceboxCategory.getValue());
         List<Tag> tags = new ArrayList<>(checkcomboboxTag.getCheckModel().getCheckedItems());
         e.setTags(tags);
-        e.getPayedRates().addAll(rates);
+        if (rates.size() > 0) {
+            for (Rate rate : rates)
+                new RateDBHelper().save(rate);
+
+            e.getPayedRates().addAll(rates);
+        }
+
         return e;
     }
 
@@ -170,8 +181,54 @@ public class AddExpenseController implements Initializable {
         populateCategories();
         populateNewTags();
         linkSaveBtnToMandatoryFields();
+        attachPopOver();
     }
 
+    private void attachPopOver() {
+        popOver = new PopOver();
+
+        Platform.runLater(() -> {
+            progressBar.setOnMouseEntered(e -> {
+                if (rates.size() > 0 && !popOver.isDetached()) {
+                    popOver.setContentNode(getPopOverContent());
+                    popOver.show(progressBar);
+                    popOver.setArrowLocation(PopOver.ArrowLocation.RIGHT_CENTER);
+                    popOver.setAutoHide(true);
+                    popOver.setOpacity(0.7);
+                    popOver.prefWidth(400);
+                }
+            });
+        });
+    }
+
+    private VBox getPopOverContent() {
+        VBox vBox = new VBox(10);
+        vBox.prefWidth(Double.MAX_VALUE);
+        vBox.setFillWidth(true);
+        vBox.setPadding(new Insets(20));
+        vBox.getChildren().removeAll();
+
+        if (rates.size() > 0) {
+            for (Rate r : rates) {
+                Text rateAmount = new Text(r.getAmount().toString());
+                Text rateDate = new Text(r.getDate().toString());
+                Text rateDesc = new Text(r.getObservations());
+                Button deleteBtn = new Button("Delete");
+                deleteBtn.prefWidth(Double.MAX_VALUE);
+                Separator separator = new Separator();
+                deleteBtn.setUserData(r);
+                deleteBtn.setOnAction(e -> {
+                    vBox.getChildren().removeAll(rateAmount, rateDate, rateDesc, deleteBtn, separator);
+                    Rate toremove = (Rate) deleteBtn.getUserData();
+                    rates.remove(toremove);
+                    displayPayProgress();
+                });
+                vBox.getChildren().addAll(rateAmount, rateDate, rateDesc, deleteBtn, separator);
+            }
+        }
+
+        return vBox;
+    }
 
     private void populateCategories() {
         CategoryDBHelper c = new CategoryDBHelper();
@@ -279,6 +336,7 @@ public class AddExpenseController implements Initializable {
         DatePicker datePicker = new DatePicker();
         datePicker.setMaxWidth(Double.MAX_VALUE);
         datePicker.setPromptText("set date");
+        datePicker.getEditor().setDisable(true);
         TextArea textAreaObserVations = new TextArea();
         textAreaObserVations.setMaxWidth(Double.MAX_VALUE);
         textAreaObserVations.setPromptText("observations");
@@ -323,7 +381,7 @@ public class AddExpenseController implements Initializable {
             Rate rate = new Rate(Double.parseDouble(textFieldAmount.getText()),
                     new Date(datePicker.getEditor().getText()),
                     textAreaObserVations.getText());
-            new RateDBHelper().save(rate);
+            // new RateDBHelper().save(rate);
             rates.add(rate);
             displayPayProgress();
 

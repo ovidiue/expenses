@@ -49,7 +49,7 @@ public class AllExpensesController implements Initializable {
 
         titleCol = new TableColumn<>("Title");
         descriptionCol = new TableColumn<>("Description");
-        recurrentCol = new TableColumn<>("Is checkboxRecurrent");
+        recurrentCol = new TableColumn<>("Is recurrent");
         createdOnCol = new TableColumn<>("Created on");
         dueDateCol = new TableColumn<>("Due date");
         amountCol = new TableColumn<>("Amount");
