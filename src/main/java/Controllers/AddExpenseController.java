@@ -198,12 +198,14 @@ public class AddExpenseController implements Initializable {
                     popOver.setAutoHide(true);
                     popOver.setOpacity(0.7);
                     popOver.prefWidth(400);
+                    popOver.setTitle("TOTAL: " + getTotalValuePayed());
+                    popOver.setHeaderAlwaysVisible(true);
                 }
             });
         });
     }
 
-    private VBox getPopOverContent() {
+    private ScrollPane getPopOverContent() {
         VBox vBox = new VBox(10);
         vBox.prefWidth(Double.MAX_VALUE);
         vBox.setFillWidth(true);
@@ -218,18 +220,25 @@ public class AddExpenseController implements Initializable {
                 Button deleteBtn = new Button("Delete");
                 deleteBtn.prefWidth(Double.MAX_VALUE);
                 Separator separator = new Separator();
+                separator.minWidthProperty().bind(vBox.widthProperty());
                 deleteBtn.setUserData(r);
                 deleteBtn.setOnAction(e -> {
                     vBox.getChildren().removeAll(rateAmount, rateDate, rateDesc, deleteBtn, separator);
                     Rate toremove = (Rate) deleteBtn.getUserData();
                     rates.remove(toremove);
                     displayPayProgress();
+                    popOver.setTitle("TOTAL: " + getTotalValuePayed());
                 });
                 vBox.getChildren().addAll(rateAmount, rateDate, rateDesc, deleteBtn, separator);
             }
         }
 
-        return vBox;
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setMinWidth(400);
+        scrollPane.setMaxHeight(400);
+        vBox.setMinWidth(350);
+
+        return scrollPane;
     }
 
     private void populateCategories() {

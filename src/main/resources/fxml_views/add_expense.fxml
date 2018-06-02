@@ -23,7 +23,7 @@
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add Expense">
                <font>
-                  <Font size="36.0" />
+                  <Font size="30.0" />
                </font>
                <VBox.margin>
                   <Insets left="10.0" top="10.0" />
