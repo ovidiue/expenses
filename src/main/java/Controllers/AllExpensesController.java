@@ -477,7 +477,7 @@ public class AllExpensesController implements Initializable {
                 tableViewDetail.getItems().remove(rate);
                 tableViewDetail.refresh();
 
-                Notification.create("Deleted category:\n" + rate.getAmount(),
+                Notification.create("Deleted rate:\n" + rate.getAmount(),
                         "Success",
                         null);
 
