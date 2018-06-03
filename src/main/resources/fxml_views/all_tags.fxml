@@ -25,7 +25,10 @@
                   <Font size="30.0" />
                </font>
             </Text>
-          <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#displayAddTagDialog" prefWidth="96.0" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+          <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#displayAddTagDialog" prefWidth="100.0" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font></Button>
          </children>
       </GridPane>
       <TableView fx:id="table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="818.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />

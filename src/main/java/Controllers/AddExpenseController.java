@@ -208,7 +208,7 @@ public class AddExpenseController implements Initializable {
     private ScrollPane getPopOverContent() {
         VBox vBox = new VBox(10);
         vBox.prefWidth(Double.MAX_VALUE);
-        vBox.setFillWidth(true);
+       // vBox.setFillWidth(true);
         vBox.setPadding(new Insets(20));
         vBox.getChildren().removeAll();
 
@@ -223,6 +223,7 @@ public class AddExpenseController implements Initializable {
                 separator.minWidthProperty().bind(vBox.widthProperty());
                 deleteBtn.setUserData(r);
                 deleteBtn.setOnAction(e -> {
+                    // TODO - bug when hovering on delete btn after implementing scrollable pane
                     vBox.getChildren().removeAll(rateAmount, rateDate, rateDesc, deleteBtn, separator);
                     Rate toremove = (Rate) deleteBtn.getUserData();
                     rates.remove(toremove);
