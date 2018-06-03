@@ -437,8 +437,8 @@ public class AllExpensesController implements Initializable {
         alert.showAndWait().ifPresent(response -> {
             if (response == okBtn) {
                 new ExpenseDBHelper().delete(e);
-                table.getItems().remove(e);
-                table.refresh();
+                tableViewMaster.getItems().remove(e);
+                tableViewMaster.refresh();
 
                 Notification.create("Deleted expense:\n" + e.getTitle(),
                         "Success",
@@ -463,12 +463,12 @@ public class AllExpensesController implements Initializable {
 
         Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
         alert.setTitle("Delete");
-        alert.setHeaderText("Delete category");
+        alert.setHeaderText("Delete rate");
         alert.setContentText("Are you sure you want to delete " + rate.getAmount() + " rate ?");
 
         alert.showAndWait().ifPresent(response -> {
             if (response == okBtn) {
-                Optional<Expense> optional =  tableViewMaster.getItems().stream().filter(e -> e.getPayedRates().contains(rate)).findFirst();
+                Optional<Expense> optional = tableViewMaster.getItems().stream().filter(e -> e.getPayedRates().contains(rate)).findFirst();
                 Expense expense = optional.get();
                 expense.getPayedRates().remove(rate);
                 new ExpenseDBHelper().update(expense);
