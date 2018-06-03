@@ -20,6 +20,7 @@ import org.controlsfx.control.MasterDetailPane;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -57,7 +58,7 @@ public class AllExpensesController implements Initializable {
                 if (!row.isEmpty()) {
                     Expense expense = row.getItem();
                     if (expense.getPayedRates().size() > 0) {
-                        System.out.println("RATES: "+expense.getPayedRates());
+                        System.out.println("RATES: " + expense.getPayedRates());
                         masterDetailPane.setShowDetailNode(true);
                         updateDetailsPane(FXCollections.observableArrayList(expense.getPayedRates()));
                     } else {
@@ -200,11 +201,13 @@ public class AllExpensesController implements Initializable {
         TableColumn<Rate, Double> colRateAmount;
         TableColumn<Rate, Date> colPayedOn;
         TableColumn<Rate, String> colObservation;
+        TableColumn<Rate, Button> colDelete;
 
         // set columns titles
         colRateAmount = new TableColumn<>("Rate amount");
         colPayedOn = new TableColumn<>("Payed on");
         colObservation = new TableColumn<>("Observation");
+        colDelete = new TableColumn<>("Delete");
 
         // set values to display in columns
         colRateAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
@@ -212,10 +215,11 @@ public class AllExpensesController implements Initializable {
         colObservation.setCellValueFactory(new PropertyValueFactory<>("observation"));
 
         // split columns widths to match table
-        Binding preferredWidth = tableViewDetail.widthProperty().divide(3);
+        Binding preferredWidth = tableViewDetail.widthProperty().divide(4);
         colRateAmount.prefWidthProperty().bind(preferredWidth);
         colPayedOn.prefWidthProperty().bind(preferredWidth);
         colObservation.prefWidthProperty().bind(preferredWidth);
+        colDelete.prefWidthProperty().bind(preferredWidth);
 
         colPayedOn.setCellFactory(column -> {
             TableCell<Rate, Date> cell = new TableCell<Rate, Date>() {
@@ -235,13 +239,37 @@ public class AllExpensesController implements Initializable {
             return cell;
         });
 
+        colDelete.setCellFactory(column -> {
+            TableCell<Rate, Button> cell = new TableCell<Rate, Button>() {
+
+                @Override
+                protected void updateItem(Button item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        final Button DELETE_BTN = new Button("delete");
+                        DELETE_BTN.setMaxWidth(Double.MAX_VALUE);
+                        DELETE_BTN.setOnAction(e -> {
+                            displayDeleteRateConfirmation((Rate) getTableRow().getItem());
+                        });
+
+                        setGraphic(DELETE_BTN);
+                    }
+                }
+            };
+
+            return cell;
+        });
+
+
         // get table data
         ObservableList<Rate> listRates = FXCollections.observableArrayList(new RateDBHelper().fetchAll());
-
         tableViewDetail.setItems(listRates);
 
         // add all columns
-        tableViewDetail.getColumns().addAll(colRateAmount, colPayedOn, colObservation);
+        tableViewDetail.getColumns().addAll(colRateAmount, colPayedOn, colObservation, colDelete);
 
         return tableViewDetail;
     }
@@ -424,5 +452,36 @@ public class AllExpensesController implements Initializable {
     private ObservableList<Expense> getAllExpenses() {
         ObservableList<Expense> list = FXCollections.observableArrayList(new ExpenseDBHelper().fetchAll());
         return list;
+    }
+
+    private void displayDeleteRateConfirmation(Rate rate) {
+        ButtonType okBtn,
+                cancelBtn;
+
+        okBtn = new ButtonType("Confirm");
+        cancelBtn = new ButtonType("Cancel");
+
+        Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
+        alert.setTitle("Delete");
+        alert.setHeaderText("Delete category");
+        alert.setContentText("Are you sure you want to delete " + rate.getAmount() + " rate ?");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == okBtn) {
+                Optional<Expense> optional =  tableViewMaster.getItems().stream().filter(e -> e.getPayedRates().contains(rate)).findFirst();
+                Expense expense = optional.get();
+                expense.getPayedRates().remove(rate);
+                new ExpenseDBHelper().update(expense);
+
+                new RateDBHelper().delete(rate);
+                tableViewDetail.getItems().remove(rate);
+                tableViewDetail.refresh();
+
+                Notification.create("Deleted category:\n" + rate.getAmount(),
+                        "Success",
+                        null);
+
+            }
+        });
     }
 }
