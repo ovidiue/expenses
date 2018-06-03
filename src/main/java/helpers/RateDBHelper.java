@@ -1,8 +1,10 @@
 package helpers;
 
+import model.Expense;
 import model.Rate;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
 
@@ -74,6 +76,16 @@ public class RateDBHelper implements HibernateHlp<Rate> {
 
         session.close();
 
+        return rates;
+    }
+
+    public List<Rate> fetchAll(Expense expense) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(Rate.class);
+        criteria.add(Restrictions.eq("expense", expense));
+
+        List<Rate> rates = criteria.list();
+        session.close();
         return rates;
     }
 

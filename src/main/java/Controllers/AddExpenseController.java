@@ -2,7 +2,6 @@ package Controllers;
 
 import helpers.CategoryDBHelper;
 import helpers.HibernateHelper;
-import helpers.RateDBHelper;
 import helpers.TagDBHelper;
 import helpers.ui.Notification;
 import helpers.ui.TextUtils;
@@ -74,10 +73,11 @@ public class AddExpenseController implements Initializable {
         List<Tag> tags = new ArrayList<>(checkcomboboxTag.getCheckModel().getCheckedItems());
         e.setTags(tags);
         if (rates.size() > 0) {
-            for (Rate rate : rates)
-                new RateDBHelper().save(rate);
-
-            e.getPayedRates().addAll(rates);
+            for (Rate rate : rates) {
+                //new RateDBHelper().save(rate);
+                e.addRate(rate);
+            }
+            //e.setPayedRates(rates);
         }
 
         return e;

@@ -14,9 +14,13 @@ public class Rate {
     private Date date;
     @Column
     private String observation;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "expense_id")
+    private Expense expense;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private int id;
+
 
     public Rate(Double amount, Date date, String observation) {
         this.amount = amount;
@@ -25,6 +29,14 @@ public class Rate {
     }
 
     public Rate() {
+    }
+
+    public Expense getExpense() {
+        return expense;
+    }
+
+    public void setExpense(Expense expense) {
+        this.expense = expense;
     }
 
     public Double getAmount() {
@@ -66,4 +78,5 @@ public class Rate {
                 "\ndate:" + date +
                 "\nobservation;'" + observation;
     }
+
 }

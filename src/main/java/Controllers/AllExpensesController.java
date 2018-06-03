@@ -9,9 +9,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import model.Category;
 import model.Expense;
 import model.Rate;
@@ -20,7 +24,6 @@ import org.controlsfx.control.MasterDetailPane;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -44,10 +47,41 @@ public class AllExpensesController implements Initializable {
 
     private void initMasterDetailPane() {
         masterDetailPane.setMasterNode(tableViewMaster);
-        masterDetailPane.setDetailNode(tableViewDetail);
+        //masterDetailPane.setDetailNode(tableViewDetail);
+        masterDetailPane.setDetailNode(buildDetailContent());
 
         masterDetailPane.getDetailNode().prefHeight(masterDetailPane.getHeight());
         setClickBehaviourMasterDetailsPane();
+    }
+
+    private AnchorPane buildDetailContent() {
+        AnchorPane anchorPane = new AnchorPane();
+        GridPane gridPane = new GridPane();
+        Label labelTitle = new Label("Rates");
+        Button buttonAdd = new Button("Add");
+
+        gridPane.add(labelTitle, 0, 0);
+        gridPane.add(buttonAdd, 1, 0);
+        gridPane.setHgrow(labelTitle, Priority.ALWAYS);
+        gridPane.setHgrow(buttonAdd, Priority.ALWAYS);
+        gridPane.setHalignment(labelTitle, HPos.LEFT);
+        gridPane.setHalignment(buttonAdd, HPos.RIGHT);
+
+        anchorPane.getChildren().addAll(gridPane, tableViewDetail);
+
+        labelTitle.setStyle("-fx-font-size: 30");
+        buttonAdd.setMinWidth(100);
+        buttonAdd.setStyle("-fx-font-weight: bold");
+
+        anchorPane.setTopAnchor(gridPane, 0.0);
+        anchorPane.setTopAnchor(tableViewDetail, 50.0);
+        anchorPane.setBottomAnchor(tableViewDetail, 0.0);
+        anchorPane.setLeftAnchor(tableViewDetail, 0.0);
+        anchorPane.setLeftAnchor(gridPane, 0.0);
+        anchorPane.setRightAnchor(gridPane, 0.0);
+        anchorPane.setRightAnchor(tableViewDetail, 0.0);
+
+        return anchorPane;
     }
 
     private void setClickBehaviourMasterDetailsPane() {
@@ -57,13 +91,15 @@ public class AllExpensesController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (!row.isEmpty()) {
                     Expense expense = row.getItem();
-                    if (expense.getPayedRates().size() > 0) {
-                        System.out.println("RATES: " + expense.getPayedRates());
-                        masterDetailPane.setShowDetailNode(true);
-                        updateDetailsPane(FXCollections.observableArrayList(expense.getPayedRates()));
-                    } else {
+                    /*if (expense.getPayedRates().size() > 0) {*/
+
+                    masterDetailPane.setShowDetailNode(true);
+                    ObservableList<Rate> ratesList = FXCollections.observableArrayList(new RateDBHelper().fetchAll(expense));
+                    //updateDetailsPane(FXCollections.observableArrayList(expense.getPayedRates()));
+                    updateDetailsPane(ratesList);
+                    /*} else {
                         masterDetailPane.setShowDetailNode(false);
-                    }
+                    }*/
                 }
             });
             return row;
@@ -468,10 +504,6 @@ public class AllExpensesController implements Initializable {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == okBtn) {
-                Optional<Expense> optional = tableViewMaster.getItems().stream().filter(e -> e.getPayedRates().contains(rate)).findFirst();
-                Expense expense = optional.get();
-                expense.getPayedRates().remove(rate);
-                new ExpenseDBHelper().update(expense);
 
                 new RateDBHelper().delete(rate);
                 tableViewDetail.getItems().remove(rate);

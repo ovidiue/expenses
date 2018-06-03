@@ -9,6 +9,7 @@ import java.util.List;
  * Created by Ovidiu on 15-May-18.
  */
 @Entity
+@Table(name = "expense")
 public class Expense {
     @Column
     private String title;
@@ -29,8 +30,9 @@ public class Expense {
     /*@Column*/
     @ManyToMany(cascade = CascadeType.DETACH)
     private List<Tag> tags;
-    @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "expense",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Rate> payedRates;
     @Id
     @GeneratedValue
@@ -148,8 +150,14 @@ public class Expense {
         return payedRates;
     }
 
-    public void setPayedRates(List<Rate> payedRates) {
-        this.payedRates = payedRates;
+    public void addRate(Rate rate) {
+        this.payedRates.add(rate);
+        rate.setExpense(this);
+    }
+
+    public void removeRate(Rate rate) {
+        this.payedRates.remove(rate);
+        rate.setExpense(null);
     }
 
     @Override
