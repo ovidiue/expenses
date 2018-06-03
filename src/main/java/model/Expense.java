@@ -29,7 +29,8 @@ public class Expense {
     /*@Column*/
     @ManyToMany(cascade = CascadeType.DETACH)
     private List<Tag> tags;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
     private List<Rate> payedRates;
     @Id
     @GeneratedValue
