@@ -57,6 +57,7 @@ public class AllExpensesController implements Initializable {
                 if (!row.isEmpty()) {
                     Expense expense = row.getItem();
                     if (expense.getPayedRates().size() > 0) {
+                        System.out.println("RATES: "+expense.getPayedRates());
                         masterDetailPane.setShowDetailNode(true);
                         updateDetailsPane(FXCollections.observableArrayList(expense.getPayedRates()));
                     } else {
@@ -215,6 +216,24 @@ public class AllExpensesController implements Initializable {
         colRateAmount.prefWidthProperty().bind(preferredWidth);
         colPayedOn.prefWidthProperty().bind(preferredWidth);
         colObservation.prefWidthProperty().bind(preferredWidth);
+
+        colPayedOn.setCellFactory(column -> {
+            TableCell<Rate, Date> cell = new TableCell<Rate, Date>() {
+                private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+
+                @Override
+                protected void updateItem(Date item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        this.setText(format.format(item));
+                    }
+                }
+            };
+
+            return cell;
+        });
 
         // get table data
         ObservableList<Rate> listRates = FXCollections.observableArrayList(new RateDBHelper().fetchAll());

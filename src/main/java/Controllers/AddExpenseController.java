@@ -208,7 +208,7 @@ public class AddExpenseController implements Initializable {
     private ScrollPane getPopOverContent() {
         VBox vBox = new VBox(10);
         vBox.prefWidth(Double.MAX_VALUE);
-       // vBox.setFillWidth(true);
+        // vBox.setFillWidth(true);
         vBox.setPadding(new Insets(20));
         vBox.getChildren().removeAll();
 
@@ -216,7 +216,7 @@ public class AddExpenseController implements Initializable {
             for (Rate r : rates) {
                 Text rateAmount = new Text(r.getAmount().toString());
                 Text rateDate = new Text(new SimpleDateFormat("dd.MM.yyyy").format(r.getDate()));
-                Text rateDesc = new Text(r.getObservations());
+                Text rateDesc = new Text(r.getObservation());
                 Button deleteBtn = new Button("Delete");
                 deleteBtn.prefWidth(Double.MAX_VALUE);
                 Separator separator = new Separator();
@@ -385,9 +385,6 @@ public class AddExpenseController implements Initializable {
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
         result.ifPresent(usernamePassword -> {
-            String color = datePicker.getValue().toString().replace("0x", "#");
-            System.out.println(color);
-
             Rate rate = new Rate(Double.parseDouble(textFieldAmountRate.getText()),
                     new Date(datePicker.getEditor().getText()),
                     textAreaObserVations.getText());
@@ -435,7 +432,7 @@ public class AddExpenseController implements Initializable {
                 info += "\nRate\n" +
                         "value: " + r.getAmount() + "\n" +
                         "Date: " + format.format(r.getDate()) + "\n" +
-                        "Info: " + r.getObservations() + "\n" +
+                        "Info: " + r.getObservation() + "\n" +
                         "****************************";
             }
         }

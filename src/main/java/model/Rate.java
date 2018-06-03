@@ -51,7 +51,7 @@ public class Rate {
         this.date = date;
     }
 
-    public String getObservations() {
+    public String getObservation() {
         return observation;
     }
 
