@@ -20,6 +20,7 @@ import model.Category;
 import model.Expense;
 import model.Rate;
 import org.controlsfx.control.MasterDetailPane;
+import org.controlsfx.control.PopOver;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -35,9 +36,9 @@ public class AllExpensesController implements Initializable {
 
     @FXML
     MasterDetailPane masterDetailPane;
-
-    private TableView<Expense> tableViewMaster = getExpenseTable();
     private TableView<Rate> tableViewDetail = getRateTable();
+    private TableView<Expense> tableViewMaster = getExpenseTable();
+    private PopOver popOver = new PopOver();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -49,8 +50,9 @@ public class AllExpensesController implements Initializable {
         masterDetailPane.setMasterNode(tableViewMaster);
         //masterDetailPane.setDetailNode(tableViewDetail);
         masterDetailPane.setDetailNode(buildDetailContent());
+        masterDetailPane.getDetailNode().minHeight(200);
+        masterDetailPane.getDetailNode().prefHeight(500);
 
-        masterDetailPane.getDetailNode().prefHeight(masterDetailPane.getHeight());
         setClickBehaviourMasterDetailsPane();
     }
 
@@ -91,15 +93,9 @@ public class AllExpensesController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (!row.isEmpty()) {
                     Expense expense = row.getItem();
-                    /*if (expense.getPayedRates().size() > 0) {*/
-
                     masterDetailPane.setShowDetailNode(true);
                     ObservableList<Rate> ratesList = FXCollections.observableArrayList(new RateDBHelper().fetchAll(expense));
-                    //updateDetailsPane(FXCollections.observableArrayList(expense.getPayedRates()));
                     updateDetailsPane(ratesList);
-                    /*} else {
-                        masterDetailPane.setShowDetailNode(false);
-                    }*/
                 }
             });
             return row;
@@ -134,6 +130,32 @@ public class AllExpensesController implements Initializable {
         amountCol = new TableColumn<>("Amount");
         deleteCol = new TableColumn<>("Delete");
         categoryCol = new TableColumn<>("Category");
+
+        descriptionCol.setCellFactory((TableColumn<Expense, String> column) -> {
+            return new TableCell<Expense, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (item != null && item.trim().length() > 0) {
+                        setText(item.substring(0, item.length() > 15 ? 15 : item.length()));
+                        setOnMouseEntered(e -> {
+                            TextArea textArea = new TextArea();
+                            textArea.setWrapText(true);
+                            textArea.setEditable(false);
+                            textArea.setText(item);
+                            popOver.setContentNode(textArea);
+                            popOver.show((TableCell) e.getTarget());
+                            popOver.setAutoHide(true);
+                            popOver.setHeaderAlwaysVisible(true);
+                            popOver.setDetachable(true);
+                            popOver.setAnimated(true);
+                            popOver.setTitle(((Expense) getTableRow().getItem()).getTitle());
+                        });
+                    }
+                }
+            };
+        });
 
         titleCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
         descriptionCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
