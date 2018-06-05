@@ -17,9 +17,10 @@ public class ControlEffect {
     public static void setBlur(Pane pane, boolean set) {
         if (set == true) {
             pane.setEffect(getEffect());
-
+            pane.setMouseTransparent(true);
         } else {
             pane.setEffect(null);
+            pane.setMouseTransparent(false);
         }
     }
 
