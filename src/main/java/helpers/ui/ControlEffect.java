@@ -1,24 +1,43 @@
 package helpers.ui;
 
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 /**
  * Created by Ovidiu on 05-Jun-18.
  */
 public class ControlEffect {
+    private final static BoxBlur boxBlur = new BoxBlur();
+    private final static InnerShadow innerShadow = new InnerShadow();
 
     public static void setBlur(Pane pane, boolean set) {
-        BoxBlur bb = new BoxBlur();
         if (set == true) {
-            bb.setWidth(5);
-            bb.setHeight(5);
-            bb.setIterations(3);
-            pane.setEffect(bb);
+            pane.setEffect(getEffect());
+
         } else {
             pane.setEffect(null);
         }
+    }
 
+    private static Effect getEffect() {
+        boxBlur.setWidth(5);
+        boxBlur.setHeight(5);
+        boxBlur.setIterations(3);
+        innerShadow.setBlurType(BlurType.GAUSSIAN);
+        innerShadow.setColor(Color.web("#000", 0.8));
+
+        innerShadow.setRadius(50.0);
+        innerShadow.setWidth(Double.MAX_VALUE);
+        innerShadow.setHeight(Double.MAX_VALUE);
+
+        innerShadow.setRadius(50);
+        boxBlur.setInput(innerShadow);
+
+        return boxBlur;
     }
 
 }
