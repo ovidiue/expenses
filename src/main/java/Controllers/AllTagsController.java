@@ -1,6 +1,7 @@
 package Controllers;
 
 import helpers.TagDBHelper;
+import helpers.ui.ControlEffect;
 import helpers.ui.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -12,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
@@ -27,10 +30,15 @@ import java.util.ResourceBundle;
 public class AllTagsController implements Initializable {
     @FXML
     TableView<Tag> table;
+    @FXML
+    AnchorPane anchorPane;
+
+    private BorderPane rootBorderPane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initTable();
+        Platform.runLater(() -> rootBorderPane = (BorderPane) anchorPane.getParent());
     }
 
     private void initTable() {
@@ -155,12 +163,12 @@ public class AllTagsController implements Initializable {
         dialog.setTitle("Add new tag");
         dialog.setHeaderText("Enter at least title in order to add a new tag");
 
+        dialog.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
+        dialog.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
 
-        // Set the button types.
         ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
 
-        // Create the username and password labels and fields.
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -179,21 +187,17 @@ public class AllTagsController implements Initializable {
         grid.add(new Label("Color:"), 0, 1);
         grid.add(colorPicker, 1, 1);
 
-        // Enable/Disable login button depending on whether a username was entered.
         Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
         saveBtn.setDisable(true);
 
-        // Do some validation (using the Java 8 lambda syntax).
         tagName.textProperty().addListener((observable, oldValue, newValue) -> {
             saveBtn.setDisable(newValue.trim().isEmpty());
         });
 
         dialog.getDialogPane().setContent(grid);
 
-        // Request focus on the username field by default.
         Platform.runLater(() -> tagName.requestFocus());
 
-        // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == confirmBtn) {
                 return new Pair<String, String>(tagName.getText(), colorPicker.getValue().toString());
@@ -249,6 +253,9 @@ public class AllTagsController implements Initializable {
         alert.setTitle("Delete");
         alert.setHeaderText("Delete tag");
         alert.setContentText("Are you sure you want to delete " + tag.getName() + " tag ?");
+
+        alert.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
+        alert.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
 
         alert.showAndWait().ifPresent(response -> {
             if (response == okBtn) {

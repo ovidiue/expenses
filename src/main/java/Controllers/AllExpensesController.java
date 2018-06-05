@@ -3,7 +3,9 @@ package Controllers;
 import helpers.CategoryDBHelper;
 import helpers.ExpenseDBHelper;
 import helpers.RateDBHelper;
+import helpers.ui.ControlEffect;
 import helpers.ui.Notification;
+import javafx.application.Platform;
 import javafx.beans.binding.Binding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import model.Category;
@@ -32,23 +35,24 @@ import java.util.ResourceBundle;
  */
 public class AllExpensesController implements Initializable {
     @FXML
-    TableView<Expense> table;
+    AnchorPane anchorPane;
+
+    BorderPane rootBorderPane;
 
     @FXML
     MasterDetailPane masterDetailPane;
     private TableView<Rate> tableViewDetail = getRateTable();
-    private TableView<Expense> tableViewMaster = getExpenseTable();
     private PopOver popOver = new PopOver();
+    private TableView<Expense> tableViewMaster = getExpenseTable();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initMasterDetailPane();
-        // initTable();
+        Platform.runLater(() -> rootBorderPane = (BorderPane) anchorPane.getParent());
     }
 
     private void initMasterDetailPane() {
         masterDetailPane.setMasterNode(tableViewMaster);
-        //masterDetailPane.setDetailNode(tableViewDetail);
         masterDetailPane.setDetailNode(buildDetailContent());
         masterDetailPane.getDetailNode().minHeight(200);
         masterDetailPane.getDetailNode().prefHeight(500);
@@ -131,30 +135,28 @@ public class AllExpensesController implements Initializable {
         deleteCol = new TableColumn<>("Delete");
         categoryCol = new TableColumn<>("Category");
 
-        descriptionCol.setCellFactory((TableColumn<Expense, String> column) -> {
-            return new TableCell<Expense, String>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
+        descriptionCol.setCellFactory((TableColumn<Expense, String> column) -> new TableCell<Expense, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
 
-                    if (item != null && item.trim().length() > 0) {
-                        setText(item.substring(0, item.length() > 15 ? 15 : item.length()));
-                        setOnMouseEntered(e -> {
-                            TextArea textArea = new TextArea();
-                            textArea.setWrapText(true);
-                            textArea.setEditable(false);
-                            textArea.setText(item);
-                            popOver.setContentNode(textArea);
-                            popOver.show((TableCell) e.getTarget());
-                            popOver.setAutoHide(true);
-                            popOver.setHeaderAlwaysVisible(true);
-                            popOver.setDetachable(true);
-                            popOver.setAnimated(true);
-                            popOver.setTitle(((Expense) getTableRow().getItem()).getTitle());
-                        });
-                    }
+                if (item != null && item.trim().length() > 0) {
+                    setText(item.substring(0, item.length() > 15 ? 15 : item.length()));
+                    setOnMouseEntered(e -> {
+                        TextArea textArea = new TextArea();
+                        textArea.setWrapText(true);
+                        textArea.setEditable(false);
+                        textArea.setText(item);
+                        popOver.setContentNode(textArea);
+                        popOver.show((TableCell) e.getTarget());
+                        popOver.setAutoHide(true);
+                        popOver.setHeaderAlwaysVisible(true);
+                        popOver.setDetachable(true);
+                        popOver.setAnimated(true);
+                        popOver.setTitle(((Expense) getTableRow().getItem()).getTitle());
+                    });
                 }
-            };
+            }
         });
 
         titleCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
@@ -332,154 +334,6 @@ public class AllExpensesController implements Initializable {
         return tableViewDetail;
     }
 
-    private void initTable() {
-        /*TODO - set display category
-        * TODO - show payed rates per expense
-        * TODO - show tags*/
-        TableColumn<Expense, String> titleCol,
-                descriptionCol,
-                deleteCol;
-
-        TableColumn<Expense, Category> categoryCol;
-
-        TableColumn<Expense, Date> createdOnCol,
-                dueDateCol;
-
-        TableColumn<Expense, Double> amountCol;
-        TableColumn<Expense, Boolean> recurrentCol;
-
-        titleCol = new TableColumn<>("Title");
-        descriptionCol = new TableColumn<>("Description");
-        recurrentCol = new TableColumn<>("Is recurrent");
-        createdOnCol = new TableColumn<>("Created on");
-        dueDateCol = new TableColumn<>("Due date");
-        amountCol = new TableColumn<>("Amount");
-        deleteCol = new TableColumn<>("Delete");
-        categoryCol = new TableColumn<>("Category");
-
-        titleCol.prefWidthProperty().bind(table.widthProperty().divide(8));
-        descriptionCol.prefWidthProperty().bind(table.widthProperty().divide(8));
-        recurrentCol.prefWidthProperty().bind(table.widthProperty().divide(8));
-        createdOnCol.prefWidthProperty().bind(table.widthProperty().divide(8));
-        dueDateCol.prefWidthProperty().bind(table.widthProperty().divide(8));
-        amountCol.prefWidthProperty().bind(table.widthProperty().divide(8));
-        deleteCol.prefWidthProperty().bind(table.widthProperty().divide(8));
-        categoryCol.prefWidthProperty().bind(table.widthProperty().divide(8));
-
-        createdOnCol.setCellFactory(column -> {
-            TableCell<Expense, Date> cell = new TableCell<Expense, Date>() {
-                private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-
-                @Override
-                protected void updateItem(Date item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setText(null);
-                    } else {
-                        this.setText(format.format(item));
-                        this.setTooltip(new Tooltip("Time\n" + item.getHours() + ":" + item.getMinutes()));
-                    }
-                }
-            };
-
-            return cell;
-        });
-
-        dueDateCol.setCellFactory(column -> {
-            TableCell<Expense, Date> cell = new TableCell<Expense, Date>() {
-                private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-
-                @Override
-                protected void updateItem(Date item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                    } else {
-                        this.setText(format.format(item));
-                    }
-                }
-            };
-
-            return cell;
-        });
-
-        deleteCol.setCellFactory((TableColumn<Expense, String> column) -> {
-            TableCell<Expense, String> cell = new TableCell<Expense, String>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setText(null);
-                    } else {
-                        final Button deleteBtn = new Button("delete");
-                        deleteBtn.setMaxWidth(Double.MAX_VALUE);
-                        deleteBtn.setOnAction(e -> {
-                            this.setFocused(true);
-                            Expense expense = getTableView().getItems().get(getIndex());
-                            displayDeleteExpenseConfirmation(expense);
-                        });
-
-                        setGraphic(deleteBtn);
-                    }
-                }
-            };
-            return cell;
-        });
-
-/*
-        categoryCol.setCellFactory((TableColumn<Expense, Category> column) -> {
-            TableCell<Expense, Category> cell = new TableCell<Expense, Category>() {
-                @Override
-                protected void updateItem(Category item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setText(null);
-                        setGraphic(null);
-                    } else {
-                        ChoiceBox<Category> choiceBoxCategory = new ChoiceBox<>();
-                        choiceBoxCategory.setItems(FXCollections.observableList(new CategoryDBHelper().fetchAll()));
-                        Expense expense = getTableView().getItems().get(getIndex());
-
-                        choiceBoxCategory.setMaxWidth(Double.MAX_VALUE);
-
-
-                        Platform.runLater(() -> {
-                            Category c = expense.getCategory();
-                            choiceBoxCategory.getSelectionModel().select(c);
-                            // choiceBoxCategory.setValue(c);
-                        });
-
-                        setGraphic(choiceBoxCategory);
-                    }
-                }
-            };
-            return cell;
-        });
-*/
-
-        categoryCol.setCellFactory(ChoiceBoxTableCell.forTableColumn(FXCollections.observableList(new CategoryDBHelper().fetchAll())));
-
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
-        recurrentCol.setCellValueFactory(new PropertyValueFactory<>("recurrent"));
-        createdOnCol.setCellValueFactory(new PropertyValueFactory<>("createdOn"));
-        dueDateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
-        amountCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
-        categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
-
-        table.getColumns().addAll(titleCol,
-                descriptionCol,
-                recurrentCol,
-                createdOnCol,
-                dueDateCol,
-                amountCol,
-                categoryCol,
-                deleteCol);
-
-        table.setItems(getAllExpenses());
-        table.setEditable(true);
-    }
-
     private void displayDeleteExpenseConfirmation(Expense e) {
         ButtonType okBtn,
                 cancelBtn;
@@ -491,6 +345,9 @@ public class AllExpensesController implements Initializable {
         alert.setTitle("Delete");
         alert.setHeaderText("Delete expense");
         alert.setContentText("Are you sure you want to delete " + e.getTitle() + " expense ?");
+
+        alert.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
+        alert.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
 
         alert.showAndWait().ifPresent(response -> {
             if (response == okBtn) {
@@ -523,6 +380,9 @@ public class AllExpensesController implements Initializable {
         alert.setTitle("Delete");
         alert.setHeaderText("Delete rate");
         alert.setContentText("Are you sure you want to delete " + rate.getAmount() + " rate ?");
+
+        alert.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
+        alert.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
 
         alert.showAndWait().ifPresent(response -> {
             if (response == okBtn) {

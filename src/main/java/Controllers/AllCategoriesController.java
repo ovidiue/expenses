@@ -1,6 +1,7 @@
 package Controllers;
 
 import helpers.CategoryDBHelper;
+import helpers.ui.ControlEffect;
 import helpers.ui.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -12,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
@@ -27,10 +30,16 @@ import java.util.ResourceBundle;
 public class AllCategoriesController implements Initializable {
     @FXML
     TableView<Category> table;
+    @FXML
+    AnchorPane anchorPane;
+
+    private BorderPane rootBorderPane;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initTable();
+        Platform.runLater(() -> rootBorderPane = (BorderPane) anchorPane.getParent());
     }
 
     private void initTable() {
@@ -200,6 +209,9 @@ public class AllCategoriesController implements Initializable {
         grid.add(new Label("Color:"), 0, 2);
         grid.add(catColor, 1, 2);
 
+        dialog.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
+        dialog.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
+
         // Enable/Disable login button depending on whether a title was entered.
         Node loginButton = dialog.getDialogPane().lookupButton(confirmBtn);
         loginButton.setDisable(true);
@@ -249,6 +261,9 @@ public class AllCategoriesController implements Initializable {
         alert.setTitle("Delete");
         alert.setHeaderText("Delete category");
         alert.setContentText("Are you sure you want to delete " + category.getName() + " category ?");
+
+        alert.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
+        alert.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
 
         alert.showAndWait().ifPresent(response -> {
             if (response == okBtn) {
