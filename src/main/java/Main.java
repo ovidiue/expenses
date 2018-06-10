@@ -31,19 +31,18 @@ public class Main extends Application implements Initializable {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Task<Void> taskDB = initializeDBConnection();
         primaryStage.setScene(new Scene(new Label("Connecting to DB ..."), 600, 600));
         Preloader preloader = new Preloader();
+        Task<Void> taskDB = initializeDBConnection();
         preloader.progressProperty().bind(taskDB.progressProperty());
 
         taskDB.setOnSucceeded(e -> {
-
-            primaryStage.show();
             preloader.hide();
 
             loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/fxml_views/main_screen.fxml"));
             loader.setResources(ResourceBundle.getBundle("lang/translations"));
+
             try {
                 root = loader.load();
             } catch (IOException e1) {
@@ -96,7 +95,6 @@ public class Main extends Application implements Initializable {
             @Override
             protected Void call() throws Exception {
                 HibernateHlp.buildSessionFactory();
-                //Thread.sleep(3000);
                 return null;
             }
         };

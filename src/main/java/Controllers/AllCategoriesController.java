@@ -1,27 +1,22 @@
 package Controllers;
 
 import helpers.CategoryDBHelper;
-import helpers.ui.ControlEffect;
+import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 import model.Category;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -159,7 +154,6 @@ public class AllCategoriesController implements Initializable {
                     event.getOldValue();
 
             Category t = table.getSelectionModel().getSelectedItem();
-            System.out.println(t.toString());
             t.setDescription(value);
             new CategoryDBHelper().update(t);
             table.refresh();
@@ -181,92 +175,44 @@ public class AllCategoriesController implements Initializable {
     }
 
     public void displayAddCategoryDialog() {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add new category");
-        dialog.setHeaderText("Enter at least title in order to add a new category");
 
-        // Set the button types.
-        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
+        DialogBuilder dialogBuilder = new DialogBuilder();
+        dialogBuilder.setTitle("Add new category")
+                .setHeader("Enter at least title in order to add a new category")
+                .addFormField("Title *:", "title", new TextField(), true)
+                .addFormField("Description :", "description", new TextArea(), false)
+                .addFormField("Color :", "color", new ColorPicker(), false)
+                .setCallerPane(rootBorderPane);
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        dialogBuilder.show().ifPresent(response -> {
+            ButtonType confirm = dialogBuilder.getConfirmAction();
 
-        TextField categoryTitle = new TextField();
-        categoryTitle.setPromptText("title");
-        TextArea catDescription = new TextArea();
-        catDescription.setPromptText("description");
-        ColorPicker catColor = new ColorPicker();
+            if (response == confirm) {
+                String name = ((TextField) dialogBuilder.getControl("title")).getText().trim();
+                String description = ((TextArea) dialogBuilder.getControl("description")).getText().trim();
+                String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#");
 
-        catColor.setMaxWidth(Double.MAX_VALUE);
+                Category category = new Category(name, description, color);
+                new CategoryDBHelper().save(category);
+                table.getItems().add(category);
+                table.refresh();
 
-        grid.add(new Label("Title *:"), 0, 0);
-        grid.add(categoryTitle, 1, 0);
-        grid.add(new Label("Description:"), 0, 1);
-        grid.add(catDescription, 1, 1);
-        grid.add(new Label("Color:"), 0, 2);
-        grid.add(catColor, 1, 2);
-
-        dialog.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        dialog.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
-
-        // Enable/Disable login button depending on whether a title was entered.
-        Node loginButton = dialog.getDialogPane().lookupButton(confirmBtn);
-        loginButton.setDisable(true);
-
-        categoryTitle.textProperty().addListener((observable, oldValue, newValue) -> {
-            loginButton.setDisable(newValue.trim().isEmpty());
-        });
-
-        dialog.getDialogPane().setContent(grid);
-
-        // Request focus on the title field by default.
-        Platform.runLater(() -> categoryTitle.requestFocus());
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == confirmBtn) {
-                return new Pair<>(categoryTitle.getText(), catDescription.getText());
+                Notification.create("Added new category:\n" + category.getName(),
+                        "Success",
+                        null);
             }
-            return null;
-        });
-
-        Optional<Pair<String, String>> result = dialog.showAndWait();
-
-        result.ifPresent(usernamePassword -> {
-            System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
-            CategoryDBHelper categoryDBHelper = new CategoryDBHelper();
-            Category category = new Category(categoryTitle.getText(),
-                    catDescription.getText(),
-                    catColor.getValue().toString().replace("0x", "#"));
-            categoryDBHelper.save(category);
-            table.getItems().add(category);
-            table.refresh();
-
-            Notification.create("Added new category:\n" + category.getName(),
-                    "Success",
-                    null);
         });
     }
 
     public void displayDeleteCatConfirmation(Category category) {
-        ButtonType okBtn,
-                cancelBtn;
 
-        okBtn = new ButtonType("Confirm");
-        cancelBtn = new ButtonType("Cancel");
+        DialogBuilder dialogBuilder = new DialogBuilder();
+        dialogBuilder.setTitle("Delete")
+                .setHeader("Are you sure you want to delete " + category.getName() + " category ?")
+                .setCallerPane(rootBorderPane);
 
-        Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
-        alert.setTitle("Delete");
-        alert.setHeaderText("Delete category");
-        alert.setContentText("Are you sure you want to delete " + category.getName() + " category ?");
-
-        alert.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        alert.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == okBtn) {
+        dialogBuilder.show().ifPresent(response -> {
+            if (response == dialogBuilder.getConfirmAction()) {
                 new CategoryDBHelper().delete(category);
                 table.getItems().remove(category);
                 table.refresh();
@@ -274,8 +220,8 @@ public class AllCategoriesController implements Initializable {
                 Notification.create("Deleted category:\n" + category.getName(),
                         "Success",
                         null);
-
             }
         });
+
     }
 }

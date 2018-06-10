@@ -398,4 +398,16 @@ public class AllExpensesController implements Initializable {
             }
         });
     }
+
+    @FXML
+    public void addExpense() {
+       /* DialogBuilder dialogBuilder = new DialogBuilder();
+        dialogBuilder.setTitle("TEST")
+                .setHeader("ADD EXPENSE")
+                .addFormField("NAME:", new TextField())
+                .addFormField("SURNAME: ", new TextField())
+                .setCallerPane(rootBorderPane);
+
+        dialogBuilder.show().ifPresent(response -> System.out.println("ASDF"));*/
+    }
 }
