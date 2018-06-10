@@ -1,0 +1,6 @@
+.root {
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-insets: 2 2 2 2;
+    -fx-border-radius: 5px;
+}

@@ -21,7 +21,7 @@
    <children>
       <VBox layoutY="-16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add Expense">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Add Expense">
                <font>
                   <Font size="30.0" />
                </font>
@@ -35,7 +35,7 @@
                      <children>
                         <VBox>
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Title" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Title" />
                               <TextField fx:id="textfieldTitle" minHeight="40.0" promptText="title">
                                  <tooltip>
                                     <Tooltip contentDisplay="TOP" maxWidth="1.7976931348623157E308" text="Title" />
@@ -48,7 +48,7 @@
                         </VBox>
                         <VBox>
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Description" />
                               <TextArea fx:id="textareaDescription" prefHeight="200.0" prefRowCount="3" prefWidth="200.0" promptText="description" wrapText="true">
                                  <tooltip>
                                     <Tooltip text="description" />
@@ -61,7 +61,7 @@
                         </VBox>
                         <VBox>
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Amount" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Amount" />
                               <TextField fx:id="textfieldAmount" minHeight="40.0" promptText="amount">
                                  <tooltip>
                                     <Tooltip text="amount to pay" />
@@ -74,7 +74,7 @@
                         </VBox>
                         <VBox>
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Due date" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Due date" />
                               <DatePicker fx:id="datepickerDueDate" maxWidth="1.7976931348623157E308" minHeight="40.0">
                                  <tooltip>
                                     <Tooltip text="date until it must be paid" />
@@ -95,13 +95,13 @@
                            <children>
                               <VBox prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tags" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Tags" />
                                     <CheckComboBox fx:id="checkcomboboxTag" maxWidth="1.7976931348623157E308" minHeight="40.0" minWidth="40.0" />
                                  </children>
                               </VBox>
                               <VBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New">
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="New">
                                        <VBox.margin>
                                           <Insets right="10.0" />
                                        </VBox.margin>
@@ -115,7 +115,7 @@
                            <children>
                               <VBox prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Category" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Category" />
                                     <ChoiceBox fx:id="choiceboxCategory" maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0">
                                        <tooltip>
                                           <Tooltip text="category" />
@@ -125,7 +125,7 @@
                               </VBox>
                               <VBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New">
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="New">
                                        <VBox.margin>
                                           <Insets right="10.0" />
                                        </VBox.margin>
@@ -137,7 +137,7 @@
                         </HBox>
                         <VBox>
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Recurrent pay" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Recurrent pay" />
                               <CheckBox fx:id="checkboxRecurrent" mnemonicParsing="false">
                                  <tooltip>
                                     <Tooltip text="repeating expense or not" />
@@ -150,7 +150,7 @@
                            <children>
                               <VBox prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Pay progress" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Pay progress" />
                                     <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="200.0" progress="0.0">
                                        <tooltip>
                                           <Tooltip text="already paid percent" />
@@ -160,7 +160,7 @@
                               </VBox>
                               <VBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add">
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Add">
                                        <VBox.margin>
                                           <Insets right="10.0" />
                                        </VBox.margin>
