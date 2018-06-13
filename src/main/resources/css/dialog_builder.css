@@ -1,0 +1,22 @@
+.root {
+    -fx-border-color: #4F5053;
+}
+
+.root:header *.header-panel {
+    -fx-background-color: gray;
+}
+
+.root:header *.header-panel *.label {
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-text-fill: #fff;
+}
+
+.root .button {
+    -fx-padding: 5px 10px;
+}
+
+.root .button:hover {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+}

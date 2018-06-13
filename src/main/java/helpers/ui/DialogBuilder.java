@@ -15,6 +15,7 @@ import java.util.Optional;
  * Created by Ovidiu on 08-Jun-18.
  */
 public class DialogBuilder {
+    private static final String DIALOG_CSS = "css/dialog_builder.css";
     private final ButtonType CLOSE_BUTTON = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
     private final ButtonType CONFIRM_ACTION = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
     private Dialog dialog;
@@ -109,7 +110,7 @@ public class DialogBuilder {
         dialog.getDialogPane().getButtonTypes().addAll(CLOSE_BUTTON, CONFIRM_ACTION);
         dialog.getDialogPane().setContent(vBoxMain);
         controls = new HashMap<>();
-        dialog.getDialogPane().getStylesheets().add("css/dialog_builder.css");
+        dialog.getDialogPane().getStylesheets().add(DIALOG_CSS);
 
         Button confirmDialog = getConfirmBtn();
         confirmDialog.addEventFilter(ActionEvent.ACTION, event -> {
