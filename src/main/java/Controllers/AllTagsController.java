@@ -1,6 +1,6 @@
 package Controllers;
 
-import helpers.TagDBHelper;
+import helpers.db.TagDBHelper;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import javafx.application.Platform;

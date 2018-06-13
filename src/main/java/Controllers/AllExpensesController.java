@@ -1,8 +1,8 @@
 package Controllers;
 
-import helpers.CategoryDBHelper;
-import helpers.ExpenseDBHelper;
-import helpers.RateDBHelper;
+import helpers.db.CategoryDBHelper;
+import helpers.db.ExpenseDBHelper;
+import helpers.db.RateDBHelper;
 import helpers.ui.ControlEffect;
 import helpers.ui.Notification;
 import javafx.application.Platform;

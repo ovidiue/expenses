@@ -1,8 +1,8 @@
 package Controllers;
 
-import helpers.CategoryDBHelper;
-import helpers.HibernateHelper;
-import helpers.TagDBHelper;
+import helpers.db.CategoryDBHelper;
+import helpers.db.HibernateHelper;
+import helpers.db.TagDBHelper;
 import helpers.ui.ControlEffect;
 import helpers.ui.Notification;
 import helpers.ui.TextUtils;

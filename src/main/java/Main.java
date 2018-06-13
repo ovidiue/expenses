@@ -1,5 +1,5 @@
-import helpers.HibernateHlp;
-import helpers.Preloader;
+import helpers.db.HibernateHlp;
+import helpers.ui.Preloader;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;

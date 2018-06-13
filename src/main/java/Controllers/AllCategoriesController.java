@@ -1,6 +1,6 @@
 package Controllers;
 
-import helpers.CategoryDBHelper;
+import helpers.db.CategoryDBHelper;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import javafx.application.Platform;

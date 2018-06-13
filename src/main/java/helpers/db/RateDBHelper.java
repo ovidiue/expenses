@@ -1,4 +1,4 @@
-package helpers;
+package helpers.db;
 
 import model.Expense;
 import model.Rate;

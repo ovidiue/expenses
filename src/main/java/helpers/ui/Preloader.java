@@ -1,4 +1,4 @@
-package helpers;
+package helpers.ui;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Cursor;
