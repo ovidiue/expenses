@@ -1,27 +1,22 @@
 package Controllers;
 
-import helpers.TagDBHelper;
-import helpers.ui.ControlEffect;
+import helpers.db.TagDBHelper;
+import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 import model.Tag;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -158,107 +153,46 @@ public class AllTagsController implements Initializable {
         return list;
     }
 
+
     public void displayAddTagDialog() {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add new tag");
-        dialog.setHeaderText("Enter at least title in order to add a new tag");
+        DialogBuilder dialogBuilder = new DialogBuilder();
+        dialogBuilder.setTitle("Add new TAG")
+                .setHeader("Enter at least title in order to add a new tag")
+                .addFormField("Name:", "name", new TextField(), true)
+                .addFormField("Color: ", "color", new ColorPicker(), false)
+                .setCallerPane(rootBorderPane);
 
-        dialog.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        dialog.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
+        dialogBuilder.show().ifPresent(response -> {
+            ButtonType confirm = dialogBuilder.getConfirmAction();
 
-        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
+            if (response == confirm) {
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-        grid.setMaxWidth(Double.MAX_VALUE);
+                String name = ((TextField) dialogBuilder.getControl("name")).getText();
+                String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#");
 
-        TextField tagName = new TextField();
-        tagName.setPromptText("name");
-        tagName.setMaxWidth(Double.MAX_VALUE);
-        ColorPicker colorPicker = new ColorPicker();
-        colorPicker.setMaxWidth(Double.MAX_VALUE);
-        colorPicker.setPromptText("choose color");
+                Tag tag = new Tag(name, color);
+                new TagDBHelper().save(tag);
+                table.getItems().add(tag);
+                table.refresh();
 
-        grid.add(new Label("Name *:"), 0, 0);
-        grid.add(tagName, 1, 0);
-        grid.add(new Label("Color:"), 0, 1);
-        grid.add(colorPicker, 1, 1);
-
-        Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
-        saveBtn.setDisable(true);
-
-        tagName.textProperty().addListener((observable, oldValue, newValue) -> {
-            saveBtn.setDisable(newValue.trim().isEmpty());
-        });
-
-        dialog.getDialogPane().setContent(grid);
-
-        Platform.runLater(() -> tagName.requestFocus());
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == confirmBtn) {
-                return new Pair<String, String>(tagName.getText(), colorPicker.getValue().toString());
+                Notification.create("Added new tag:\n" + tag.getName(),
+                        "Success",
+                        null);
             }
-            return null;
         });
 
-        Optional<Pair<String, String>> result = dialog.showAndWait();
-
-        result.ifPresent(usernamePassword -> {
-            String color = extractRGB(colorPicker.getValue());
-            System.out.println(color);
-
-            Tag tag = new Tag(tagName.getText(), color);
-            new TagDBHelper().save(tag);
-            table.getItems().add(tag);
-            table.refresh();
-
-            Notification.create("Added new tag:\n" + tag.getName(),
-                    "Success",
-                    null);
-
-        });
 
     }
 
-    private String extractRGB(Color color) {
-        int red,
-                green,
-                blue;
-
-        double opacity;
-
-        String result;
-
-        red = (int) (color.getRed() * 255);
-        blue = (int) (color.getBlue() * 255);
-        green = (int) (color.getGreen() * 255);
-        //opacity = color.getOpacity();
-
-        //return "rgb("+red+","+green+","+blue+","+opacity+")";
-        return "rgb(" + red + "," + green + "," + blue + ")";
-    }
 
     public void displayDeleteTagConfirmation(Tag tag) {
-        ButtonType okBtn,
-                cancelBtn;
 
-        okBtn = new ButtonType("Confirm");
-        cancelBtn = new ButtonType("Cancel");
+        DialogBuilder dialogBuilder = new DialogBuilder()
+                .setHeader("Are you sure you want to delete " + tag.getName() + " tag ?")
+                .setCallerPane(rootBorderPane);
 
-        Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
-        alert.setTitle("Delete");
-        alert.setHeaderText("Delete tag");
-        alert.setContentText("Are you sure you want to delete " + tag.getName() + " tag ?");
-
-        alert.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        alert.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == okBtn) {
+        dialogBuilder.show().ifPresent(response -> {
+            if (response == dialogBuilder.getConfirmAction()) {
                 new TagDBHelper().delete(tag);
                 table.getItems().remove(tag);
                 table.refresh();
@@ -266,7 +200,6 @@ public class AllTagsController implements Initializable {
                 Notification.create("Deleted tag:\n" + tag.getName(),
                         "Success",
                         null);
-
             }
         });
     }

@@ -1,7 +1,6 @@
-package helpers;
+package helpers.db;
 
 import model.Category;
-import model.Expense;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 

@@ -1,6 +1,5 @@
-package helpers;
+package helpers.db;
 
-import model.Tag;
 import model.Tag;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

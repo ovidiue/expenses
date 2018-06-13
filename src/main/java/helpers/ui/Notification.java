@@ -14,7 +14,7 @@ public class Notification {
 
     public static void create(String message, String title, String style) {
         Notifications n = Notifications.create()
-                .position(Pos.BASELINE_RIGHT)
+                .position(Pos.BOTTOM_CENTER)
                 .text(message)
                 .title(title)
                 .hideAfter(Duration.seconds(2));
