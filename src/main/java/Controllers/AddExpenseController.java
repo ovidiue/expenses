@@ -3,7 +3,7 @@ package Controllers;
 import helpers.db.CategoryDBHelper;
 import helpers.db.HibernateHelper;
 import helpers.db.TagDBHelper;
-import helpers.ui.ControlEffect;
+import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import helpers.ui.TextUtils;
 import javafx.application.Platform;
@@ -13,14 +13,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.util.Pair;
 import model.Category;
 import model.Expense;
 import model.Rate;
@@ -32,13 +29,17 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
  * Created by Ovidiu on 18-May-18.
  */
 public class AddExpenseController implements Initializable {
+
     @FXML
     TextField textfieldTitle;
     @FXML
@@ -60,10 +61,10 @@ public class AddExpenseController implements Initializable {
     @FXML
     AnchorPane anchorPane;
 
+    private DialogBuilder dialogBuilder = new DialogBuilder();
     private ObservableList<Category> categoriesList;
     private ObservableList<Tag> tagsList;
     private List<Rate> rates = new ArrayList<>();
-
     private PopOver popOver;
     private BorderPane rootBorderPane;
 
@@ -117,66 +118,26 @@ public class AddExpenseController implements Initializable {
     }
 
     public void displayAddCategoryDialog() {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add new category");
-        dialog.setHeaderText("Enter at least textfieldTitle in order to add a new category");
+        dialogBuilder.setHeader("Enter at least textfieldTitle in order to add a new category")
+                .addFormField("Title:", "title", new TextField(), true)
+                .addFormField("Description:", "description", new TextArea(), false)
+                .addFormField("Color:", "color", new ColorPicker(), false)
+                .setCallerPane(rootBorderPane)
+                .show()
+                .ifPresent(result -> {
+                    if ((ButtonType) result == dialogBuilder.getConfirmAction()) {
+                        CategoryDBHelper categoryDBHelper = new CategoryDBHelper();
+                        Category category = new Category(
+                                ((TextField) dialogBuilder.getControl("title")).getText(),
+                                ((TextArea) dialogBuilder.getControl("description")).getText(),
+                                ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#"));
+                        categoryDBHelper.save(category);
+                        populateCategories();
 
-        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
-
-        TextField categoryTitle = new TextField();
-        categoryTitle.setPromptText("textfieldTitle");
-        VBox vBoxTitle = new VBox(new Label("Title:"), categoryTitle);
-
-        TextArea catDescription = new TextArea();
-        catDescription.setPromptText("textareaDescription");
-        catDescription.setWrapText(true);
-        VBox vBoxDescription = new VBox(new Label("Description"), catDescription);
-
-        ColorPicker catColor = new ColorPicker();
-        catColor.setMaxWidth(Double.MAX_VALUE);
-        VBox vBoxColor = new VBox(new Label("Color:"), catColor);
-
-        VBox vBoxMain = new VBox(vBoxTitle, vBoxDescription, vBoxColor);
-        vBoxMain.setSpacing(15);
-        vBoxMain.setPadding(new Insets(10, 10, 20, 10));
-        StackPane stackPane = new StackPane(vBoxMain);
-
-        Node loginButton = dialog.getDialogPane().lookupButton(confirmBtn);
-        loginButton.setDisable(true);
-
-        categoryTitle.textProperty().addListener((observable, oldValue, newValue) -> {
-            loginButton.setDisable(newValue.trim().isEmpty());
-        });
-
-        dialog.getDialogPane().setContent(stackPane);
-
-        dialog.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        dialog.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
-
-        Platform.runLater(() -> categoryTitle.requestFocus());
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == confirmBtn) {
-                return new Pair<>(categoryTitle.getText(), catDescription.getText());
-            }
-            return null;
-        });
-
-        Optional<Pair<String, String>> result = dialog.showAndWait();
-
-        result.ifPresent(usernamePassword -> {
-            System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
-            CategoryDBHelper categoryDBHelper = new CategoryDBHelper();
-            Category category = new Category(categoryTitle.getText(),
-                    catDescription.getText(),
-                    catColor.getValue().toString().replace("0x", "#"));
-            categoryDBHelper.save(category);
-            populateCategories();
-
-            Notification.create("Added category: \n" +
-                    category.getName(), "Success", null);
-        });
+                        Notification.create("Added category: \n" +
+                                category.getName(), "Success", null);
+                    }
+                });
     }
 
     @Override
@@ -267,86 +228,31 @@ public class AddExpenseController implements Initializable {
 
     @FXML
     public void displayAddTagDialog() {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add new tag");
-        dialog.setHeaderText("Enter at least TITLE in order to add a new tag");
+        dialogBuilder.setCallerPane(rootBorderPane)
+                .setHeader("Enter at least TITLE in order to add a new tag")
+                .addFormField("Name:", "name", new TextField(), true)
+                .addFormField("Color:", "color", new ColorPicker(), false)
+                .show()
+                .ifPresent(result -> {
+                    if ((ButtonType) result == dialogBuilder.getConfirmAction()) {
+                        String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#"),
+                                name = ((TextField) dialogBuilder.getControl("name")).getText();
+                        Tag tag = new Tag(name, color);
+                        new TagDBHelper().save(tag);
+                        populateNewTags();
 
-        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
-
-        Label labelName = new Label("Name:");
-        TextField tagName = new TextField();
-        tagName.setPromptText("name");
-        tagName.setMaxWidth(Double.MAX_VALUE);
-        VBox vBoxTitle = new VBox(labelName, tagName);
-
-        Label labelColor = new Label("Color:");
-        ColorPicker colorPicker = new ColorPicker();
-        colorPicker.setMaxWidth(Double.MAX_VALUE);
-        colorPicker.setPromptText("choose color");
-        VBox vBoxColor = new VBox(labelColor, colorPicker);
-
-        VBox vBoxMain = new VBox(vBoxTitle, vBoxColor);
-        vBoxMain.setSpacing(15);
-        vBoxMain.setPadding(new Insets(10, 10, 20, 10));
-
-        Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
-        saveBtn.setDisable(true);
-
-        tagName.textProperty().addListener((observable, oldValue, newValue) -> {
-            saveBtn.setDisable(newValue.trim().isEmpty());
-        });
-
-        dialog.getDialogPane().setContent(new StackPane(vBoxMain));
-
-        dialog.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        dialog.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
-
-        Platform.runLater(() -> tagName.requestFocus());
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == confirmBtn) {
-                return new Pair<String, String>(tagName.getText(), colorPicker.getValue().toString());
-            }
-            return null;
-        });
-
-        Optional<Pair<String, String>> result = dialog.showAndWait();
-
-        result.ifPresent(usernamePassword -> {
-            String color = colorPicker.getValue().toString().replace("0x", "#");
-            System.out.println(color);
-
-            Tag tag = new Tag(tagName.getText(), color);
-            new TagDBHelper().save(tag);
-            populateNewTags();
-
-            Notification.create("Added new tag:\n" + tag.getName(),
-                    "Success", null);
-        });
-
+                        Notification.create("Added new tag:\n" + tag.getName(),
+                                "Success", null);
+                    }
+                });
     }
 
     @FXML
     public void displayAddPayedRatesDialog() {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add payed rate");
-        dialog.setHeaderText("Enter at least AMOUNT in order to add a rate");
-
-        ButtonType confirmBtn = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(confirmBtn, ButtonType.CANCEL);
-
-        Label labelAmount = new Label("Amount:");
         TextField textFieldAmountRate = new TextField();
-        textFieldAmountRate.setPromptText("rate amount");
-        textFieldAmountRate.setMaxWidth(Double.MAX_VALUE);
         textFieldAmountRate.textProperty().addListener(TextUtils.getDigitListener());
-        VBox vBoxAmount = new VBox(labelAmount, textFieldAmountRate);
 
-        Label labelDate = new Label("Date:");
         DatePicker datePicker = new DatePicker();
-        datePicker.setMaxWidth(Double.MAX_VALUE);
-        datePicker.setPromptText("set date");
         datePicker.getEditor().setDisable(true);
         datePicker.setDayCellFactory((DatePicker datePickerz) -> new DateCell() {
             @Override
@@ -358,55 +264,28 @@ public class AddExpenseController implements Initializable {
                 }
             }
         });
-        VBox vBoxDate = new VBox(labelDate, datePicker);
 
-        Label labelObservations = new Label("Observations:");
-        TextArea textAreaObservations = new TextArea();
-        textAreaObservations.setMaxWidth(Double.MAX_VALUE);
-        textAreaObservations.setPromptText("observations");
-        textAreaObservations.setWrapText(true);
-        VBox vBoxObs = new VBox(labelObservations, textAreaObservations);
+        dialogBuilder
+                .setCallerPane(rootBorderPane)
+                .setHeader("Enter at least AMOUNT in order to add a rate")
+                .addFormField("Amount:", "amount", textFieldAmountRate, true)
+                .addFormField("Date:", "date", datePicker, true)
+                .addFormField("Obsevations:", "observation", new TextArea(), false)
+                .show()
+                .ifPresent(result -> {
+                    if ((ButtonType) result == dialogBuilder.getConfirmAction()) {
+                        Rate rate = new Rate(
+                                Double.parseDouble(textFieldAmountRate.getText()),
+                                new Date(datePicker.getEditor().getText()),
+                                ((TextArea) dialogBuilder.getControl("observation")).getText());
 
-        VBox vBoxMain = new VBox(vBoxAmount, vBoxDate, vBoxObs);
-        vBoxMain.setSpacing(15);
-        vBoxMain.setPadding(new Insets(10, 10, 20, 10));
+                        rates.add(rate);
+                        displayPayProgress();
 
-        Node saveBtn = dialog.getDialogPane().lookupButton(confirmBtn);
-        saveBtn.setDisable(true);
-
-        saveBtn.disableProperty().bind(
-                Bindings.or(
-                        textFieldAmountRate.textProperty().isEmpty(),
-                        datePicker.valueProperty().isNull()
-                ));
-
-        dialog.getDialogPane().setContent(new StackPane(vBoxMain));
-        dialog.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        dialog.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
-
-        Platform.runLater(() -> textFieldAmountRate.requestFocus());
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == confirmBtn) {
-                return new Pair<String, String>(textFieldAmountRate.getText(), datePicker.getValue().toString());
-            }
-            return null;
-        });
-
-        Optional<Pair<String, String>> result = dialog.showAndWait();
-
-        result.ifPresent(usernamePassword -> {
-            Rate rate = new Rate(Double.parseDouble(textFieldAmountRate.getText()),
-                    new Date(datePicker.getEditor().getText()),
-                    textAreaObservations.getText());
-            // new RateDBHelper().save(rate);
-            rates.add(rate);
-            displayPayProgress();
-
-            Notification.create("Added partial pay, textfieldAmount:\n" + rate.getAmount(),
-                    "Success", null);
-        });
-
+                        Notification.create("Added partial pay, textfieldAmount:\n" + rate.getAmount(),
+                                "Success", null);
+                    }
+                });
     }
 
     private void displayPayProgress() {
