@@ -160,7 +160,7 @@ public class AddExpenseController implements Initializable {
                     popOver.show(progressBar);
                     popOver.setArrowLocation(PopOver.ArrowLocation.RIGHT_CENTER);
                     popOver.setAutoHide(true);
-                    popOver.setOpacity(0.7);
+                    popOver.setOpacity(0.8);
                     popOver.prefWidth(400);
                     popOver.setTitle("TOTAL: " + getTotalValuePayed());
                     popOver.setHeaderAlwaysVisible(true);

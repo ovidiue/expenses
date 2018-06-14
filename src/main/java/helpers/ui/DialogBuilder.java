@@ -1,11 +1,13 @@
 package helpers.ui;
 
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,6 +87,12 @@ public class DialogBuilder {
     public Optional show() {
         dialog.setOnShowing(e -> ControlEffect.setBlur(getCallerPane(), true));
         dialog.setOnHiding(e -> ControlEffect.setBlur(getCallerPane(), false));
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(.3));
+        fadeTransition.setFromValue(0);
+        fadeTransition.setToValue(1);
+        fadeTransition.setNode(dialog.getDialogPane());
+        fadeTransition.play();
+
         return dialog.showAndWait();
     }
 
