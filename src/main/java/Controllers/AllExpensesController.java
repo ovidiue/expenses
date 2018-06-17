@@ -3,7 +3,7 @@ package Controllers;
 import helpers.db.CategoryDBHelper;
 import helpers.db.ExpenseDBHelper;
 import helpers.db.RateDBHelper;
-import helpers.ui.ControlEffect;
+import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import javafx.application.Platform;
 import javafx.beans.binding.Binding;
@@ -430,32 +430,21 @@ public class AllExpensesController implements Initializable {
     }
 
     private void displayDeleteExpenseConfirmation(Expense e) {
-        ButtonType okBtn,
-                cancelBtn;
+        DialogBuilder dialogBuilder = new DialogBuilder();
+        dialogBuilder.setCallerPane(rootBorderPane)
+                .setHeader("Are you sure you want to delete " + e.getTitle() + " expense ?")
+                .show()
+                .ifPresent(response -> {
+                    if ((ButtonType) response == dialogBuilder.getConfirmAction()) {
+                        new ExpenseDBHelper().delete(e);
+                        tableViewMaster.getItems().remove(e);
+                        tableViewMaster.refresh();
 
-        okBtn = new ButtonType("Confirm");
-        cancelBtn = new ButtonType("Cancel");
-
-        Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
-        alert.setTitle("Delete");
-        alert.setHeaderText("Delete expense");
-        alert.setContentText("Are you sure you want to delete " + e.getTitle() + " expense ?");
-
-        alert.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        alert.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == okBtn) {
-                new ExpenseDBHelper().delete(e);
-                tableViewMaster.getItems().remove(e);
-                tableViewMaster.refresh();
-
-                Notification.create("Deleted expense:\n" + e.getTitle(),
-                        "Success",
-                        null);
-
-            }
-        });
+                        Notification.create("Deleted expense:\n" + e.getTitle(),
+                                "Success",
+                                null);
+                    }
+                });
 
     }
 
@@ -465,44 +454,35 @@ public class AllExpensesController implements Initializable {
     }
 
     private void displayDeleteRateConfirmation(Rate rate) {
-        ButtonType okBtn,
-                cancelBtn;
+        DialogBuilder dialogBuilder = new DialogBuilder();
+        dialogBuilder.setCallerPane(rootBorderPane)
+                .setHeader("Are you sure you want to delete " + rate.getAmount() + " rate ?")
+                .show()
+                .ifPresent(response -> {
+                    if ((ButtonType) response == dialogBuilder.getConfirmAction()) {
+                        new RateDBHelper().delete(rate);
+                        tableViewDetail.getItems().remove(rate);
+                        tableViewDetail.refresh();
 
-        okBtn = new ButtonType("Confirm");
-        cancelBtn = new ButtonType("Cancel");
-
-        Alert alert = new Alert(Alert.AlertType.WARNING, "asdfasd", cancelBtn, okBtn);
-        alert.setTitle("Delete");
-        alert.setHeaderText("Delete rate");
-        alert.setContentText("Are you sure you want to delete " + rate.getAmount() + " rate ?");
-
-        alert.setOnShowing(event -> ControlEffect.setBlur(rootBorderPane, true));
-        alert.setOnCloseRequest(event -> ControlEffect.setBlur(rootBorderPane, false));
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == okBtn) {
-
-                new RateDBHelper().delete(rate);
-                tableViewDetail.getItems().remove(rate);
-                tableViewDetail.refresh();
-
-                Notification.create("Deleted rate:\n" + rate.getAmount(),
-                        "Success",
-                        null);
-
-            }
-        });
+                        Notification.create("Deleted rate:\n" + rate.getAmount(),
+                                "Success",
+                                null);
+                    }
+                });
     }
 
     @FXML
     public void addExpense() {
-       /* DialogBuilder dialogBuilder = new DialogBuilder();
-        dialogBuilder.setTitle("TEST")
-                .setHeader("ADD EXPENSE")
-                .addFormField("NAME:", new TextField())
-                .addFormField("SURNAME: ", new TextField())
-                .setCallerPane(rootBorderPane);
+        DialogBuilder dialogBuilder = new DialogBuilder();
+        dialogBuilder.setCallerPane(rootBorderPane)
+                .setHeader("Add expense")
+                .addFormField("Title:", "title", new TextField(), true)
+                .addFormField("Description:", "description", new TextArea(), false)
+                .addFormField("Recurrent:", "recurrent", new CheckBox(), false)
+                .addFormField("Due date:", "dueDate", new DatePicker(), false)
+                .addFormField("Amount:", "amount", new TextField(), true)
+                .addFormField("Amount:", "amount", new TextField(), true)
+                .show();
 
-        dialogBuilder.show().ifPresent(response -> System.out.println("ASDF"));*/
     }
 }
