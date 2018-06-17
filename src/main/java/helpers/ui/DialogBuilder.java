@@ -59,9 +59,7 @@ public class DialogBuilder {
 
         for (Control c : controls.values()) {
             if (c.getUserData().toString().equalsIgnoreCase("true")) {
-                System.out.println("BIG IF");
                 if (c instanceof TextField && ((TextField) c).getText().trim().length() == 0) {
-                    System.out.println("SMALL IF");
                     return true;
                 }
 
@@ -70,6 +68,10 @@ public class DialogBuilder {
                 }
 
                 if (c instanceof TextArea && ((TextArea) c).getText().toString().trim().length() == 0) {
+                    return true;
+                }
+
+                if (c instanceof DatePicker && ((DatePicker) c).getEditor().getText().toString().trim().length() == 0) {
                     return true;
                 }
 

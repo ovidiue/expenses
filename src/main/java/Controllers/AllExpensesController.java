@@ -15,10 +15,12 @@ import javafx.geometry.HPos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.util.StringConverter;
 import model.Category;
 import model.Expense;
 import model.Rate;
@@ -113,6 +115,7 @@ public class AllExpensesController implements Initializable {
 
     private TableView<Expense> getExpenseTable() {
         tableViewMaster = new TableView<>();
+        tableViewMaster.setEditable(true);
 
         TableColumn<Expense, String> titleCol,
                 descriptionCol,
@@ -139,6 +142,7 @@ public class AllExpensesController implements Initializable {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
+                this.setFocused(true);
 
                 if (item != null && item.trim().length() > 0) {
                     setText(item.substring(0, item.length() > 15 ? 15 : item.length()));
@@ -146,7 +150,15 @@ public class AllExpensesController implements Initializable {
                         TextArea textArea = new TextArea();
                         textArea.setWrapText(true);
                         textArea.setEditable(false);
+                        textArea.setOnMouseClicked(event -> {
+                            if (event.getClickCount() == 2) {
+                                textArea.setEditable(true);
+                                textArea.setTooltip(null);
+                            }
+                        });
                         textArea.setText(item);
+                        textArea.setTooltip(new Tooltip("Double click to edit"));
+
                         popOver.setContentNode(textArea);
                         popOver.show((TableCell) e.getTarget());
                         popOver.setAutoHide(true);
@@ -154,9 +166,52 @@ public class AllExpensesController implements Initializable {
                         popOver.setDetachable(true);
                         popOver.setAnimated(true);
                         popOver.setTitle(((Expense) getTableRow().getItem()).getTitle());
+
+                        popOver.setOnHidden(event -> {
+                            Expense ex = (Expense) getTableRow().getItem();
+                            if (!ex.getDescription().equals(textArea.getText())) {
+                                ex.setDescription(textArea.getText());
+                                new ExpenseDBHelper().update(ex);
+                                tableViewMaster.refresh();
+                            }
+                        });
                     });
                 }
             }
+        });
+
+        titleCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        titleCol.setOnEditCommit(e -> {
+            final String value = e.getNewValue() != null ?
+                    e.getNewValue() :
+                    e.getOldValue();
+
+            Expense expense = tableViewMaster.getSelectionModel().getSelectedItem();
+            expense.setTitle(value);
+            new ExpenseDBHelper().update(expense);
+            tableViewMaster.refresh();
+        });
+
+        amountCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                return String.valueOf(object);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                return Double.parseDouble(string);
+            }
+        }));
+        amountCol.setOnEditCommit(e -> {
+            final Double value = e.getNewValue() != null ?
+                    e.getNewValue() :
+                    e.getOldValue();
+
+            Expense expense = tableViewMaster.getSelectionModel().getSelectedItem();
+            expense.setAmount(value);
+            new ExpenseDBHelper().update(expense);
+            tableViewMaster.refresh();
         });
 
         titleCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
@@ -194,10 +249,25 @@ public class AllExpensesController implements Initializable {
                 @Override
                 protected void updateItem(Date item, boolean empty) {
                     super.updateItem(item, empty);
+
                     if (empty || item == null) {
                         setText(null);
                     } else {
+                        final DatePicker dp = new DatePicker();
+                        dp.valueProperty().addListener((observable, oldValue, newValue) -> {
+                            /*Expense expense = (Expense) getTableRow().getItem();
+                            expense.setDueDate();
+                            new ExpenseDBHelper().update(expense);*/
+
+                        });
+                        dp.setPrefWidth(0);
+                        dp.setVisible(false);
                         this.setText(format.format(item));
+                        this.setOnMouseClicked(e -> {
+                            if (e.getClickCount() == 2)
+                                dp.show();
+                        });
+                        setGraphic(dp);
                     }
                 }
             };
@@ -222,6 +292,31 @@ public class AllExpensesController implements Initializable {
                         });
 
                         setGraphic(deleteBtn);
+                    }
+                }
+            };
+            return cell;
+        });
+
+        recurrentCol.setCellFactory((TableColumn<Expense, Boolean> column) -> {
+            TableCell<Expense, Boolean> cell = new TableCell<Expense, Boolean>() {
+                @Override
+                protected void updateItem(Boolean item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty)
+                        setText(null);
+                    else {
+                        CheckBox cb = new CheckBox();
+                        cb.setSelected(item);
+                        cb.setOnAction(e -> {
+                            boolean value = cb.isSelected();
+
+                            Expense expense = (Expense) getTableRow().getItem();
+                            expense.setRecurrent(value);
+                            new ExpenseDBHelper().update(expense);
+                        });
+
+                        setGraphic(cb);
                     }
                 }
             };
