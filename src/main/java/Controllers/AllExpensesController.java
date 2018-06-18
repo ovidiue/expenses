@@ -426,7 +426,7 @@ public class AllExpensesController implements Initializable {
         });
 
         colObservation.setCellFactory((TableColumn<Rate, String> column) -> {
-            return new TableCell<Rate, String>() {
+            TableCell<Rate, String> cell = new TableCell<Rate, String>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
@@ -472,10 +472,52 @@ public class AllExpensesController implements Initializable {
                             popOver.setAnimated(true);
                             popOver.setTitle(((Rate) getTableRow().getItem()).getAmount().toString());
                         });
+                    } else {
+                        setOnMouseClicked(event -> {
+                            if (event.getClickCount() == 2) {
+                                VBox vBoxObservation = new VBox(5);
+                                vBoxObservation.setAlignment(Pos.CENTER_RIGHT);
+                                vBoxObservation.setPadding(new Insets(10));
+
+                                TextArea textArea = new TextArea();
+                                textArea.setWrapText(true);
+                                textArea.setEditable(false);
+                                textArea.setOnMouseClicked(e -> {
+                                    if (e.getClickCount() == 2) {
+                                        textArea.setEditable(true);
+                                        textArea.setTooltip(null);
+                                    }
+                                });
+
+                                textArea.setTooltip(new Tooltip("Double click to edit"));
+
+                                Button btnConfirmEdit = new Button("Confirm");
+                                btnConfirmEdit.setOnAction(e -> {
+                                    Rate rate = (Rate) getTableRow().getItem();
+                                    rate.setObservation(textArea.getText());
+                                    rateDBHelper.update(rate);
+                                    tableViewDetail.refresh();
+                                    popOver.hide();
+                                });
+                                btnConfirmEdit.disableProperty().bind(textArea.textProperty().isEmpty());
+
+                                vBoxObservation.getChildren().addAll(textArea, btnConfirmEdit);
+
+                                popOver.setContentNode(vBoxObservation);
+                                popOver.show((TableCell) event.getTarget());
+                                popOver.setAutoHide(true);
+                                popOver.setHeaderAlwaysVisible(true);
+                                popOver.setDetached(true);
+                                popOver.setAnimated(true);
+                                popOver.setTitle(((Rate) getTableRow().getItem()).getAmount().toString());
+                            }
+                        });
                     }
                 }
 
+
             };
+            return cell;
         });
 
         // split columns widths to match table
