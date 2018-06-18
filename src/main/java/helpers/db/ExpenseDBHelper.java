@@ -2,6 +2,7 @@ package helpers.db;
 
 import model.Expense;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
 import java.util.List;
@@ -58,6 +59,7 @@ public class ExpenseDBHelper implements HibernateHlp<Expense> {
         Session session = sessionFactory.openSession();
 
         Expense expense = session.get(Expense.class, id);
+        Hibernate.initialize(expense.getPayedRates());
 
         session.close();
 
@@ -76,4 +78,6 @@ public class ExpenseDBHelper implements HibernateHlp<Expense> {
 
         return expenses;
     }
+
+
 }

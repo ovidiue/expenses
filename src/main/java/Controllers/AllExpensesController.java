@@ -41,6 +41,7 @@ public class AllExpensesController implements Initializable {
 
     BorderPane rootBorderPane;
 
+
     @FXML
     MasterDetailPane masterDetailPane;
     private TableView<Rate> tableViewDetail = getRateTable();
@@ -66,20 +67,22 @@ public class AllExpensesController implements Initializable {
         AnchorPane anchorPane = new AnchorPane();
         GridPane gridPane = new GridPane();
         Label labelTitle = new Label("Rates");
-        Button buttonAdd = new Button("Add");
+        Button buttonAddRate = new Button("Add");
+        buttonAddRate.disableProperty().bind(tableViewMaster.getSelectionModel().selectedItemProperty().isNull());
+        buttonAddRate.setOnAction(e -> displayAddRateToExpense());
 
         gridPane.add(labelTitle, 0, 0);
-        gridPane.add(buttonAdd, 1, 0);
+        gridPane.add(buttonAddRate, 1, 0);
         gridPane.setHgrow(labelTitle, Priority.ALWAYS);
-        gridPane.setHgrow(buttonAdd, Priority.ALWAYS);
+        gridPane.setHgrow(buttonAddRate, Priority.ALWAYS);
         gridPane.setHalignment(labelTitle, HPos.LEFT);
-        gridPane.setHalignment(buttonAdd, HPos.RIGHT);
+        gridPane.setHalignment(buttonAddRate, HPos.RIGHT);
 
         anchorPane.getChildren().addAll(gridPane, tableViewDetail);
 
         labelTitle.setStyle("-fx-font-size: 30");
-        buttonAdd.setMinWidth(100);
-        buttonAdd.setStyle("-fx-font-weight: bold");
+        buttonAddRate.setMinWidth(100);
+        buttonAddRate.setStyle("-fx-font-weight: bold");
 
         anchorPane.setTopAnchor(gridPane, 0.0);
         anchorPane.setTopAnchor(tableViewDetail, 50.0);
@@ -90,6 +93,40 @@ public class AllExpensesController implements Initializable {
         anchorPane.setRightAnchor(tableViewDetail, 0.0);
 
         return anchorPane;
+    }
+
+    private void displayAddRateToExpense() {
+        int expenseId = tableViewMaster.getSelectionModel().getSelectedItem().getId();
+        ExpenseDBHelper expenseDBHelper = new ExpenseDBHelper();
+        Expense expense = expenseDBHelper.findById(expenseId);
+        DialogBuilder dialogBuilder = new DialogBuilder();
+        dialogBuilder.setCallerPane(rootBorderPane)
+                .setHeader("Add rate to " + expense.getTitle() + " expense")
+                .addFormField("Amount:", "amount", new TextField(), true)
+                .addFormField("Date:", "date", new DatePicker(), true)
+                .addFormField("Observation:", "observation", new TextArea(), false)
+                .show()
+                .ifPresent(result -> {
+                    if (result == dialogBuilder.getConfirmAction()) {
+                        String amountString = ((TextField) dialogBuilder.getControl("amount")).getText();
+                        String dateString = ((DatePicker) dialogBuilder.getControl("date")).getEditor().getText();
+                        Rate rate = new Rate(
+                                Double.parseDouble(amountString),
+                                new Date(dateString),
+                                ((TextArea) dialogBuilder.getControl("observation")).getText()
+                        );
+
+                        expense.addRate(rate);
+                        expenseDBHelper.update(expense);
+                        tableViewDetail.getItems().add(rate);
+                        tableViewDetail.refresh();
+                        Notification.create("Added rate:\n" + rate.getAmount(),
+                                "Success",
+                                null);
+
+                    }
+                });
+
     }
 
     private void setClickBehaviourMasterDetailsPane() {

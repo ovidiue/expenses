@@ -24,8 +24,8 @@
                   <Font size="30.0" />
                </font>
             </Text>
-             <Button minWidth="100.0" mnemonicParsing="false" onAction="#addExpense" text="Add" GridPane.columnIndex="1"
-                     GridPane.halignment="RIGHT">
+             <Button fx:id="btnAddEpense" minWidth="100.0" mnemonicParsing="false" onAction="#addExpense" text="Add"
+                     GridPane.columnIndex="1" GridPane.halignment="RIGHT">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font></Button>
