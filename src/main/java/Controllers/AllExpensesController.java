@@ -12,14 +12,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.util.StringConverter;
 import model.Category;
 import model.Expense;
@@ -44,9 +43,9 @@ public class AllExpensesController implements Initializable {
 
     @FXML
     MasterDetailPane masterDetailPane;
-    private TableView<Rate> tableViewDetail = getRateTable();
     private PopOver popOver = new PopOver();
     private TableView<Expense> tableViewMaster = getExpenseTable();
+    private TableView<Rate> tableViewDetail = getRateTable();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -387,7 +386,9 @@ public class AllExpensesController implements Initializable {
     }
 
     private TableView<Rate> getRateTable() {
+        RateDBHelper rateDBHelper = new RateDBHelper();
         tableViewDetail = new TableView<>();
+        tableViewDetail.setEditable(true);
 
         // declare columns
         TableColumn<Rate, Double> colRateAmount;
@@ -405,6 +406,77 @@ public class AllExpensesController implements Initializable {
         colRateAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
         colPayedOn.setCellValueFactory(new PropertyValueFactory<>("date"));
         colObservation.setCellValueFactory(new PropertyValueFactory<>("observation"));
+
+        colRateAmount.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                return String.valueOf(object);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                return Double.parseDouble(string);
+            }
+        }));
+
+        colRateAmount.setOnEditCommit(event -> {
+            Rate rate = event.getRowValue();
+            rate.setAmount(event.getNewValue());
+            rateDBHelper.update(rate);
+        });
+
+        colObservation.setCellFactory((TableColumn<Rate, String> column) -> {
+            return new TableCell<Rate, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setFocused(true);
+
+                    if (item != null && item.trim().length() > 0) {
+                        setText(item.substring(0, item.length() > 15 ? 15 : item.length()));
+                        setOnMouseEntered(e -> {
+                            VBox vBoxObservation = new VBox(5);
+                            vBoxObservation.setAlignment(Pos.CENTER_RIGHT);
+                            vBoxObservation.setPadding(new Insets(10));
+
+                            TextArea textArea = new TextArea();
+                            textArea.setWrapText(true);
+                            textArea.setEditable(false);
+                            textArea.setOnMouseClicked(event -> {
+                                if (event.getClickCount() == 2) {
+                                    textArea.setEditable(true);
+                                    textArea.setTooltip(null);
+                                }
+                            });
+                            textArea.setText(item);
+                            textArea.setTooltip(new Tooltip("Double click to edit"));
+
+                            Button btnConfirmEdit = new Button("Confirm");
+                            btnConfirmEdit.setOnAction(event -> {
+                                Rate rate = (Rate) getTableRow().getItem();
+                                if (!rate.getObservation().equals(textArea.getText())) {
+                                    rate.setObservation(textArea.getText());
+                                    rateDBHelper.update(rate);
+                                    tableViewDetail.refresh();
+                                    popOver.hide();
+                                }
+                            });
+
+                            vBoxObservation.getChildren().addAll(textArea, btnConfirmEdit);
+
+                            popOver.setContentNode(vBoxObservation);
+                            popOver.show((TableCell) e.getTarget());
+                            popOver.setAutoHide(true);
+                            popOver.setHeaderAlwaysVisible(true);
+                            popOver.setDetachable(true);
+                            popOver.setAnimated(true);
+                            popOver.setTitle(((Rate) getTableRow().getItem()).getAmount().toString());
+                        });
+                    }
+                }
+
+            };
+        });
 
         // split columns widths to match table
         Binding preferredWidth = tableViewDetail.widthProperty().divide(4);

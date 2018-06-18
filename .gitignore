@@ -63,3 +63,4 @@ src/test/
 test_db/
 /META-INF/MANIFEST.MF
 /.idea/artifacts/expenses.xml
+/META-INF/
