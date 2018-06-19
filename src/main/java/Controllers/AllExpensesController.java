@@ -3,6 +3,7 @@ package Controllers;
 import helpers.db.CategoryDBHelper;
 import helpers.db.ExpenseDBHelper;
 import helpers.db.RateDBHelper;
+import helpers.db.TagDBHelper;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import javafx.application.Platform;
@@ -23,12 +24,15 @@ import javafx.util.StringConverter;
 import model.Category;
 import model.Expense;
 import model.Rate;
+import model.Tag;
+import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.PopOver;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -586,7 +590,7 @@ public class AllExpensesController implements Initializable {
                 .setHeader("Are you sure you want to delete " + e.getTitle() + " expense ?")
                 .show()
                 .ifPresent(response -> {
-                    if ((ButtonType) response == dialogBuilder.getConfirmAction()) {
+                    if (response == dialogBuilder.getConfirmAction()) {
                         new ExpenseDBHelper().delete(e);
                         tableViewMaster.getItems().remove(e);
                         tableViewMaster.refresh();
@@ -625,6 +629,8 @@ public class AllExpensesController implements Initializable {
     @FXML
     public void addExpense() {
         DialogBuilder dialogBuilder = new DialogBuilder();
+        ChoiceBox<Category> choiceBoxCat = new ChoiceBox<>(FXCollections.observableArrayList(new CategoryDBHelper().fetchAll()));
+        CheckComboBox<Tag> checkComboBoxTag = new CheckComboBox<>(FXCollections.observableArrayList(new TagDBHelper().fetchAll()));
         dialogBuilder.setCallerPane(rootBorderPane)
                 .setHeader("Add expense")
                 .addFormField("Title:", "title", new TextField(), true)
@@ -632,8 +638,38 @@ public class AllExpensesController implements Initializable {
                 .addFormField("Recurrent:", "recurrent", new CheckBox(), false)
                 .addFormField("Due date:", "dueDate", new DatePicker(), false)
                 .addFormField("Amount:", "amount", new TextField(), true)
-                .addFormField("Amount:", "amount", new TextField(), true)
-                .show();
+                .addFormField("Category:", "category", choiceBoxCat, false)
+                .addFormField("Tag(s):", "tags", checkComboBoxTag, false)
+                .show()
+                .ifPresent(result -> {
+                    if (result == dialogBuilder.getConfirmAction()) {
+                        String title = ((TextField) dialogBuilder.getControl("title")).getText(),
+                                description = ((TextArea) dialogBuilder.getControl("description")).getText();
+                        boolean isRecurrent = ((CheckBox) dialogBuilder.getControl("recurrent")).isSelected();
+                        String dueDate = ((DatePicker) dialogBuilder.getControl("dueDate")).getEditor().getText();
+                        String amount = ((TextField) dialogBuilder.getControl("amount")).getText();
+                        Category category = ((ChoiceBox<Category>) dialogBuilder.getControl("category")).getValue();
+                        List<Tag> tags = ((CheckComboBox<Tag>) dialogBuilder.getControl("tags")).getCheckModel().getCheckedItems();
+
+                        Expense expense = new Expense(
+                                title,
+                                description,
+                                isRecurrent,
+                                new Date(dueDate),
+                                Double.parseDouble(amount),
+                                category
+                        );
+
+                        expense.getTags().addAll(tags);
+
+                        new ExpenseDBHelper().save(expense);
+                        tableViewMaster.getItems().add(expense);
+                        tableViewMaster.refresh();
+                        Notification.create("Added Expense:\n" + expense.getTitle(),
+                                "Success",
+                                null);
+                    }
+                });
 
     }
 }
