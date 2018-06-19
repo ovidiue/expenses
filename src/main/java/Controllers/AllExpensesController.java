@@ -644,10 +644,10 @@ public class AllExpensesController implements Initializable {
                 .ifPresent(result -> {
                     if (result == dialogBuilder.getConfirmAction()) {
                         String title = ((TextField) dialogBuilder.getControl("title")).getText(),
-                                description = ((TextArea) dialogBuilder.getControl("description")).getText();
+                                description = ((TextArea) dialogBuilder.getControl("description")).getText(),
+                                dueDate = ((DatePicker) dialogBuilder.getControl("dueDate")).getEditor().getText(),
+                                amount = ((TextField) dialogBuilder.getControl("amount")).getText();
                         boolean isRecurrent = ((CheckBox) dialogBuilder.getControl("recurrent")).isSelected();
-                        String dueDate = ((DatePicker) dialogBuilder.getControl("dueDate")).getEditor().getText();
-                        String amount = ((TextField) dialogBuilder.getControl("amount")).getText();
                         Category category = ((ChoiceBox<Category>) dialogBuilder.getControl("category")).getValue();
                         List<Tag> tags = ((CheckComboBox<Tag>) dialogBuilder.getControl("tags")).getCheckModel().getCheckedItems();
 
