@@ -48,8 +48,9 @@ public class AllExpensesController implements Initializable {
     @FXML
     MasterDetailPane masterDetailPane;
     private PopOver popOver = new PopOver();
-    private TableView<Expense> tableViewMaster = getExpenseTable();
     private TableView<Rate> tableViewDetail = getRateTable();
+    private ExpenseDBHelper expenseDBHelper = new ExpenseDBHelper();
+    private TableView<Expense> tableViewMaster = getExpenseTable();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -100,7 +101,6 @@ public class AllExpensesController implements Initializable {
 
     private void displayAddRateToExpense() {
         int expenseId = tableViewMaster.getSelectionModel().getSelectedItem().getId();
-        ExpenseDBHelper expenseDBHelper = new ExpenseDBHelper();
         Expense expense = expenseDBHelper.findById(expenseId);
         DialogBuilder dialogBuilder = new DialogBuilder();
         dialogBuilder.setCallerPane(rootBorderPane)
@@ -211,7 +211,7 @@ public class AllExpensesController implements Initializable {
                             Expense ex = (Expense) getTableRow().getItem();
                             if (!ex.getDescription().equals(textArea.getText())) {
                                 ex.setDescription(textArea.getText());
-                                new ExpenseDBHelper().update(ex);
+                                expenseDBHelper.update(ex);
                                 tableViewMaster.refresh();
                             }
                         });
@@ -228,7 +228,7 @@ public class AllExpensesController implements Initializable {
 
             Expense expense = tableViewMaster.getSelectionModel().getSelectedItem();
             expense.setTitle(value);
-            new ExpenseDBHelper().update(expense);
+            expenseDBHelper.update(expense);
             tableViewMaster.refresh();
         });
 
@@ -250,7 +250,7 @@ public class AllExpensesController implements Initializable {
 
             Expense expense = tableViewMaster.getSelectionModel().getSelectedItem();
             expense.setAmount(value);
-            new ExpenseDBHelper().update(expense);
+            expenseDBHelper.update(expense);
             tableViewMaster.refresh();
         });
 
@@ -353,7 +353,7 @@ public class AllExpensesController implements Initializable {
 
                             Expense expense = (Expense) getTableRow().getItem();
                             expense.setRecurrent(value);
-                            new ExpenseDBHelper().update(expense);
+                            expenseDBHelper.update(expense);
                         });
 
                         setGraphic(cb);
@@ -436,26 +436,36 @@ public class AllExpensesController implements Initializable {
                     super.updateItem(item, empty);
                     this.setFocused(true);
 
+                    VBox vBoxObservation = new VBox(5);
+                    vBoxObservation.setAlignment(Pos.CENTER_RIGHT);
+                    vBoxObservation.setPadding(new Insets(10));
+
+                    TextArea textArea = new TextArea();
+                    textArea.setWrapText(true);
+                    textArea.setEditable(false);
+                    textArea.setOnMouseClicked(event -> {
+                        if (event.getClickCount() == 2) {
+                            textArea.setEditable(true);
+                            textArea.setTooltip(null);
+                        }
+                    });
+                    textArea.setTooltip(new Tooltip("Double click to edit"));
+                    Button btnConfirmEdit = new Button("Confirm");
+                    vBoxObservation.getChildren().addAll(textArea, btnConfirmEdit);
+
+                    popOver.setContentNode(vBoxObservation);
+                    popOver.setAutoHide(true);
+                    popOver.setHeaderAlwaysVisible(true);
+                    popOver.setDetachable(true);
+                    popOver.setAnimated(true);
+
+
                     if (item != null && item.trim().length() > 0) {
                         setText(item.substring(0, item.length() > 15 ? 15 : item.length()));
                         setOnMouseEntered(e -> {
-                            VBox vBoxObservation = new VBox(5);
-                            vBoxObservation.setAlignment(Pos.CENTER_RIGHT);
-                            vBoxObservation.setPadding(new Insets(10));
-
-                            TextArea textArea = new TextArea();
-                            textArea.setWrapText(true);
-                            textArea.setEditable(false);
-                            textArea.setOnMouseClicked(event -> {
-                                if (event.getClickCount() == 2) {
-                                    textArea.setEditable(true);
-                                    textArea.setTooltip(null);
-                                }
-                            });
                             textArea.setText(item);
-                            textArea.setTooltip(new Tooltip("Double click to edit"));
+                            popOver.setTitle(((Rate) getTableRow().getItem()).getAmount().toString());
 
-                            Button btnConfirmEdit = new Button("Confirm");
                             btnConfirmEdit.setOnAction(event -> {
                                 Rate rate = (Rate) getTableRow().getItem();
                                 if (!rate.getObservation().equals(textArea.getText())) {
@@ -466,36 +476,11 @@ public class AllExpensesController implements Initializable {
                                 }
                             });
 
-                            vBoxObservation.getChildren().addAll(textArea, btnConfirmEdit);
-
-                            popOver.setContentNode(vBoxObservation);
                             popOver.show((TableCell) e.getTarget());
-                            popOver.setAutoHide(true);
-                            popOver.setHeaderAlwaysVisible(true);
-                            popOver.setDetachable(true);
-                            popOver.setAnimated(true);
-                            popOver.setTitle(((Rate) getTableRow().getItem()).getAmount().toString());
                         });
                     } else {
                         setOnMouseClicked(event -> {
                             if (event.getClickCount() == 2) {
-                                VBox vBoxObservation = new VBox(5);
-                                vBoxObservation.setAlignment(Pos.CENTER_RIGHT);
-                                vBoxObservation.setPadding(new Insets(10));
-
-                                TextArea textArea = new TextArea();
-                                textArea.setWrapText(true);
-                                textArea.setEditable(false);
-                                textArea.setOnMouseClicked(e -> {
-                                    if (e.getClickCount() == 2) {
-                                        textArea.setEditable(true);
-                                        textArea.setTooltip(null);
-                                    }
-                                });
-
-                                textArea.setTooltip(new Tooltip("Double click to edit"));
-
-                                Button btnConfirmEdit = new Button("Confirm");
                                 btnConfirmEdit.setOnAction(e -> {
                                     Rate rate = (Rate) getTableRow().getItem();
                                     rate.setObservation(textArea.getText());
@@ -505,14 +490,7 @@ public class AllExpensesController implements Initializable {
                                 });
                                 btnConfirmEdit.disableProperty().bind(textArea.textProperty().isEmpty());
 
-                                vBoxObservation.getChildren().addAll(textArea, btnConfirmEdit);
-
-                                popOver.setContentNode(vBoxObservation);
                                 popOver.show((TableCell) event.getTarget());
-                                popOver.setAutoHide(true);
-                                popOver.setHeaderAlwaysVisible(true);
-                                popOver.setDetached(true);
-                                popOver.setAnimated(true);
                                 popOver.setTitle(((Rate) getTableRow().getItem()).getAmount().toString());
                             }
                         });
@@ -591,7 +569,7 @@ public class AllExpensesController implements Initializable {
                 .show()
                 .ifPresent(response -> {
                     if (response == dialogBuilder.getConfirmAction()) {
-                        new ExpenseDBHelper().delete(e);
+                        expenseDBHelper.delete(e);
                         tableViewMaster.getItems().remove(e);
                         tableViewMaster.refresh();
 
@@ -662,7 +640,7 @@ public class AllExpensesController implements Initializable {
 
                         expense.getTags().addAll(tags);
 
-                        new ExpenseDBHelper().save(expense);
+                        expenseDBHelper.save(expense);
                         tableViewMaster.getItems().add(expense);
                         tableViewMaster.refresh();
                         Notification.create("Added Expense:\n" + expense.getTitle(),
