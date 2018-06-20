@@ -123,6 +123,12 @@ public class Main extends Application implements Initializable {
         root.setCenter(table);
     }
 
+    @FXML
+    public void viewReports() throws IOException {
+        AnchorPane table = loader.load(getClass().getResource("fxml_views/reports.fxml"));
+        root.setCenter(table);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         /*HibernateHlp.buildSessionFactory();*/

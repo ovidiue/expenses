@@ -5,30 +5,37 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="699.0" prefWidth="858.0" xmlns="http://javafx.com/javafx/8.0.141"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AllTagsController">
-   <children>
-      <GridPane alignment="CENTER" layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-         </rowConstraints>
-         <children>
-             <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Tags">
-               <font>
-                  <Font size="30.0" />
-               </font>
-            </Text>
-          <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#displayAddTagDialog" prefWidth="100.0" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
-               <font>
-                  <Font name="System Bold" size="15.0" />
-               </font></Button>
-         </children>
-      </GridPane>
-      <TableView fx:id="table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="818.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
-   </children>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity"
+            minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="699.0" prefWidth="858.0"
+            xmlns="http://javafx.com/javafx/8.0.141" fx:controller="Controllers.AllTagsController">
+    <children>
+        <GridPane alignment="CENTER" layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" prefHeight="50.0"
+                  AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Tags">
+                    <font>
+                        <Font size="30.0"/>
+                    </font>
+                </Text>
+                <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"
+                        onAction="#displayAddTagDialog" prefWidth="100.0" text="Add" GridPane.columnIndex="1"
+                        GridPane.halignment="RIGHT">
+                    <font>
+                        <Font name="System Bold" size="15.0"/>
+                    </font>
+                </Button>
+            </children>
+        </GridPane>
+        <TableView fx:id="table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0"
+                   prefWidth="818.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0"/>
+    </children>
 </AnchorPane>
