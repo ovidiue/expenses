@@ -633,7 +633,7 @@ public class AllExpensesController implements Initializable {
                                 title,
                                 description,
                                 isRecurrent,
-                                new Date(dueDate),
+                                dueDate.trim().length() > 0 ? new Date(dueDate) : null,
                                 Double.parseDouble(amount),
                                 category
                         );
