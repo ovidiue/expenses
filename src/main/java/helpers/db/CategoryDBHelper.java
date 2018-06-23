@@ -2,6 +2,7 @@ package helpers.db;
 
 import model.Category;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 import java.util.List;
@@ -75,6 +76,16 @@ public class CategoryDBHelper implements HibernateHlp<Category> {
         session.close();
 
         return categories;
+    }
+
+    public Boolean nameExists(String name) {
+        Session session = sessionFactory.openSession();
+        Query query = session.createQuery("select 1 from Category c where c.name = :name");
+        query.setString("name", name);
+        boolean result = query.uniqueResult() != null;
+        session.close();
+
+        return result;
     }
 
 }

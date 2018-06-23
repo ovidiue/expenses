@@ -192,6 +192,11 @@ public class AllCategoriesController implements Initializable {
                 String description = ((TextArea) dialogBuilder.getControl("description")).getText().trim();
                 String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#");
 
+                if (categoryExists(name)) {
+                    System.out.println("ALREADY EXISTS");
+                    return;
+                }
+
                 Category category = new Category(name, description, color);
                 new CategoryDBHelper().save(category);
                 table.getItems().add(category);
@@ -202,6 +207,10 @@ public class AllCategoriesController implements Initializable {
                         null);
             }
         });
+    }
+
+    private boolean categoryExists(String catName) {
+        return new CategoryDBHelper().nameExists(catName);
     }
 
     public void displayDeleteCatConfirmation(Category category) {
