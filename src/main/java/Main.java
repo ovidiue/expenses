@@ -7,12 +7,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import netscape.javascript.JSObject;
 
 import java.io.IOException;
 import java.net.URL;
@@ -133,6 +137,19 @@ public class Main extends Application implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         /*HibernateHlp.buildSessionFactory();*/
         Platform.runLater(() -> initMenuActions());
+        Button test = new Button("TEST");
+        root.setCenter(test);
+        test.setOnAction(e -> {
+            System.out.println("PRESSED");
+            WebView webView = new WebView();
+            WebEngine engine = webView.getEngine();
+            engine.loadContent("<html><head><script src=\"https://unpkg.com/sweetalert/dist/sweetalert.min.js\"></script><script>function openAlert() { swal('hello'); } </script></head><body><button onclick=\"openAlert()\">Open alert</button></body></html>");
+
+            JSObject window = (JSObject) engine.executeScript("window");
+            Stage stage = new Stage();
+            stage.setScene(new Scene(webView));
+            stage.show();
+        });
     }
 
     private Task<Void> initializeDBConnection() {
