@@ -2,6 +2,7 @@ package helpers.db;
 
 import model.Expense;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
@@ -75,6 +76,15 @@ public class ExpenseDBHelper implements HibernateHlp<Expense> {
         List<Expense> expenses = criteria.list();
 
         session.close();
+
+        return expenses;
+    }
+
+    public List<Expense> fetchAllWithRates() {
+        Session session = sessionFactory.openSession();
+        List<Expense> expenses = session.createCriteria(Expense.class)
+                .setFetchMode("rate", FetchMode.EAGER)
+                .list();
 
         return expenses;
     }

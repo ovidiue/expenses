@@ -53,6 +53,5 @@ public class ReportsController implements Initializable {
             series.getData().add(new XYChart.Data<>(rate.getAmount().toString(), rate.getAmount()));
         }
         barChartRates.getData().add(series);
-
     }
 }
