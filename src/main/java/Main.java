@@ -16,19 +16,22 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 
 /**
  * Created by Ovidiu on 15-May-18.
  */
 public class Main extends Application implements Initializable {
-    final static HashMap<String, String> AVAILABLE_THEMES = new HashMap<>();
-
-    static {
-        AVAILABLE_THEMES.put("light", "css/style.css");
-        AVAILABLE_THEMES.put("dark", "css/style_dark.css");
-    }
+    private static final String MAIN_SCREEN = "/fxml_views/main_screen.fxml";
+    private static final String EXPENSES_LISTING = "fxml_views/all_expenses.fxml";
+    private static final String CATEGORIES_LISTING = "fxml_views/all_categories.fxml";
+    private static final String TAGS_LISTING = "fxml_views/all_tags.fxml";
+    private static final String REPORTS_PAGE = "fxml_views/reports.fxml";
+    private static final String ADD_EXPENSE = "fxml_views/add_expense.fxml";
+    private static final String LIGHT_STYLE = "css/style.css";
+    private static final String DARK_STYLE = "css/style_dark.css";
+    private static final String WHITE_NOTIFICATIONS = "css/custom_notifications_white.css";
+    private static final String TRANSLATIONS_FILE = "lang/translations";
 
     @FXML
     BorderPane root;
@@ -57,8 +60,8 @@ public class Main extends Application implements Initializable {
             preloader.hide();
 
             loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fxml_views/main_screen.fxml"));
-            loader.setResources(ResourceBundle.getBundle("lang/translations"));
+            loader.setLocation(getClass().getResource(MAIN_SCREEN));
+            loader.setResources(ResourceBundle.getBundle(TRANSLATIONS_FILE));
 
             try {
                 root = loader.load();
@@ -67,8 +70,8 @@ public class Main extends Application implements Initializable {
             }
 
             Scene scene = new Scene(root);
-            scene.getStylesheets().add("css/style.css");
-            scene.getStylesheets().add("css/custom_notifications_white.css");
+            scene.getStylesheets().add(LIGHT_STYLE);
+            scene.getStylesheets().add(WHITE_NOTIFICATIONS);
 
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(event -> System.exit(1));
@@ -77,8 +80,6 @@ public class Main extends Application implements Initializable {
 
         preloader.show();
         new Thread(taskDB).start();
-
-
     }
 
     private void initMenuActions() {
@@ -89,12 +90,12 @@ public class Main extends Application implements Initializable {
         Scene scene = root.getScene();
         radioMenuItemDark.setOnAction(e -> {
             clearStyleSheets();
-            scene.getStylesheets().add(AVAILABLE_THEMES.get("dark"));
+            scene.getStylesheets().add(DARK_STYLE);
         });
 
         radioMenuItemLight.setOnAction(e -> {
             clearStyleSheets();
-            scene.getStylesheets().add(AVAILABLE_THEMES.get("light"));
+            scene.getStylesheets().add(LIGHT_STYLE);
         });
     }
 
@@ -103,29 +104,29 @@ public class Main extends Application implements Initializable {
     }
 
     public void viewAllExpenses() throws IOException {
-        AnchorPane table = loader.load(getClass().getResource("fxml_views/all_expenses.fxml"));
+        AnchorPane table = loader.load(getClass().getResource(EXPENSES_LISTING));
         root.setCenter(table);
     }
 
     public void addExpense() throws IOException {
-        AnchorPane table = loader.load(getClass().getResource("fxml_views/add_expense.fxml"));
+        AnchorPane table = loader.load(getClass().getResource(ADD_EXPENSE));
         root.setCenter(table);
     }
 
     public void viewAllTags() throws IOException {
-        AnchorPane table = loader.load(getClass().getResource("fxml_views/all_tags.fxml"));
+        AnchorPane table = loader.load(getClass().getResource(TAGS_LISTING));
         table.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         root.setCenter(table);
     }
 
     public void viewAllCategories() throws IOException {
-        AnchorPane table = loader.load(getClass().getResource("fxml_views/all_categories.fxml"));
+        AnchorPane table = loader.load(getClass().getResource(CATEGORIES_LISTING));
         root.setCenter(table);
     }
 
     @FXML
     public void viewReports() throws IOException {
-        AnchorPane table = loader.load(getClass().getResource("fxml_views/reports.fxml"));
+        AnchorPane table = loader.load(getClass().getResource(REPORTS_PAGE));
         root.setCenter(table);
     }
 
