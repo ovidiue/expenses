@@ -3,6 +3,7 @@ package Controllers;
 import helpers.db.CategoryDBHelper;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
+import helpers.ui.View;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import model.Category;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -174,9 +176,12 @@ public class AllCategoriesController implements Initializable {
                 "-fx-padding: 1px 1px 1px 1px");
     }
 
-    public void displayAddCategoryDialog() {
+    public void displayAddCategoryDialog() throws IOException {
 
-        DialogBuilder dialogBuilder = new DialogBuilder();
+        final String ADD_CATEGORY_SCREEN = "/fxml_views/add_category.fxml";
+        View.loadScreen(ADD_CATEGORY_SCREEN);
+
+      /*  DialogBuilder dialogBuilder = new DialogBuilder();
         dialogBuilder.setTitle("Add new category")
                 .setHeader("Enter at least title in order to add a new category")
                 .addFormField("Title *:", "title", new TextField(), true)
@@ -206,7 +211,7 @@ public class AllCategoriesController implements Initializable {
                         "Success",
                         null);
             }
-        });
+        });*/
     }
 
     private boolean categoryExists(String catName) {

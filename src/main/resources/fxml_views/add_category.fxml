@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <VBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="387.0" prefWidth="600.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+                      minWidth="-Infinity">
+                    <children>
+                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                                    HBox.hgrow="ALWAYS">
+                            <children>
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add Category"
+                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.topAnchor="0.0">
+                                    <font>
+                                        <Font size="25.0"/>
+                                    </font>
+                                </Text>
+                            </children>
+                        </AnchorPane>
+                    </children>
+                    <padding>
+                        <Insets bottom="5.0" top="5.0"/>
+                    </padding>
+                    <VBox.margin>
+                        <Insets/>
+                    </VBox.margin>
+                </HBox>
+                <Separator maxWidth="1.7976931348623157E308" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <VBox.margin>
+                        <Insets bottom="10.0" top="10.0"/>
+                    </VBox.margin>
+                </Separator>
+                <VBox prefHeight="218.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label text="Name"/>
+                        <TextField maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                            <VBox.margin>
+                                <Insets bottom="5.0"/>
+                            </VBox.margin>
+                        </TextField>
+                        <Label text="Description"/>
+                        <TextArea prefHeight="200.0" prefWidth="200.0" wrapText="true">
+                            <VBox.margin>
+                                <Insets bottom="5.0"/>
+                            </VBox.margin>
+                        </TextArea>
+                        <Label text="Color"/>
+                        <ColorPicker maxWidth="1.7976931348623157E308" minHeight="30.0">
+                            <VBox.margin>
+                                <Insets bottom="5.0"/>
+                            </VBox.margin>
+                        </ColorPicker>
+                    </children>
+                    <padding>
+                        <Insets left="50.0" right="50.0"/>
+                    </padding>
+                </VBox>
+                <Separator prefWidth="200.0">
+                    <VBox.margin>
+                        <Insets top="30.0"/>
+                    </VBox.margin>
+                </Separator>
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" top="10.0"/>
+            </padding>
+        </VBox>
+        <Button layoutX="521.0" layoutY="350.0" minWidth="100.0" mnemonicParsing="false" text="Save"
+                AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="48.0"/>
+        <Button layoutX="45.0" layoutY="359.0" minWidth="100.0" mnemonicParsing="false" text="Cancel"
+                AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="48.0"/>
+    </children>
+</AnchorPane>
