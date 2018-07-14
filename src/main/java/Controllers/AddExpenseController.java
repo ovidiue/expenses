@@ -24,6 +24,8 @@ import model.Rate;
 import model.Tag;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.PopOver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -35,11 +37,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+
 /**
  * Created by Ovidiu on 18-May-18.
  */
 public class AddExpenseController implements Initializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(AddExpenseController.class);
     @FXML
     TextField textfieldTitle;
     @FXML
@@ -60,7 +64,6 @@ public class AddExpenseController implements Initializable {
     Button btnSave;
     @FXML
     AnchorPane anchorPane;
-
     private DialogBuilder dialogBuilder = new DialogBuilder();
     private ObservableList<Category> categoriesList;
     private ObservableList<Tag> tagsList;
@@ -292,13 +295,13 @@ public class AddExpenseController implements Initializable {
         if (textfieldAmount.getText().trim().length() != 0) {
             double amountPayed = getTotalValuePayed();
             Double payed = (amountPayed * 100) / Double.parseDouble(textfieldAmount.getText());
-            System.out.println("TOTAL: " + Double.parseDouble(textfieldAmount.getText()));
-            System.out.println("PAYED: " + payed);
+            logger.info("TOTAL: " + Double.parseDouble(textfieldAmount.getText()));
+            logger.info("PAYED: " + payed);
             progressBar.setProgress(payed / 100);
 
             DecimalFormat df = new DecimalFormat("#.##");
             payed = Double.valueOf(df.format(payed));
-            System.out.println("FORMATED: " + payed);
+            logger.info("FORMATED: " + payed);
             progressBar.getTooltip().setText(getRatesInfoString());
         }
     }

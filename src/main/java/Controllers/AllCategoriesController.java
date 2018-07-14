@@ -15,6 +15,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import model.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -23,13 +25,12 @@ import java.util.ResourceBundle;
  * Created by Ovidiu on 19-May-18.
  */
 public class AllCategoriesController implements Initializable {
+    private static final Logger logger = LoggerFactory.getLogger(AddExpenseController.class);
     @FXML
     TableView<Category> table;
     @FXML
     AnchorPane anchorPane;
-
     private BorderPane rootBorderPane;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -93,7 +94,7 @@ public class AllCategoriesController implements Initializable {
                             this.setStyle(getColorCellDefaultStyle(newColor));
 
                             Category t = table.getSelectionModel().getSelectedItem();
-                            System.out.println(t.toString());
+                            logger.info(t.toString());
                             t.setColor(newColor);
                             new CategoryDBHelper().update(t);
 
@@ -142,7 +143,7 @@ public class AllCategoriesController implements Initializable {
                     event.getOldValue();
 
             Category t = table.getSelectionModel().getSelectedItem();
-            System.out.println(t.toString());
+            logger.info(t.toString());
             t.setName(value);
             new CategoryDBHelper().update(t);
             table.refresh();
@@ -193,11 +194,12 @@ public class AllCategoriesController implements Initializable {
                 String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#");
 
                 if (categoryExists(name)) {
-                    System.out.println("ALREADY EXISTS");
+                    logger.info("ALREADY EXISTS");
                     return;
                 }
 
                 Category category = new Category(name, description, color);
+                logger.info("Category: ", category);
                 new CategoryDBHelper().save(category);
                 table.getItems().add(category);
                 table.refresh();

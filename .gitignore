@@ -24,7 +24,7 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-.gitignore
+
 .gradle/
 .idea/compiler.xml
 .idea/dataSources.local.xml
@@ -64,3 +64,9 @@ test_db/
 /META-INF/MANIFEST.MF
 /.idea/artifacts/expenses.xml
 /META-INF/
+/.idea/libraries/Gradle__log4j_log4j_1_2_17.xml
+/.idea/libraries/Gradle__org_slf4j_slf4j_api_1_7_2.xml
+/.idea/libraries/Gradle__org_slf4j_slf4j_log4j12_1_7_2.xml
+.idea/GrepConsole.xml
+.idea/dictionaries/
+src/main/resources/lang/translations_ro.properties
