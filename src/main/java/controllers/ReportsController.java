@@ -1,4 +1,4 @@
-package Controllers;
+package controllers;
 
 import helpers.db.ExpenseDBHelper;
 import helpers.db.RateDBHelper;
@@ -28,8 +28,8 @@ public class ReportsController implements Initializable {
     StackedBarChart<String, Number> stackedBarChart;
 
 
-    private ExpenseDBHelper expenseDBHelper = new ExpenseDBHelper();
-    private RateDBHelper rateDBHelper = new RateDBHelper();
+    private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
+    private static final RateDBHelper RATE_DB_HELPER = new RateDBHelper();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -39,7 +39,7 @@ public class ReportsController implements Initializable {
     }
 
     private void setUpPieChartExpenses() {
-        ObservableList<Expense> expensesList = FXCollections.observableArrayList(expenseDBHelper.fetchAll());
+        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_DB_HELPER.fetchAll());
         ObservableList<PieChart.Data> pieChartExpensesData = FXCollections.observableArrayList();
         for (Expense e : expensesList) {
             pieChartExpensesData.add(new PieChart.Data(e.getTitle(), e.getAmount()));
@@ -50,7 +50,7 @@ public class ReportsController implements Initializable {
     }
 
     private void setUpBarChartRates() {
-        ObservableList<Expense> expensesList = FXCollections.observableArrayList(expenseDBHelper.fetchAllWithRates());
+        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_DB_HELPER.fetchAllWithRates());
 
         for (Expense expense : expensesList) {
             XYChart.Series series = new XYChart.Series();
@@ -67,7 +67,7 @@ public class ReportsController implements Initializable {
     }
 
     private void setUpStackedBarChart() {
-        ObservableList<Expense> expensesList = FXCollections.observableArrayList(expenseDBHelper.fetchAllWithRates());
+        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_DB_HELPER.fetchAllWithRates());
 
         for (Expense expense : expensesList) {
             XYChart.Series series = new XYChart.Series();

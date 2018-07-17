@@ -1,4 +1,4 @@
-package Controllers;
+package controllers;
 
 import helpers.db.CategoryDBHelper;
 import helpers.db.ExpenseDBHelper;
@@ -49,7 +49,7 @@ public class AllExpensesController implements Initializable {
     MasterDetailPane masterDetailPane;
     private PopOver popOver = new PopOver();
     private TableView<Rate> tableViewDetail = getRateTable();
-    private ExpenseDBHelper expenseDBHelper = new ExpenseDBHelper();
+    private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
     private TableView<Expense> tableViewMaster = getExpenseTable();
 
     @Override
@@ -101,7 +101,7 @@ public class AllExpensesController implements Initializable {
 
     private void displayAddRateToExpense() {
         int expenseId = tableViewMaster.getSelectionModel().getSelectedItem().getId();
-        Expense expense = expenseDBHelper.findById(expenseId);
+        Expense expense = EXPENSE_DB_HELPER.findById(expenseId);
         DialogBuilder dialogBuilder = new DialogBuilder();
         dialogBuilder.setCallerPane(rootBorderPane)
                 .setHeader("Add rate to " + expense.getTitle() + " expense")
@@ -120,7 +120,7 @@ public class AllExpensesController implements Initializable {
                         );
 
                         expense.addRate(rate);
-                        expenseDBHelper.update(expense);
+                        EXPENSE_DB_HELPER.update(expense);
                         tableViewDetail.getItems().add(rate);
                         tableViewDetail.refresh();
                         Notification.create("Added rate:\n" + rate.getAmount(),
@@ -211,7 +211,7 @@ public class AllExpensesController implements Initializable {
                             Expense ex = (Expense) getTableRow().getItem();
                             if (!ex.getDescription().equals(textArea.getText())) {
                                 ex.setDescription(textArea.getText());
-                                expenseDBHelper.update(ex);
+                                EXPENSE_DB_HELPER.update(ex);
                                 tableViewMaster.refresh();
                             }
                         });
@@ -228,7 +228,7 @@ public class AllExpensesController implements Initializable {
 
             Expense expense = tableViewMaster.getSelectionModel().getSelectedItem();
             expense.setTitle(value);
-            expenseDBHelper.update(expense);
+            EXPENSE_DB_HELPER.update(expense);
             tableViewMaster.refresh();
         });
 
@@ -250,7 +250,7 @@ public class AllExpensesController implements Initializable {
 
             Expense expense = tableViewMaster.getSelectionModel().getSelectedItem();
             expense.setAmount(value);
-            expenseDBHelper.update(expense);
+            EXPENSE_DB_HELPER.update(expense);
             tableViewMaster.refresh();
         });
 
@@ -353,7 +353,7 @@ public class AllExpensesController implements Initializable {
 
                             Expense expense = (Expense) getTableRow().getItem();
                             expense.setRecurrent(value);
-                            expenseDBHelper.update(expense);
+                            EXPENSE_DB_HELPER.update(expense);
                         });
 
                         setGraphic(cb);
@@ -569,7 +569,7 @@ public class AllExpensesController implements Initializable {
                 .show()
                 .ifPresent(response -> {
                     if (response == dialogBuilder.getConfirmAction()) {
-                        expenseDBHelper.delete(e);
+                        EXPENSE_DB_HELPER.delete(e);
                         tableViewMaster.getItems().remove(e);
                         tableViewMaster.refresh();
 
@@ -640,7 +640,7 @@ public class AllExpensesController implements Initializable {
 
                         expense.getTags().addAll(tags);
 
-                        expenseDBHelper.save(expense);
+                        EXPENSE_DB_HELPER.save(expense);
                         tableViewMaster.getItems().add(expense);
                         tableViewMaster.refresh();
                         Notification.create("Added Expense:\n" + expense.getTitle(),

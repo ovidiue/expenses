@@ -1,4 +1,4 @@
-package Controllers;
+package controllers;
 
 import helpers.db.TagDBHelper;
 import helpers.ui.DialogBuilder;
@@ -25,7 +25,8 @@ import java.util.ResourceBundle;
  * Created by Ovidiu on 20-May-18.
  */
 public class AllTagsController implements Initializable {
-    private static final Logger logger = LoggerFactory.getLogger(AddExpenseController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AllTagsController.class);
+    private static final TagDBHelper TAG_DB_HELPER = new TagDBHelper();
     @FXML
     TableView<Tag> table;
     @FXML
@@ -86,7 +87,7 @@ public class AllTagsController implements Initializable {
                             Tag t = table.getSelectionModel().getSelectedItem();
                             logger.info(t.toString());
                             t.setColor(newColor);
-                            new TagDBHelper().update(t);
+                            TAG_DB_HELPER.update(t);
 
                         });
                         cp.setVisible(false);
@@ -138,7 +139,7 @@ public class AllTagsController implements Initializable {
             Tag t = table.getSelectionModel().getSelectedItem();
             logger.info(t.toString());
             t.setName(value);
-            new TagDBHelper().update(t);
+            TAG_DB_HELPER.update(t);
             table.refresh();
         });
 
@@ -151,7 +152,7 @@ public class AllTagsController implements Initializable {
     }
 
     private ObservableList<Tag> getAllTags() {
-        ObservableList<Tag> list = FXCollections.observableArrayList(new TagDBHelper().fetchAll());
+        ObservableList<Tag> list = FXCollections.observableArrayList(TAG_DB_HELPER.fetchAll());
         return list;
     }
 
@@ -173,7 +174,7 @@ public class AllTagsController implements Initializable {
                 String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#");
 
                 Tag tag = new Tag(name, color);
-                new TagDBHelper().save(tag);
+                TAG_DB_HELPER.save(tag);
                 table.getItems().add(tag);
                 table.refresh();
 
@@ -182,8 +183,6 @@ public class AllTagsController implements Initializable {
                         null);
             }
         });
-
-
     }
 
 
@@ -195,7 +194,7 @@ public class AllTagsController implements Initializable {
 
         dialogBuilder.show().ifPresent(response -> {
             if (response == dialogBuilder.getConfirmAction()) {
-                new TagDBHelper().delete(tag);
+                TAG_DB_HELPER.delete(tag);
                 table.getItems().remove(tag);
                 table.refresh();
 

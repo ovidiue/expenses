@@ -1,4 +1,4 @@
-package Controllers;
+package controllers;
 
 import helpers.db.CategoryDBHelper;
 import helpers.ui.DialogBuilder;
@@ -25,7 +25,8 @@ import java.util.ResourceBundle;
  * Created by Ovidiu on 19-May-18.
  */
 public class AllCategoriesController implements Initializable {
-    private static final Logger logger = LoggerFactory.getLogger(AddExpenseController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AllCategoriesController.class);
+    private static final CategoryDBHelper CATEGORY_DB_HELPER = new CategoryDBHelper();
     @FXML
     TableView<Category> table;
     @FXML
@@ -96,7 +97,7 @@ public class AllCategoriesController implements Initializable {
                             Category t = table.getSelectionModel().getSelectedItem();
                             logger.info(t.toString());
                             t.setColor(newColor);
-                            new CategoryDBHelper().update(t);
+                            CATEGORY_DB_HELPER.update(t);
 
                         });
                         cp.setVisible(false);
@@ -145,7 +146,7 @@ public class AllCategoriesController implements Initializable {
             Category t = table.getSelectionModel().getSelectedItem();
             logger.info(t.toString());
             t.setName(value);
-            new CategoryDBHelper().update(t);
+            CATEGORY_DB_HELPER.update(t);
             table.refresh();
         });
 
@@ -156,7 +157,7 @@ public class AllCategoriesController implements Initializable {
 
             Category t = table.getSelectionModel().getSelectedItem();
             t.setDescription(value);
-            new CategoryDBHelper().update(t);
+            CATEGORY_DB_HELPER.update(t);
             table.refresh();
         });
 
@@ -164,7 +165,7 @@ public class AllCategoriesController implements Initializable {
     }
 
     private ObservableList<Category> getAllCategories() {
-        ObservableList<Category> list = FXCollections.observableArrayList(new CategoryDBHelper().fetchAll());
+        ObservableList<Category> list = FXCollections.observableArrayList(CATEGORY_DB_HELPER.fetchAll());
         return list;
     }
 
@@ -200,7 +201,7 @@ public class AllCategoriesController implements Initializable {
 
                 Category category = new Category(name, description, color);
                 logger.info("Category: ", category);
-                new CategoryDBHelper().save(category);
+                CATEGORY_DB_HELPER.save(category);
                 table.getItems().add(category);
                 table.refresh();
 
@@ -224,7 +225,7 @@ public class AllCategoriesController implements Initializable {
 
         dialogBuilder.show().ifPresent(response -> {
             if (response == dialogBuilder.getConfirmAction()) {
-                new CategoryDBHelper().delete(category);
+                CATEGORY_DB_HELPER.delete(category);
                 table.getItems().remove(category);
                 table.refresh();
 

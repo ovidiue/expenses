@@ -1,7 +1,7 @@
-package Controllers;
+package controllers;
 
 import helpers.db.CategoryDBHelper;
-import helpers.db.HibernateHelper;
+import helpers.db.ExpenseDBHelper;
 import helpers.db.TagDBHelper;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
@@ -44,6 +44,9 @@ import java.util.stream.Collectors;
 public class AddExpenseController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(AddExpenseController.class);
+    private static final CategoryDBHelper CATEGORY_DB_HELPER = new CategoryDBHelper();
+    private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
+    private static final TagDBHelper TAG_DB_HELPER = new TagDBHelper();
     @FXML
     TextField textfieldTitle;
     @FXML
@@ -99,7 +102,7 @@ public class AddExpenseController implements Initializable {
         Category z = choiceboxCategory.getValue();
         e.setCategory(z);
 
-        HibernateHelper.save(e);
+        EXPENSE_DB_HELPER.save(e);
         clearFieldSelections();
 
         Notification.create("Added new expense:\n" + e.getTitle(),
@@ -129,12 +132,11 @@ public class AddExpenseController implements Initializable {
                 .show()
                 .ifPresent(result -> {
                     if ((ButtonType) result == dialogBuilder.getConfirmAction()) {
-                        CategoryDBHelper categoryDBHelper = new CategoryDBHelper();
                         Category category = new Category(
                                 ((TextField) dialogBuilder.getControl("title")).getText(),
                                 ((TextArea) dialogBuilder.getControl("description")).getText(),
                                 ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#"));
-                        categoryDBHelper.save(category);
+                        CATEGORY_DB_HELPER.save(category);
                         populateCategories();
 
                         Notification.create("Added category: \n" +
@@ -209,8 +211,7 @@ public class AddExpenseController implements Initializable {
     }
 
     private void populateCategories() {
-        CategoryDBHelper c = new CategoryDBHelper();
-        categoriesList = FXCollections.observableArrayList(c.fetchAll());
+        categoriesList = FXCollections.observableArrayList(CATEGORY_DB_HELPER.fetchAll());
         choiceboxCategory.setItems(categoriesList);
     }
 
@@ -224,7 +225,7 @@ public class AddExpenseController implements Initializable {
     }
 
     private void populateNewTags() {
-        tagsList = FXCollections.observableArrayList(new TagDBHelper().fetchAll());
+        tagsList = FXCollections.observableArrayList(TAG_DB_HELPER.fetchAll());
         checkcomboboxTag.getItems().clear();
         checkcomboboxTag.getItems().addAll(tagsList);
     }
@@ -241,7 +242,7 @@ public class AddExpenseController implements Initializable {
                         String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#"),
                                 name = ((TextField) dialogBuilder.getControl("name")).getText();
                         Tag tag = new Tag(name, color);
-                        new TagDBHelper().save(tag);
+                        TAG_DB_HELPER.save(tag);
                         populateNewTags();
 
                         Notification.create("Added new tag:\n" + tag.getName(),
