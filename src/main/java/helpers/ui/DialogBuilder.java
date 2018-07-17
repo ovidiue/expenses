@@ -1,13 +1,16 @@
 package helpers.ui;
 
 import javafx.animation.FadeTransition;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,18 +21,18 @@ import java.util.Optional;
  */
 public class DialogBuilder {
     private static final String DIALOG_CSS = "css/dialog_builder.css";
-    private final ButtonType CLOSE_BUTTON = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-    private final ButtonType CONFIRM_ACTION = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+    private final ButtonType buttonTypeClose = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+    private final ButtonType buttonTypeConfirm = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
     private Dialog dialog;
     private VBox vBoxMain;
     private VBox vBoxForm;
     private Pane caller;
     private Map<String, Control> controls;
+    private ValidationSupport validationSupport;
 
     public DialogBuilder() {
         initDialogControls();
     }
-
 
     public DialogBuilder setTitle(String title) {
         dialog.setTitle(title);
@@ -41,46 +44,36 @@ public class DialogBuilder {
         return this;
     }
 
-    public Map<String, Control> getControls() {
-        return controls;
+    public DialogBuilder addFormField(String label, String key, Control control, boolean mandatory) {
+        final String MSG = "MANDATORY";
+        VBox vBox = new VBox(new Label(label), control);
+        vBoxForm.getChildren().add(vBox);
+        control.setUserData(mandatory);
+        controls.put(key, control);
+        control.setMaxWidth(Double.MAX_VALUE);
+        if (mandatory == true)
+            Platform.runLater(
+                    () -> validationSupport.registerValidator(control,
+                            Validator.createEmptyValidator(MSG, Severity.ERROR)));
+
+        return this;
     }
 
-    public DialogBuilder addFormField(String label, String key, Control control, boolean mandatory) {
+    public DialogBuilder addFormField(String label, String key, Control control, boolean mandatory, String msg) {
         VBox vBox = new VBox(new Label(label), control);
         vBoxForm.getChildren().add(vBox);
         control.setUserData(mandatory);
         controls.put(key, control);
         control.setMaxWidth(Double.MAX_VALUE);
 
+        if (mandatory == true)
+            Platform.runLater(
+                    () -> validationSupport.registerValidator(control,
+                            Validator.createEmptyValidator(msg, Severity.ERROR)));
+
         return this;
     }
 
-    private boolean areEmpty() {
-
-        for (Control c : controls.values()) {
-            if (c.getUserData().toString().equalsIgnoreCase("true")) {
-                if (c instanceof TextField && ((TextField) c).getText().trim().length() == 0) {
-                    return true;
-                }
-
-                if (c instanceof ColorPicker && ((ColorPicker) c).getValue().toString().trim().length() == 0) {
-                    return true;
-                }
-
-                if (c instanceof TextArea && ((TextArea) c).getText().toString().trim().length() == 0) {
-                    return true;
-                }
-
-                if (c instanceof DatePicker && ((DatePicker) c).getEditor().getText().toString().trim().length() == 0) {
-                    return true;
-                }
-
-            }
-        }
-
-        return false;
-
-    }
 
     public Control getControl(String controlKey) {
         return controls.get(controlKey);
@@ -95,6 +88,11 @@ public class DialogBuilder {
         fadeTransition.setNode(dialog.getDialogPane());
         fadeTransition.play();
 
+        if (controls.size() > 0) {
+            Button confirmDialog = getConfirmBtn();
+            confirmDialog.disableProperty().bind(validationSupport.invalidProperty());
+        }
+
         return dialog.showAndWait();
     }
 
@@ -108,6 +106,8 @@ public class DialogBuilder {
     }
 
     private void initDialogControls() {
+        validationSupport = new ValidationSupport();
+
         vBoxForm = new VBox(15);
 
         vBoxMain = new VBox(vBoxForm);
@@ -117,25 +117,18 @@ public class DialogBuilder {
 
         dialog = new Dialog();
         dialog.initStyle(StageStyle.TRANSPARENT);
-        dialog.getDialogPane().getButtonTypes().addAll(CLOSE_BUTTON, CONFIRM_ACTION);
+        dialog.getDialogPane().getButtonTypes().addAll(buttonTypeClose, buttonTypeConfirm);
         dialog.getDialogPane().setContent(vBoxMain);
         controls = new HashMap<>();
         dialog.getDialogPane().getStylesheets().add(DIALOG_CSS);
-
-        Button confirmDialog = getConfirmBtn();
-        confirmDialog.addEventFilter(ActionEvent.ACTION, event -> {
-            if (areEmpty())
-                event.consume();
-        });
-
     }
 
     private Button getConfirmBtn() {
-        return (Button) dialog.getDialogPane().lookupButton(CONFIRM_ACTION);
+        return (Button) dialog.getDialogPane().lookupButton(buttonTypeConfirm);
     }
 
     public ButtonType getConfirmAction() {
-        return CONFIRM_ACTION;
+        return buttonTypeConfirm;
     }
 
 }
