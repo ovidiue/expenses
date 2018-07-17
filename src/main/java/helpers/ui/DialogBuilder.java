@@ -88,6 +88,11 @@ public class DialogBuilder {
         fadeTransition.setNode(dialog.getDialogPane());
         fadeTransition.play();
 
+        if (controls.size() > 0) {
+            Button confirmDialog = getConfirmBtn();
+            confirmDialog.disableProperty().bind(validationSupport.invalidProperty());
+        }
+
         return dialog.showAndWait();
     }
 
@@ -116,11 +121,6 @@ public class DialogBuilder {
         dialog.getDialogPane().setContent(vBoxMain);
         controls = new HashMap<>();
         dialog.getDialogPane().getStylesheets().add(DIALOG_CSS);
-
-        if (controls.size() > 0) {
-            Button confirmDialog = getConfirmBtn();
-            confirmDialog.disableProperty().bind(validationSupport.invalidProperty());
-        }
     }
 
     private Button getConfirmBtn() {
