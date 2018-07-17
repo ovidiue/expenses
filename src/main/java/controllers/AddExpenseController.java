@@ -67,7 +67,7 @@ public class AddExpenseController implements Initializable {
     Button btnSave;
     @FXML
     AnchorPane anchorPane;
-    private DialogBuilder dialogBuilder = new DialogBuilder();
+
     private ObservableList<Category> categoriesList;
     private ObservableList<Tag> tagsList;
     private List<Rate> rates = new ArrayList<>();
@@ -124,6 +124,7 @@ public class AddExpenseController implements Initializable {
     }
 
     public void displayAddCategoryDialog() {
+        DialogBuilder dialogBuilder = new DialogBuilder();
         dialogBuilder.setHeader("Enter at least textfieldTitle in order to add a new category")
                 .addFormField("Title:", "title", new TextField(), true)
                 .addFormField("Description:", "description", new TextArea(), false)
@@ -232,6 +233,7 @@ public class AddExpenseController implements Initializable {
 
     @FXML
     public void displayAddTagDialog() {
+        DialogBuilder dialogBuilder = new DialogBuilder();
         dialogBuilder.setCallerPane(rootBorderPane)
                 .setHeader("Enter at least TITLE in order to add a new tag")
                 .addFormField("Name:", "name", new TextField(), true)
@@ -253,6 +255,7 @@ public class AddExpenseController implements Initializable {
 
     @FXML
     public void displayAddPayedRatesDialog() {
+        DialogBuilder dialogBuilder = new DialogBuilder();
         TextField textFieldAmountRate = new TextField();
         textFieldAmountRate.textProperty().addListener(TextUtils.getDigitListener());
 
