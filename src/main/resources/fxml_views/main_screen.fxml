@@ -3,9 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="root" focusTraversable="true" maxHeight="-Infinity"
-            maxWidth="-Infinity"
-            prefHeight="850.0" prefWidth="1083.0" xmlns="http://javafx.com/javafx/8.0.141"
+<BorderPane fx:id="root" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="850.0"
+            prefWidth="1083.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Main">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
@@ -13,6 +12,7 @@
                 <Menu mnemonicParsing="false" text="%file">
                     <items>
                         <MenuItem mnemonicParsing="false" text="Close"/>
+                        <MenuItem fx:id="radioMenuItemExport" mnemonicParsing="false" text="Export expenses"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="%edit">
