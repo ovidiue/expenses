@@ -7,15 +7,17 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import model.Expense;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -23,7 +25,10 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.controlsfx.control.Notifications;
+import org.controlsfx.control.action.Action;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,7 +64,6 @@ public class Main extends Application implements Initializable {
     MenuItem radioMenuItemExport;
 
     FXMLLoader loader;
-
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -142,7 +146,7 @@ public class Main extends Application implements Initializable {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(expense.getTitle());
                 row.createCell(1).setCellValue(expense.getDescription());
-                row.createCell(2).setCellValue(expense.isRecurrent());
+                row.createCell(2).setCellValue(expense.isRecurrent() == true ? "true" : "false");
                 row.createCell(3).setCellValue(expense.getCreatedOn().toString());
                 row.createCell(4).setCellValue(expense.getAmount());
             }
@@ -161,9 +165,30 @@ public class Main extends Application implements Initializable {
 
                 if (file != null) {
                     FileOutputStream fileOutputStream = new FileOutputStream(file.getAbsolutePath());
-                    log.info("in if");
+                    log.info("Export Started");
                     workbook.write(fileOutputStream);
                     fileOutputStream.close();
+
+                    Notifications.
+                            create().
+                            title("Export").
+                            text("Exported Succesfully !")
+                            .action(new Action("Open file", ez -> {
+                                if (Desktop.isDesktopSupported()) {
+                                    log.info("OPENING FILE");
+                                    try {
+                                        Desktop.getDesktop().open(file);
+                                        Button target = (Button) ez.getTarget();
+                                        target.getScene().getWindow().hide();
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            }))
+                            .owner(null)
+                            .position(Pos.BOTTOM_RIGHT)
+                            .hideAfter(Duration.seconds(3))
+                            .show();
                 }
 
             } catch (IOException e1) {
