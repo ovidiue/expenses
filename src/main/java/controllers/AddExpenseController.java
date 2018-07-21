@@ -18,14 +18,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import lombok.extern.slf4j.Slf4j;
 import model.Category;
 import model.Expense;
 import model.Rate;
 import model.Tag;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.PopOver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -41,9 +40,9 @@ import java.util.stream.Collectors;
 /**
  * Created by Ovidiu on 18-May-18.
  */
+@Slf4j
 public class AddExpenseController implements Initializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(AddExpenseController.class);
     private static final CategoryDBHelper CATEGORY_DB_HELPER = new CategoryDBHelper();
     private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
     private static final TagDBHelper TAG_DB_HELPER = new TagDBHelper();
@@ -299,13 +298,13 @@ public class AddExpenseController implements Initializable {
         if (textfieldAmount.getText().trim().length() != 0) {
             double amountPayed = getTotalValuePayed();
             Double payed = (amountPayed * 100) / Double.parseDouble(textfieldAmount.getText());
-            logger.info("TOTAL: " + Double.parseDouble(textfieldAmount.getText()));
-            logger.info("PAYED: " + payed);
+            log.info("TOTAL: " + Double.parseDouble(textfieldAmount.getText()));
+            log.info("PAYED: " + payed);
             progressBar.setProgress(payed / 100);
 
             DecimalFormat df = new DecimalFormat("#.##");
             payed = Double.valueOf(df.format(payed));
-            logger.info("FORMATED: " + payed);
+            log.info("FORMATED: " + payed);
             progressBar.getTooltip().setText(getRatesInfoString());
         }
     }

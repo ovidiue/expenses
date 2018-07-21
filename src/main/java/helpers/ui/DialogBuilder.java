@@ -8,11 +8,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +20,7 @@ import java.util.Optional;
 /**
  * Created by Ovidiu on 08-Jun-18.
  */
+@Slf4j
 public class DialogBuilder {
     private static final String DIALOG_CSS = "css/dialog_builder.css";
     private final ButtonType buttonTypeClose = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -31,7 +31,6 @@ public class DialogBuilder {
     private Pane caller;
     private Map<String, Control> controls;
     private ValidationSupport validationSupport;
-    private final Logger logger = LoggerFactory.getLogger(DialogBuilder.class);
 
     public DialogBuilder() {
         initDialogControls();
@@ -92,7 +91,7 @@ public class DialogBuilder {
         fadeTransition.play();
 
         if (controls.size() > 0) {
-            logger.info("CONTROLS SIZE: " + controls.size());
+            log.info("CONTROLS SIZE: " + controls.size());
             Button confirmDialog = getConfirmBtn();
             confirmDialog.disableProperty().bind(validationSupport.invalidProperty());
         }

@@ -18,5 +18,6 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.2'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.2'
     compile group: 'org.apache.poi', name: 'poi', version: '3.9'
-
+    compile 'org.projectlombok:lombok:1.18.0'
+   // apt "org.projectlombok:lombok:1.18.0"
 }

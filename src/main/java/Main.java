@@ -16,14 +16,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 import model.Expense;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +34,7 @@ import java.util.ResourceBundle;
 /**
  * Created by Ovidiu on 15-May-18.
  */
+@Slf4j
 public class Main extends Application implements Initializable {
     private static final String MAIN_SCREEN = "/fxml_views/main_screen.fxml";
     private static final String EXPENSES_LISTING = "fxml_views/all_expenses.fxml";
@@ -46,10 +46,7 @@ public class Main extends Application implements Initializable {
     private static final String DARK_STYLE = "css/style_dark.css";
     private static final String WHITE_NOTIFICATIONS = "css/custom_notifications_white.css";
     private static final String TRANSLATIONS_FILE = "lang/translations";
-
     private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
-    private final Logger logger = LoggerFactory.getLogger(Main.class);
-    String name;
     @FXML
     BorderPane root;
     @FXML
@@ -138,10 +135,10 @@ public class Main extends Application implements Initializable {
             int rowNum = 1;
 
             for (Expense expense : expenseList) {
-                logger.info(expense.getTitle());
-                logger.info(expense.getDescription());
-                logger.info(expense.getCreatedOn().toString());
-                logger.info(expense.getAmount().toString());
+                log.info(expense.getTitle());
+                log.info(expense.getDescription());
+                log.info(expense.getCreatedOn().toString());
+                log.info(expense.getAmount().toString());
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(expense.getTitle());
                 row.createCell(1).setCellValue(expense.getDescription());
@@ -164,7 +161,7 @@ public class Main extends Application implements Initializable {
 
                 if (file != null) {
                     FileOutputStream fileOutputStream = new FileOutputStream(file.getAbsolutePath());
-                    logger.info("in if");
+                    log.info("in if");
                     workbook.write(fileOutputStream);
                     fileOutputStream.close();
                 }

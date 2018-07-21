@@ -8,10 +8,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by Ovidiu on 26-May-18.
  */
+@Slf4j
 public class Preloader {
     private final String PRELOADER_CSS = "css/preloader.css";
     private ProgressBar bar;
