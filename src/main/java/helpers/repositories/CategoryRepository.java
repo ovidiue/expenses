@@ -1,4 +1,4 @@
-package helpers.db;
+package helpers.repositories;
 
 import model.Category;
 import org.hibernate.Criteria;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Ovidiu on 19-May-18.
  */
-public class CategoryDBHelper implements HibernateHlp<Category> {
+public class CategoryRepository implements HibernateHlp<Category> {
 
     @Override
     public int save(Category category) {

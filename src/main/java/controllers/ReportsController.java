@@ -1,7 +1,7 @@
 package controllers;
 
-import helpers.db.ExpenseDBHelper;
-import helpers.db.RateDBHelper;
+import helpers.repositories.ExpenseRepository;
+import helpers.repositories.RateRepository;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,16 +20,14 @@ import java.util.ResourceBundle;
  * Created by Ovidiu on 21-Jun-18.
  */
 public class ReportsController implements Initializable {
+    private static final ExpenseRepository EXPENSE_REPOSITORY = new ExpenseRepository();
+    private static final RateRepository RATE_REPOSITORY = new RateRepository();
     @FXML
     PieChart pieExpenses;
     @FXML
     BarChart<String, Number> barChartRates;
     @FXML
     StackedBarChart<String, Number> stackedBarChart;
-
-
-    private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
-    private static final RateDBHelper RATE_DB_HELPER = new RateDBHelper();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -39,7 +37,7 @@ public class ReportsController implements Initializable {
     }
 
     private void setUpPieChartExpenses() {
-        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_DB_HELPER.fetchAll());
+        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_REPOSITORY.fetchAll());
         ObservableList<PieChart.Data> pieChartExpensesData = FXCollections.observableArrayList();
         for (Expense e : expensesList) {
             pieChartExpensesData.add(new PieChart.Data(e.getTitle(), e.getAmount()));
@@ -50,7 +48,7 @@ public class ReportsController implements Initializable {
     }
 
     private void setUpBarChartRates() {
-        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_DB_HELPER.fetchAllWithRates());
+        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_REPOSITORY.fetchAllWithRates());
 
         for (Expense expense : expensesList) {
             XYChart.Series series = new XYChart.Series();
@@ -67,7 +65,7 @@ public class ReportsController implements Initializable {
     }
 
     private void setUpStackedBarChart() {
-        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_DB_HELPER.fetchAllWithRates());
+        ObservableList<Expense> expensesList = FXCollections.observableArrayList(EXPENSE_REPOSITORY.fetchAllWithRates());
 
         for (Expense expense : expensesList) {
             XYChart.Series series = new XYChart.Series();

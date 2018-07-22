@@ -1,6 +1,6 @@
 package controllers;
 
-import helpers.db.TagDBHelper;
+import helpers.repositories.TagRepository;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import javafx.application.Platform;
@@ -14,9 +14,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import lombok.extern.slf4j.Slf4j;
 import model.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -24,9 +23,10 @@ import java.util.ResourceBundle;
 /**
  * Created by Ovidiu on 20-May-18.
  */
+
+@Slf4j
 public class AllTagsController implements Initializable {
-    private static final Logger logger = LoggerFactory.getLogger(AllTagsController.class);
-    private static final TagDBHelper TAG_DB_HELPER = new TagDBHelper();
+    private static final TagRepository TAG_REPOSITORY = new TagRepository();
     @FXML
     TableView<Tag> table;
     @FXML
@@ -85,9 +85,9 @@ public class AllTagsController implements Initializable {
                                     "-fx-padding: 1px 1px 1px 1px");
 
                             Tag t = table.getSelectionModel().getSelectedItem();
-                            logger.info(t.toString());
+                            log.info(t.toString());
                             t.setColor(newColor);
-                            TAG_DB_HELPER.update(t);
+                            TAG_REPOSITORY.update(t);
 
                         });
                         cp.setVisible(false);
@@ -137,9 +137,9 @@ public class AllTagsController implements Initializable {
                     .get(event.getTablePosition().getRow()))
                     .setName(value);
             Tag t = table.getSelectionModel().getSelectedItem();
-            logger.info(t.toString());
+            log.info(t.toString());
             t.setName(value);
-            TAG_DB_HELPER.update(t);
+            TAG_REPOSITORY.update(t);
             table.refresh();
         });
 
@@ -152,7 +152,7 @@ public class AllTagsController implements Initializable {
     }
 
     private ObservableList<Tag> getAllTags() {
-        ObservableList<Tag> list = FXCollections.observableArrayList(TAG_DB_HELPER.fetchAll());
+        ObservableList<Tag> list = FXCollections.observableArrayList(TAG_REPOSITORY.fetchAll());
         return list;
     }
 
@@ -174,7 +174,7 @@ public class AllTagsController implements Initializable {
                 String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#");
 
                 Tag tag = new Tag(name, color);
-                TAG_DB_HELPER.save(tag);
+                TAG_REPOSITORY.save(tag);
                 table.getItems().add(tag);
                 table.refresh();
 
@@ -194,7 +194,7 @@ public class AllTagsController implements Initializable {
 
         dialogBuilder.show().ifPresent(response -> {
             if (response == dialogBuilder.getConfirmAction()) {
-                TAG_DB_HELPER.delete(tag);
+                TAG_REPOSITORY.delete(tag);
                 table.getItems().remove(tag);
                 table.refresh();
 

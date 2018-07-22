@@ -1,4 +1,4 @@
-package helpers.db;
+package helpers.repositories;
 
 import model.Tag;
 import org.hibernate.Criteria;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Ovidiu on 19-May-18.
  */
-public class TagDBHelper implements HibernateHlp<Tag> {
+public class TagRepository implements HibernateHlp<Tag> {
     @Override
     public int save(Tag tag) {
         Session session = sessionFactory.openSession();

@@ -1,4 +1,4 @@
-package helpers.db;
+package helpers.repositories;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;

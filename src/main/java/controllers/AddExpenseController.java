@@ -1,8 +1,8 @@
 package controllers;
 
-import helpers.db.CategoryDBHelper;
-import helpers.db.ExpenseDBHelper;
-import helpers.db.TagDBHelper;
+import helpers.repositories.CategoryRepository;
+import helpers.repositories.ExpenseRepository;
+import helpers.repositories.TagRepository;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import helpers.ui.TextUtils;
@@ -43,9 +43,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AddExpenseController implements Initializable {
 
-    private static final CategoryDBHelper CATEGORY_DB_HELPER = new CategoryDBHelper();
-    private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
-    private static final TagDBHelper TAG_DB_HELPER = new TagDBHelper();
+    private static final CategoryRepository CATEGORY_REPOSITORY = new CategoryRepository();
+    private static final ExpenseRepository EXPENSE_REPOSITORY = new ExpenseRepository();
+    private static final TagRepository TAG_REPOSITORY = new TagRepository();
     @FXML
     TextField textfieldTitle;
     @FXML
@@ -87,21 +87,20 @@ public class AddExpenseController implements Initializable {
         e.setTags(tags);
         if (rates.size() > 0) {
             for (Rate rate : rates) {
-                //new RateDBHelper().save(rate);
                 e.addRate(rate);
             }
-            //e.setPayedRates(rates);
         }
 
         return e;
     }
 
+    @FXML
     public void saveExpense() {
         Expense e = getExpense();
         Category z = choiceboxCategory.getValue();
         e.setCategory(z);
 
-        EXPENSE_DB_HELPER.save(e);
+        EXPENSE_REPOSITORY.save(e);
         clearFieldSelections();
 
         Notification.create("Added new expense:\n" + e.getTitle(),
@@ -122,6 +121,7 @@ public class AddExpenseController implements Initializable {
         rates = new ArrayList<>();
     }
 
+    @FXML
     public void displayAddCategoryDialog() {
         DialogBuilder dialogBuilder = new DialogBuilder();
         dialogBuilder.setHeader("Enter at least textfieldTitle in order to add a new category")
@@ -136,7 +136,7 @@ public class AddExpenseController implements Initializable {
                                 ((TextField) dialogBuilder.getControl("title")).getText(),
                                 ((TextArea) dialogBuilder.getControl("description")).getText(),
                                 ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#"));
-                        CATEGORY_DB_HELPER.save(category);
+                        CATEGORY_REPOSITORY.save(category);
                         populateCategories();
 
                         Notification.create("Added category: \n" +
@@ -211,7 +211,7 @@ public class AddExpenseController implements Initializable {
     }
 
     private void populateCategories() {
-        categoriesList = FXCollections.observableArrayList(CATEGORY_DB_HELPER.fetchAll());
+        categoriesList = FXCollections.observableArrayList(CATEGORY_REPOSITORY.fetchAll());
         choiceboxCategory.setItems(categoriesList);
     }
 
@@ -225,7 +225,7 @@ public class AddExpenseController implements Initializable {
     }
 
     private void populateNewTags() {
-        tagsList = FXCollections.observableArrayList(TAG_DB_HELPER.fetchAll());
+        tagsList = FXCollections.observableArrayList(TAG_REPOSITORY.fetchAll());
         checkcomboboxTag.getItems().clear();
         checkcomboboxTag.getItems().addAll(tagsList);
     }
@@ -243,7 +243,7 @@ public class AddExpenseController implements Initializable {
                         String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString().replace("0x", "#"),
                                 name = ((TextField) dialogBuilder.getControl("name")).getText();
                         Tag tag = new Tag(name, color);
-                        TAG_DB_HELPER.save(tag);
+                        TAG_REPOSITORY.save(tag);
                         populateNewTags();
 
                         Notification.create("Added new tag:\n" + tag.getName(),

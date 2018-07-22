@@ -1,5 +1,5 @@
-import helpers.db.ExpenseDBHelper;
-import helpers.db.HibernateHlp;
+import helpers.repositories.ExpenseRepository;
+import helpers.repositories.HibernateHlp;
 import helpers.ui.Preloader;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -51,7 +51,7 @@ public class Main extends Application implements Initializable {
     private static final String DARK_STYLE = "css/style_dark.css";
     private static final String WHITE_NOTIFICATIONS = "css/custom_notifications_white.css";
     private static final String TRANSLATIONS_FILE = "lang/translations";
-    private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
+    private static final ExpenseRepository EXPENSE_DB_HELPER = new ExpenseRepository();
     @FXML
     BorderPane root;
     @FXML

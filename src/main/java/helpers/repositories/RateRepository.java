@@ -1,4 +1,4 @@
-package helpers.db;
+package helpers.repositories;
 
 import model.Expense;
 import model.Rate;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by Ovidiu on 27-May-18.
  */
-public class RateDBHelper implements HibernateHlp<Rate> {
+public class RateRepository implements HibernateHlp<Rate> {
 
     @Override
     public int save(Rate rate) {

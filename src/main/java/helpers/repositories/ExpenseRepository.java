@@ -1,4 +1,4 @@
-package helpers.db;
+package helpers.repositories;
 
 import model.Expense;
 import org.hibernate.Criteria;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by Ovidiu on 19-May-18.
  */
-public class ExpenseDBHelper implements HibernateHlp<Expense> {
+public class ExpenseRepository implements HibernateHlp<Expense> {
 
     @Override
     public int save(Expense expense) {

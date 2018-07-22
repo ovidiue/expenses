@@ -1,9 +1,9 @@
 package controllers;
 
-import helpers.db.CategoryDBHelper;
-import helpers.db.ExpenseDBHelper;
-import helpers.db.RateDBHelper;
-import helpers.db.TagDBHelper;
+import helpers.repositories.CategoryRepository;
+import helpers.repositories.ExpenseRepository;
+import helpers.repositories.RateRepository;
+import helpers.repositories.TagRepository;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
 import javafx.application.Platform;
@@ -49,7 +49,8 @@ public class AllExpensesController implements Initializable {
     MasterDetailPane masterDetailPane;
     private PopOver popOver = new PopOver();
     private TableView<Rate> tableViewDetail = getRateTable();
-    private static final ExpenseDBHelper EXPENSE_DB_HELPER = new ExpenseDBHelper();
+    private static final ExpenseRepository EXPENSE_REPOSITORY = new ExpenseRepository();
+    private static final RateRepository RATE_REPOSITORY = new RateRepository();
     private TableView<Expense> tableViewMaster = getExpenseTable();
 
     @Override
@@ -101,7 +102,7 @@ public class AllExpensesController implements Initializable {
 
     private void displayAddRateToExpense() {
         int expenseId = tableViewMaster.getSelectionModel().getSelectedItem().getId();
-        Expense expense = EXPENSE_DB_HELPER.findById(expenseId);
+        Expense expense = EXPENSE_REPOSITORY.findById(expenseId);
         DialogBuilder dialogBuilder = new DialogBuilder();
         dialogBuilder.setCallerPane(rootBorderPane)
                 .setHeader("Add rate to " + expense.getTitle() + " expense")
@@ -120,7 +121,7 @@ public class AllExpensesController implements Initializable {
                         );
 
                         expense.addRate(rate);
-                        EXPENSE_DB_HELPER.update(expense);
+                        EXPENSE_REPOSITORY.update(expense);
                         tableViewDetail.getItems().add(rate);
                         tableViewDetail.refresh();
                         Notification.create("Added rate:\n" + rate.getAmount(),
@@ -140,7 +141,7 @@ public class AllExpensesController implements Initializable {
                 if (!row.isEmpty()) {
                     Expense expense = row.getItem();
                     masterDetailPane.setShowDetailNode(true);
-                    ObservableList<Rate> ratesList = FXCollections.observableArrayList(new RateDBHelper().fetchAll(expense));
+                    ObservableList<Rate> ratesList = FXCollections.observableArrayList(RATE_REPOSITORY.fetchAll(expense));
                     updateDetailsPane(ratesList);
                 }
             });
@@ -211,7 +212,7 @@ public class AllExpensesController implements Initializable {
                             Expense ex = (Expense) getTableRow().getItem();
                             if (!ex.getDescription().equals(textArea.getText())) {
                                 ex.setDescription(textArea.getText());
-                                EXPENSE_DB_HELPER.update(ex);
+                                EXPENSE_REPOSITORY.update(ex);
                                 tableViewMaster.refresh();
                             }
                         });
@@ -228,7 +229,7 @@ public class AllExpensesController implements Initializable {
 
             Expense expense = tableViewMaster.getSelectionModel().getSelectedItem();
             expense.setTitle(value);
-            EXPENSE_DB_HELPER.update(expense);
+            EXPENSE_REPOSITORY.update(expense);
             tableViewMaster.refresh();
         });
 
@@ -250,7 +251,7 @@ public class AllExpensesController implements Initializable {
 
             Expense expense = tableViewMaster.getSelectionModel().getSelectedItem();
             expense.setAmount(value);
-            EXPENSE_DB_HELPER.update(expense);
+            EXPENSE_REPOSITORY.update(expense);
             tableViewMaster.refresh();
         });
 
@@ -295,10 +296,6 @@ public class AllExpensesController implements Initializable {
                     } else {
                         final DatePicker dp = new DatePicker();
                         dp.valueProperty().addListener((observable, oldValue, newValue) -> {
-                            /*Expense expense = (Expense) getTableRow().getItem();
-                            expense.setDueDate();
-                            new ExpenseDBHelper().update(expense);*/
-
                         });
                         dp.setPrefWidth(0);
                         dp.setVisible(false);
@@ -353,7 +350,7 @@ public class AllExpensesController implements Initializable {
 
                             Expense expense = (Expense) getTableRow().getItem();
                             expense.setRecurrent(value);
-                            EXPENSE_DB_HELPER.update(expense);
+                            EXPENSE_REPOSITORY.update(expense);
                         });
 
                         setGraphic(cb);
@@ -364,7 +361,7 @@ public class AllExpensesController implements Initializable {
         });
 
 
-        categoryCol.setCellFactory(ChoiceBoxTableCell.forTableColumn(FXCollections.observableList(new CategoryDBHelper().fetchAll())));
+        categoryCol.setCellFactory(ChoiceBoxTableCell.forTableColumn(FXCollections.observableList(new CategoryRepository().fetchAll())));
 
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -390,7 +387,6 @@ public class AllExpensesController implements Initializable {
     }
 
     private TableView<Rate> getRateTable() {
-        RateDBHelper rateDBHelper = new RateDBHelper();
         tableViewDetail = new TableView<>();
         tableViewDetail.setEditable(true);
 
@@ -426,7 +422,7 @@ public class AllExpensesController implements Initializable {
         colRateAmount.setOnEditCommit(event -> {
             Rate rate = event.getRowValue();
             rate.setAmount(event.getNewValue());
-            rateDBHelper.update(rate);
+            RATE_REPOSITORY.update(rate);
         });
 
         colObservation.setCellFactory((TableColumn<Rate, String> column) -> {
@@ -470,7 +466,7 @@ public class AllExpensesController implements Initializable {
                                 Rate rate = (Rate) getTableRow().getItem();
                                 if (!rate.getObservation().equals(textArea.getText())) {
                                     rate.setObservation(textArea.getText());
-                                    rateDBHelper.update(rate);
+                                    RATE_REPOSITORY.update(rate);
                                     tableViewDetail.refresh();
                                     popOver.hide();
                                 }
@@ -484,7 +480,7 @@ public class AllExpensesController implements Initializable {
                                 btnConfirmEdit.setOnAction(e -> {
                                     Rate rate = (Rate) getTableRow().getItem();
                                     rate.setObservation(textArea.getText());
-                                    rateDBHelper.update(rate);
+                                    RATE_REPOSITORY.update(rate);
                                     tableViewDetail.refresh();
                                     popOver.hide();
                                 });
@@ -553,7 +549,7 @@ public class AllExpensesController implements Initializable {
 
 
         // get table data
-        ObservableList<Rate> listRates = FXCollections.observableArrayList(new RateDBHelper().fetchAll());
+        ObservableList<Rate> listRates = FXCollections.observableArrayList(RATE_REPOSITORY.fetchAll());
         tableViewDetail.setItems(listRates);
 
         // add all columns
@@ -569,7 +565,7 @@ public class AllExpensesController implements Initializable {
                 .show()
                 .ifPresent(response -> {
                     if (response == dialogBuilder.getConfirmAction()) {
-                        EXPENSE_DB_HELPER.delete(e);
+                        EXPENSE_REPOSITORY.delete(e);
                         tableViewMaster.getItems().remove(e);
                         tableViewMaster.refresh();
 
@@ -582,7 +578,7 @@ public class AllExpensesController implements Initializable {
     }
 
     private ObservableList<Expense> getAllExpenses() {
-        ObservableList<Expense> list = FXCollections.observableArrayList(new ExpenseDBHelper().fetchAll());
+        ObservableList<Expense> list = FXCollections.observableArrayList(new ExpenseRepository().fetchAll());
         return list;
     }
 
@@ -593,7 +589,7 @@ public class AllExpensesController implements Initializable {
                 .show()
                 .ifPresent(response -> {
                     if ((ButtonType) response == dialogBuilder.getConfirmAction()) {
-                        new RateDBHelper().delete(rate);
+                        RATE_REPOSITORY.delete(rate);
                         tableViewDetail.getItems().remove(rate);
                         tableViewDetail.refresh();
 
@@ -607,8 +603,8 @@ public class AllExpensesController implements Initializable {
     @FXML
     public void addExpense() {
         DialogBuilder dialogBuilder = new DialogBuilder();
-        ChoiceBox<Category> choiceBoxCat = new ChoiceBox<>(FXCollections.observableArrayList(new CategoryDBHelper().fetchAll()));
-        CheckComboBox<Tag> checkComboBoxTag = new CheckComboBox<>(FXCollections.observableArrayList(new TagDBHelper().fetchAll()));
+        ChoiceBox<Category> choiceBoxCat = new ChoiceBox<>(FXCollections.observableArrayList(new CategoryRepository().fetchAll()));
+        CheckComboBox<Tag> checkComboBoxTag = new CheckComboBox<>(FXCollections.observableArrayList(new TagRepository().fetchAll()));
         dialogBuilder.setCallerPane(rootBorderPane)
                 .setHeader("Add expense")
                 .addFormField("Title:", "title", new TextField(), true)
@@ -640,7 +636,7 @@ public class AllExpensesController implements Initializable {
 
                         expense.getTags().addAll(tags);
 
-                        EXPENSE_DB_HELPER.save(expense);
+                        EXPENSE_REPOSITORY.save(expense);
                         tableViewMaster.getItems().add(expense);
                         tableViewMaster.refresh();
                         Notification.create("Added Expense:\n" + expense.getTitle(),

@@ -1,4 +1,4 @@
-package helpers.db;
+package helpers.repositories;
 
 import model.Expense;
 import org.hibernate.Criteria;
