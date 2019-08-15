@@ -6,6 +6,13 @@ import helpers.repositories.RateRepository;
 import helpers.repositories.TagRepository;
 import helpers.ui.DialogBuilder;
 import helpers.ui.Notification;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.binding.Binding;
 import javafx.collections.FXCollections;
@@ -15,12 +22,31 @@ import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.StringConverter;
+import lombok.extern.slf4j.Slf4j;
 import model.Category;
 import model.Expense;
 import model.Rate;
@@ -29,28 +55,24 @@ import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.PopOver;
 
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
-
 /**
  * Created by Ovidiu on 18-May-18.
  */
+
+@Slf4j
 public class AllExpensesController implements Initializable {
+
+  private static final ExpenseRepository EXPENSE_REPOSITORY = new ExpenseRepository();
+  private static final RateRepository RATE_REPOSITORY = new RateRepository();
+  private static final CategoryRepository CATEGORY_REPOSITORY = new CategoryRepository();
+  private static final TagRepository TAG_REPOSITORY = new TagRepository();
     @FXML
     AnchorPane anchorPane;
-
     BorderPane rootBorderPane;
-
-
     @FXML
     MasterDetailPane masterDetailPane;
     private PopOver popOver = new PopOver();
     private TableView<Rate> tableViewDetail = getRateTable();
-    private static final ExpenseRepository EXPENSE_REPOSITORY = new ExpenseRepository();
-    private static final RateRepository RATE_REPOSITORY = new RateRepository();
     private TableView<Expense> tableViewMaster = getExpenseTable();
 
     @Override
@@ -62,8 +84,8 @@ public class AllExpensesController implements Initializable {
     private void initMasterDetailPane() {
         masterDetailPane.setMasterNode(tableViewMaster);
         masterDetailPane.setDetailNode(buildDetailContent());
-        masterDetailPane.getDetailNode().minHeight(200);
-        masterDetailPane.getDetailNode().prefHeight(500);
+        /*masterDetailPane.getDetailNode().minHeight(200);
+        masterDetailPane.getDetailNode().prefHeight(500);*/
 
         setClickBehaviourMasterDetailsPane();
     }
@@ -133,6 +155,7 @@ public class AllExpensesController implements Initializable {
 
     }
 
+
     private void setClickBehaviourMasterDetailsPane() {
         masterDetailPane.setAnimated(true);
         tableViewMaster.setRowFactory(e -> {
@@ -160,7 +183,8 @@ public class AllExpensesController implements Initializable {
 
         TableColumn<Expense, String> titleCol,
                 descriptionCol,
-                deleteCol;
+            deleteCol,
+            editCol;
 
         TableColumn<Expense, Category> categoryCol;
 
@@ -178,6 +202,8 @@ public class AllExpensesController implements Initializable {
         amountCol = new TableColumn<>("Amount");
         deleteCol = new TableColumn<>("Delete");
         categoryCol = new TableColumn<>("Category");
+      editCol = new TableColumn<>("Edit");
+
 
         descriptionCol.setCellFactory((TableColumn<Expense, String> column) -> new TableCell<Expense, String>() {
             @Override
@@ -185,37 +211,30 @@ public class AllExpensesController implements Initializable {
                 super.updateItem(item, empty);
                 this.setFocused(true);
 
-                if (item != null && item.trim().length() > 0) {
+              if (item != null) {
                     setText(item.substring(0, item.length() > 15 ? 15 : item.length()));
-                    setOnMouseEntered(e -> {
-                        TextArea textArea = new TextArea();
-                        textArea.setWrapText(true);
-                        textArea.setEditable(false);
-                        textArea.setOnMouseClicked(event -> {
-                            if (event.getClickCount() == 2) {
-                                textArea.setEditable(true);
-                                textArea.setTooltip(null);
-                            }
-                        });
-                        textArea.setText(item);
-                        textArea.setTooltip(new Tooltip("Double click to edit"));
+                setOnMouseClicked(e -> {
+                  if (e.getClickCount() == 2) {
+                    TextArea textArea = getTextArea(item);
 
-                        popOver.setContentNode(textArea);
-                        popOver.show((TableCell) e.getTarget());
-                        popOver.setAutoHide(true);
-                        popOver.setHeaderAlwaysVisible(true);
-                        popOver.setDetachable(true);
-                        popOver.setAnimated(true);
-                        popOver.setTitle(((Expense) getTableRow().getItem()).getTitle());
+                    popOver.setContentNode(textArea);
+                    popOver.show((Text) e.getTarget());
+                    popOver.setAutoHide(true);
+                    popOver.setHeaderAlwaysVisible(true);
+                    popOver.setDetachable(true);
+                    popOver.setAnimated(true);
+                    popOver.setTitle(((Expense) getTableRow().getItem()).getTitle());
 
-                        popOver.setOnHidden(event -> {
-                            Expense ex = (Expense) getTableRow().getItem();
-                            if (!ex.getDescription().equals(textArea.getText())) {
-                                ex.setDescription(textArea.getText());
-                                EXPENSE_REPOSITORY.update(ex);
-                                tableViewMaster.refresh();
-                            }
-                        });
+                    popOver.setOnHidden(event -> {
+                      Expense ex = (Expense) getTableRow().getItem();
+                      if (!ex.getDescription().equals(textArea.getText())) {
+                        ex.setDescription(textArea.getText());
+                        EXPENSE_REPOSITORY.update(ex);
+                        tableViewMaster.refresh();
+                      }
+                    });
+                  }
+
                     });
                 }
             }
@@ -255,14 +274,14 @@ public class AllExpensesController implements Initializable {
             tableViewMaster.refresh();
         });
 
-        titleCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
-        descriptionCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
-        recurrentCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
-        createdOnCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
-        dueDateCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
-        amountCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
-        deleteCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
-        categoryCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(8));
+      titleCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(9));
+      descriptionCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(9));
+      recurrentCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(9));
+      createdOnCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(9));
+      dueDateCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(9));
+      amountCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(9));
+      deleteCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(9));
+      categoryCol.prefWidthProperty().bind(tableViewMaster.widthProperty().divide(9));
 
         createdOnCol.setCellFactory(column -> {
             TableCell<Expense, Date> cell = new TableCell<Expense, Date>() {
@@ -320,7 +339,11 @@ public class AllExpensesController implements Initializable {
                     if (empty) {
                         setText(null);
                     } else {
-                        final Button deleteBtn = new Button("delete");
+                      final Button deleteBtn = new Button();
+                      ImageView graphic = new ImageView("images/delete.png");
+                      graphic.setFitHeight(20);
+                      graphic.setFitWidth(20);
+                      deleteBtn.setGraphic(graphic);
                         deleteBtn.setMaxWidth(Double.MAX_VALUE);
                         deleteBtn.setOnAction(e -> {
                             this.setFocused(true);
@@ -334,6 +357,36 @@ public class AllExpensesController implements Initializable {
             };
             return cell;
         });
+
+      editCol.setCellFactory((TableColumn<Expense, String> column) -> {
+        TableCell<Expense, String> cell = new TableCell<Expense, String>() {
+          @Override
+          protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+              setText(null);
+            } else {
+              final Button editBtn = new Button();
+              ImageView graphic = new ImageView("images/edit.png");
+              graphic.setFitHeight(20);
+              graphic.setFitWidth(20);
+              editBtn.setGraphic(graphic);
+              editBtn.setMaxWidth(Double.MAX_VALUE);
+              editBtn.setOnAction(e -> {
+                this.setFocused(true);
+                log.info("EDIT PRESSED");
+                int id = getTableView().getItems().get(getIndex()).getId();
+                Expense expense = EXPENSE_REPOSITORY.findById(id);
+                editExpenseDialog(expense);
+              });
+
+              setGraphic(editBtn);
+            }
+          }
+        };
+        return cell;
+      });
+
 
         recurrentCol.setCellFactory((TableColumn<Expense, Boolean> column) -> {
             TableCell<Expense, Boolean> cell = new TableCell<Expense, Boolean>() {
@@ -378,13 +431,30 @@ public class AllExpensesController implements Initializable {
                 dueDateCol,
                 amountCol,
                 categoryCol,
-                deleteCol);
+            deleteCol,
+            editCol);
 
         tableViewMaster.setItems(getAllExpenses());
         tableViewMaster.setEditable(true);
+      tableViewMaster.autosize();
 
         return tableViewMaster;
     }
+
+  private TextArea getTextArea(String item) {
+    TextArea textArea = new TextArea();
+    textArea.setWrapText(true);
+    textArea.setEditable(false);
+    textArea.setOnMouseClicked(event -> {
+      if (event.getClickCount() == 2) {
+        textArea.setEditable(true);
+        textArea.setTooltip(null);
+      }
+    });
+    textArea.setText(item);
+    textArea.setTooltip(new Tooltip("Double click to edit"));
+    return textArea;
+  }
 
     private TableView<Rate> getRateTable() {
         tableViewDetail = new TableView<>();
@@ -499,7 +569,7 @@ public class AllExpensesController implements Initializable {
         });
 
         // split columns widths to match table
-        Binding preferredWidth = tableViewDetail.widthProperty().divide(4);
+      Binding<Number> preferredWidth = tableViewDetail.widthProperty().divide(4);
         colRateAmount.prefWidthProperty().bind(preferredWidth);
         colPayedOn.prefWidthProperty().bind(preferredWidth);
         colObservation.prefWidthProperty().bind(preferredWidth);
@@ -601,49 +671,137 @@ public class AllExpensesController implements Initializable {
     }
 
     @FXML
-    public void addExpense() {
+    public void addExpenseDialog() {
         DialogBuilder dialogBuilder = new DialogBuilder();
-        ChoiceBox<Category> choiceBoxCat = new ChoiceBox<>(FXCollections.observableArrayList(new CategoryRepository().fetchAll()));
-        CheckComboBox<Tag> checkComboBoxTag = new CheckComboBox<>(FXCollections.observableArrayList(new TagRepository().fetchAll()));
+      ChoiceBox<Category> choiceBoxCat = new ChoiceBox<>(
+          FXCollections.observableArrayList(CATEGORY_REPOSITORY.fetchAll()));
+      CheckComboBox<Tag> checkComboBoxTag = new CheckComboBox<>(
+          FXCollections.observableArrayList(TAG_REPOSITORY.fetchAll()));
         dialogBuilder.setCallerPane(rootBorderPane)
-                .setHeader("Add expense")
-                .addFormField("Title:", "title", new TextField(), true)
-                .addFormField("Description:", "description", new TextArea(), false)
-                .addFormField("Recurrent:", "recurrent", new CheckBox(), false)
-                .addFormField("Due date:", "dueDate", new DatePicker(), false)
-                .addFormField("Amount:", "amount", new TextField(), true)
-                .addFormField("Category:", "category", choiceBoxCat, false)
-                .addFormField("Tag(s):", "tags", checkComboBoxTag, false)
-                .show()
-                .ifPresent(result -> {
-                    if (result == dialogBuilder.getConfirmAction()) {
-                        String title = ((TextField) dialogBuilder.getControl("title")).getText(),
-                                description = ((TextArea) dialogBuilder.getControl("description")).getText(),
-                                dueDate = ((DatePicker) dialogBuilder.getControl("dueDate")).getEditor().getText(),
-                                amount = ((TextField) dialogBuilder.getControl("amount")).getText();
-                        boolean isRecurrent = ((CheckBox) dialogBuilder.getControl("recurrent")).isSelected();
-                        Category category = ((ChoiceBox<Category>) dialogBuilder.getControl("category")).getValue();
-                        List<Tag> tags = ((CheckComboBox<Tag>) dialogBuilder.getControl("tags")).getCheckModel().getCheckedItems();
+            .setHeader("Add expense")
+            .addFormField("Title:", "title", new TextField(), true)
+            .addFormField("Description:", "description", new TextArea(), false)
+            .addFormField("Recurrent:", "recurrent", new CheckBox(), false)
+            .addFormField("Due date:", "dueDate", new DatePicker(), false)
+            .addFormField("Amount:", "amount", new TextField(), true)
+            .addFormField("Category:", "category", choiceBoxCat, false)
+            .addFormField("Tag(s):", "tags", checkComboBoxTag, false)
+            .show()
+            .ifPresent(result -> {
+              if (result == dialogBuilder.getConfirmAction()) {
+                String title = ((TextField) dialogBuilder.getControl("title")).getText(),
+                    description = ((TextArea) dialogBuilder.getControl("description"))
+                        .getText(),
+                    dueDate = ((DatePicker) dialogBuilder.getControl("dueDate")).getEditor()
+                        .getText(),
+                    amount = ((TextField) dialogBuilder.getControl("amount")).getText();
+                boolean isRecurrent = ((CheckBox) dialogBuilder.getControl("recurrent"))
+                    .isSelected();
+                Category category = ((ChoiceBox<Category>) dialogBuilder.getControl("category"))
+                    .getValue();
+                List<Tag> tags = ((CheckComboBox<Tag>) dialogBuilder.getControl("tags"))
+                    .getCheckModel().getCheckedItems();
 
-                        Expense expense = new Expense(
-                                title,
-                                description,
-                                isRecurrent,
-                                dueDate.trim().length() > 0 ? new Date(dueDate) : null,
-                                Double.parseDouble(amount),
-                                category
-                        );
+                Expense expense = new Expense(
+                    title,
+                    description,
+                    isRecurrent,
+                    dueDate.trim().length() > 0 ? new Date(dueDate) : null,
+                    Double.parseDouble(amount),
+                    category
+                );
 
-                        expense.getTags().addAll(tags);
+                expense.getTags().addAll(tags);
 
-                        EXPENSE_REPOSITORY.save(expense);
-                        tableViewMaster.getItems().add(expense);
-                        tableViewMaster.refresh();
-                        Notification.create("Added Expense:\n" + expense.getTitle(),
-                                "Success",
-                                null);
-                    }
+                EXPENSE_REPOSITORY.save(expense);
+                tableViewMaster.getItems().add(expense);
+                tableViewMaster.refresh();
+                Notification.create("Added Expense:\n" + expense.getTitle(),
+                    "Success",
+                    null);
+              }
+            });
+
+    }
+
+
+  public void editExpenseDialog(Expense ex) {
+    DialogBuilder dialogBuilder = new DialogBuilder();
+    ChoiceBox<Category> choiceBoxCat = new ChoiceBox<>(
+        FXCollections.observableArrayList(CATEGORY_REPOSITORY.fetchAll()));
+    Platform.runLater(() -> {
+      log.info("CATEGORY: ",
+          ex.getCategory().getColor() + " " + ex.getCategory().getDescription());
+      choiceBoxCat.getSelectionModel().select(ex.getCategory());
+    });
+    CheckComboBox<Tag> checkComboBoxTag = new CheckComboBox<>(
+        FXCollections.observableArrayList(TAG_REPOSITORY.fetchAll()));
+    Object[] intersectingTags = checkComboBoxTag.getItems()
+        .stream()
+        .filter(ex.getTags()::contains)
+        .toArray();
+    Platform.runLater(() -> {
+      Arrays.stream(intersectingTags)
+          .forEach(e -> checkComboBoxTag.getCheckModel().check((Tag) e));
+    });
+    TextField textFieldTitle = new TextField(ex.getTitle());
+    TextArea textAreaDescription = new TextArea(ex.getDescription());
+    CheckBox checkBoxRecurrent = new CheckBox();
+    checkBoxRecurrent.setSelected(ex.isRecurrent());
+    DatePicker datePickerDueDate = new DatePicker();
+    if (ex.getDueDate() != null) {
+      datePickerDueDate.setValue(LocalDate
+          .of(ex.getDueDate().getYear(), ex.getDueDate().getMonth(),
+              ex.getDueDate().getDay()));
+    }
+    TextField textFieldAmount = new TextField(String.valueOf(ex.getAmount()));
+    dialogBuilder.setCallerPane(rootBorderPane)
+        .setHeader("Edit expense " + ex.getTitle())
+        .addFormField("Title:", "title", textFieldTitle, true)
+        .addFormField("Description:", "description", textAreaDescription, false)
+        .addFormField("Recurrent:", "recurrent", checkBoxRecurrent, false)
+        .addFormField("Due date:", "dueDate", datePickerDueDate, false)
+        .addFormField("Amount:", "amount", textFieldAmount, true)
+        .addFormField("Category:", "category", choiceBoxCat, false)
+        .addFormField("Tag(s):", "tags", checkComboBoxTag, false)
+        .show()
+        .ifPresent(result -> {
+          if (result == dialogBuilder.getConfirmAction()) {
+
+            String title = textFieldTitle.getText(),
+                description = (textAreaDescription).getText(),
+                dueDate = (datePickerDueDate).getEditor().getText(),
+                amount = (textFieldAmount).getText();
+            boolean isRecurrent = checkBoxRecurrent.isSelected();
+            Category category = choiceBoxCat.getValue();
+            List<Tag> tags = checkComboBoxTag.getCheckModel().getCheckedItems();
+
+            ex.setTitle(title);
+            ex.setDescription(description);
+            ex.setRecurrent(isRecurrent);
+            ex.setDueDate(dueDate.trim().length() > 0 ? new Date(dueDate) : null);
+            ex.setAmount(Double.parseDouble(amount));
+            ex.setCategory(category);
+
+            ex.getTags().clear();
+            ex.setTags(tags);
+
+            EXPENSE_REPOSITORY.update(ex);
+            tableViewMaster.getItems()
+                .stream()
+                .filter(e -> e.getId() == ex.getId())
+                .findFirst()
+                .ifPresent(e -> {
+                  tableViewMaster.getItems().remove(e);
+                  tableViewMaster.getItems().add(ex);
                 });
+
+            tableViewMaster.refresh();
+            Notification.create("Updated Expense:\n" + ex.getTitle(),
+                "Success",
+                null);
+          }
+        });
 
     }
 }

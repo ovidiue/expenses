@@ -1,5 +1,6 @@
 .root {
     -fx-border-color: #4F5053;
+  -fx-background-color: linear-gradient(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.5));
 }
 
 .root:header *.header-panel {

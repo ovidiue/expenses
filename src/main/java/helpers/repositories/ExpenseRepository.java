@@ -1,12 +1,11 @@
 package helpers.repositories;
 
+import java.util.List;
 import model.Expense;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
-
-import java.util.List;
 
 /**
  * Created by Ovidiu on 19-May-18.
@@ -61,6 +60,7 @@ public class ExpenseRepository implements HibernateHlp<Expense> {
 
         Expense expense = session.get(Expense.class, id);
         Hibernate.initialize(expense.getPayedRates());
+        Hibernate.initialize(expense.getTags());
 
         session.close();
 
