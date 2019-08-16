@@ -1,11 +1,9 @@
 package controllers;
 
-import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
-import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
@@ -13,11 +11,14 @@ import helpers.repositories.CategoryRepository;
 import helpers.repositories.ExpenseRepository;
 import helpers.repositories.TagRepository;
 import helpers.ui.DialogBuilder;
+import helpers.ui.ModalBuilder;
+import helpers.ui.ModalCategoryContent;
 import helpers.ui.Notification;
 import helpers.ui.TextUtils;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
@@ -42,7 +44,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import model.Category;
@@ -139,26 +140,16 @@ public class AddExpenseController implements Initializable {
 
   @FXML
   public void displayAddCategoryDialog() {
-    DialogBuilder dialogBuilder = new DialogBuilder();
-    dialogBuilder.setHeader("Enter at least textfieldTitle in order to add a new category")
-        .addFormField("Title:", "title", new TextField(), true)
-        .addFormField("Description:", "description", new TextArea(), false)
-        .addFormField("Color:", "color", new ColorPicker(), false)
-        .setCallerPane(rootBorderPane)
-        .show()
-        .ifPresent(result -> {
-          if ((ButtonType) result == dialogBuilder.getConfirmAction()) {
-            Category category = new Category(
-                ((TextField) dialogBuilder.getControl("title")).getText(),
-                ((TextArea) dialogBuilder.getControl("description")).getText(),
-                ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString()
-                    .replace("0x", "#"));
-            CATEGORY_REPOSITORY.save(category);
-            populateCategories();
-
-            Notification.create("Added category: \n" +
-                category.getName(), "Success", null);
-          }
+    ModalCategoryContent cat = new ModalCategoryContent();
+    ModalBuilder modal = new ModalBuilder(cat,
+        (Stage) this.btnSave.getScene().getWindow());
+    modal.show()
+        .ifPresent(catResponse -> {
+          Category category = (Category) catResponse;
+          CATEGORY_REPOSITORY.save(category);
+          this.categoriesList.add(category);
+          Notification.create("Added category: \n" +
+              category.getName(), "Success", null);
         });
   }
 
@@ -276,27 +267,6 @@ public class AddExpenseController implements Initializable {
 
   @FXML
   public void displayAddPayedRatesDialog() {
-    JFXAlert alert = new JFXAlert((Stage) textfieldTitle.getScene().getWindow());
-    alert.initModality(Modality.APPLICATION_MODAL);
-    alert.setOverlayClose(false);
-    JFXDialogLayout layout = new JFXDialogLayout();
-    layout.setHeading(new Label("Modal Dialog using JFXAlert"));
-    VBox content = new VBox();
-    content.getChildren().add(new Label("Title"));
-    content.getChildren().add(new JFXTextField());
-    content.getChildren().add(new Label("Date"));
-    content.getChildren().add(new JFXDatePicker());
-    layout.setBody(content);
-    JFXButton cancelButton = new JFXButton("CANCEL");
-    cancelButton.setOnAction(event -> alert.hideWithAnimation());
-    JFXButton closeButton = new JFXButton("ACCEPT");
-    closeButton.getStyleClass().add("dialog-accept");
-    closeButton.setOnAction(event -> alert.hideWithAnimation());
-    layout.setActions(cancelButton, closeButton);
-    alert.setContent(layout);
-    alert.show();
-
-/*
     DialogBuilder dialogBuilder = new DialogBuilder();
     TextField textFieldAmountRate = new TextField();
     textFieldAmountRate.textProperty().addListener(TextUtils.getDigitListener());
@@ -335,7 +305,6 @@ public class AddExpenseController implements Initializable {
                 "Success", null);
           }
         });
-*/
   }
 
   private void displayPayProgress() {
