@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXProgressBar?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.RadialGradient?>
-<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import org.controlsfx.control.CheckComboBox?>
@@ -38,64 +35,48 @@
             </Separator>
             <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="40.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox alignment="TOP_CENTER" prefHeight="578.0" prefWidth="327.0" spacing="20.0" HBox.hgrow="ALWAYS">
+                  <VBox alignment="TOP_CENTER" prefHeight="578.0" prefWidth="327.0" spacing="30.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <VBox alignment="CENTER_LEFT">
+                        <VBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Title" />
-                              <TextField fx:id="textfieldTitle" minHeight="40.0" promptText="title">
-                                 <tooltip>
-                                    <Tooltip contentDisplay="TOP" maxWidth="1.7976931348623157E308" text="Title" />
-                                 </tooltip>
+                              <JFXTextField fx:id="textfieldTitle" focusColor="#008f1d" labelFloat="true" minHeight="40.0" promptText="Title">
                                  <font>
-                                    <Font name="System Italic" size="15.0" />
+                                    <Font size="15.0" />
                                  </font>
-                              </TextField>
+                              </JFXTextField>
                            </children>
                         </VBox>
                         <VBox alignment="CENTER_LEFT">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Description" />
-                              <TextArea fx:id="textareaDescription" prefHeight="200.0" prefRowCount="3" prefWidth="200.0" promptText="description" wrapText="true">
-                                 <tooltip>
-                                    <Tooltip text="description" />
-                                 </tooltip>
+                              <JFXTextArea fx:id="textareaDescription" focusColor="#008f1d" labelFloat="true" promptText="Description">
                                  <font>
-                                    <Font name="System Italic" size="15.0" />
+                                    <Font size="15.0" />
                                  </font>
-                              </TextArea>
+                              </JFXTextArea>
                            </children>
                         </VBox>
                         <VBox alignment="CENTER_LEFT">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Amount" />
-                              <TextField fx:id="textfieldAmount" minHeight="40.0" promptText="amount">
-                                 <tooltip>
-                                    <Tooltip text="amount to pay" />
-                                 </tooltip>
+                              <JFXTextField fx:id="textfieldAmount" focusColor="#008f1d" labelFloat="true" minHeight="40.0" promptText="Amount">
                                  <font>
-                                    <Font name="System Italic" size="15.0" />
+                                    <Font size="15.0" />
                                  </font>
-                              </TextField>
+                              </JFXTextField>
                            </children>
                         </VBox>
-                        <VBox alignment="CENTER_LEFT">
-                           <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Due date" />
-                              <DatePicker fx:id="datepickerDueDate" maxWidth="1.7976931348623157E308" minHeight="40.0">
-                                 <tooltip>
-                                    <Tooltip text="date until it must be paid" />
-                                 </tooltip>
-                              </DatePicker>
-                           </children>
-                        </VBox>
+                        <VBox alignment="CENTER_LEFT" />
+                        <JFXDatePicker fx:id="datepickerDueDate" defaultColor="#008f1d" editable="false" maxWidth="1.7976931348623157E308" minHeight="40.0" promptText="Due date" showWeekNumbers="true">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </JFXDatePicker>
                      </children>
                      <HBox.margin>
-                        <Insets />
+                        <Insets top="30.0" />
                      </HBox.margin>
                   </VBox>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <VBox prefHeight="578.0" prefWidth="434.0" spacing="20.0" HBox.hgrow="ALWAYS">
+                  <VBox prefHeight="578.0" prefWidth="434.0" spacing="30.0" HBox.hgrow="ALWAYS">
                      <children>
                         <HBox maxWidth="1.7976931348623157E308" spacing="20.0">
                            <children>
@@ -107,12 +88,11 @@
                               </VBox>
                               <VBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="New">
+                                    <JFXButton buttonType="RAISED" minHeight="40.0" minWidth="40.0" onAction="#displayAddTagDialog" ripplerFill="#000411" style="-fx-background-color: #008f1d; -fx-background-radius: 90px;" text="Add" textFill="WHITE">
                                        <VBox.margin>
-                                          <Insets right="10.0" />
+                                          <Insets top="20.0" />
                                        </VBox.margin>
-                                    </Text>
-                                    <Button minHeight="40.0" minWidth="40.0" mnemonicParsing="false" onAction="#displayAddTagDialog" text="+" />
+                                    </JFXButton>
                                  </children>
                               </VBox>
                            </children>
@@ -121,42 +101,19 @@
                            <children>
                               <VBox alignment="CENTER_LEFT" prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Category" />
-                                    <ChoiceBox fx:id="choiceboxCategory" maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="150.0">
-                                       <tooltip>
-                                          <Tooltip text="category" />
-                                       </tooltip>
-                                    </ChoiceBox>
+                                    <JFXComboBox fx:id="choiceboxCategory" focusColor="#008f1d" maxWidth="1.7976931348623157E308" minHeight="40.0" minWidth="40.0" promptText="Category" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="New">
-                                       <VBox.margin>
-                                          <Insets right="10.0" />
-                                       </VBox.margin>
-                                    </Text>
-                                    <Button minHeight="40.0" minWidth="40.0" mnemonicParsing="false" onAction="#displayAddCategoryDialog" text="+" />
+                                    <JFXButton buttonType="RAISED" minHeight="40.0" minWidth="40.0" onAction="#displayAddCategoryDialog" ripplerFill="#000411" style="-fx-background-color: #008f1d; -fx-background-radius: 90px;" text="Add" textFill="WHITE" />
                                  </children>
                               </VBox>
                            </children>
                         </HBox>
                         <VBox alignment="CENTER_LEFT">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Recurrent pay" />
-                              <CheckBox fx:id="checkboxRecurrent" mnemonicParsing="false">
-                                 <tooltip>
-                                    <Tooltip text="repeating expense or not" />
-                                 </tooltip>
-                                 <textFill>
-                                    <RadialGradient centerX="0.5" centerY="0.5" cycleMethod="REFLECT" radius="0.5">
-                                       <stops>
-                                          <Stop color="BLACK" />
-                                          <Stop color="#c33939" offset="1.0" />
-                                       </stops>
-                                    </RadialGradient>
-                                 </textFill>
-                              </CheckBox>
+                              <JFXCheckBox fx:id="checkboxRecurrent" checkedColor="#008f1d" minHeight="40.0" text="Recurrent pay" unCheckedColor="#8d8484" />
                            </children>
                         </VBox>
                         <HBox maxWidth="1.7976931348623157E308" spacing="20.0">
@@ -164,21 +121,16 @@
                               <VBox alignment="CENTER_LEFT" prefHeight="84.0" prefWidth="358.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Pay progress" />
-                                    <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" minHeight="40.0" prefWidth="200.0" progress="0.0">
-                                       <tooltip>
-                                          <Tooltip text="already paid percent" />
-                                       </tooltip>
-                                    </ProgressBar>
+                                    <JFXProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" minHeight="40.0" progress="0.0" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" prefHeight="84.0" prefWidth="12.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-labels" text="Add">
+                                    <JFXButton buttonType="RAISED" minHeight="40.0" minWidth="40.0" onAction="#displayAddPayedRatesDialog" ripplerFill="#000411" style="-fx-background-color: #008f1d; -fx-background-radius: 90px;" text="Add" textFill="WHITE">
                                        <VBox.margin>
-                                          <Insets right="10.0" />
+                                          <Insets top="20.0" />
                                        </VBox.margin>
-                                    </Text>
-                                    <Button minHeight="40.0" minWidth="40.0" mnemonicParsing="false" onAction="#displayAddPayedRatesDialog" text="+" />
+                                    </JFXButton>
                                  </children>
                               </VBox>
                            </children>
@@ -190,16 +142,16 @@
             <HBox alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="103.0" prefWidth="890.0" VBox.vgrow="ALWAYS">
                <children>
                   <Separator prefWidth="200.0" />
-                  <Button fx:id="btnReset" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#clearFieldSelections" text="Reset fields">
+                  <JFXButton fx:id="btnReset" buttonType="RAISED" cancelButton="true" minHeight="40.0" minWidth="100.0" onAction="#clearFieldSelections" ripplerFill="#3d463f" style="-fx-background-color: gray; -fx-background-radius: 10;" text="Reset fields" textFill="WHITE">
                      <HBox.margin>
                         <Insets bottom="20.0" right="20.0" />
                      </HBox.margin>
-                  </Button>
-                  <Button fx:id="btnSave" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#saveExpense" text="Save">
+                  </JFXButton>
+                  <JFXButton fx:id="btnSave" buttonType="RAISED" minHeight="40.0" minWidth="100.0" onAction="#saveExpense" ripplerFill="BLACK" style="-fx-background-color: #1D8F00; -fx-background-radius: 10px;" text="Save" textFill="WHITE">
                      <HBox.margin>
                         <Insets bottom="20.0" right="20.0" />
                      </HBox.margin>
-                  </Button>
+                  </JFXButton>
                </children>
             </HBox>
          </children>

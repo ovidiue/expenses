@@ -1,21 +1,27 @@
 package helpers.ui;
 
+import com.jfoenix.controls.JFXAlert;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Control;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Created by Ovidiu on 08-Jun-18.
@@ -31,7 +37,6 @@ public class DialogBuilder {
     private Pane caller;
     private Map<String, Control> controls;
     private ValidationSupport validationSupport;
-
     public DialogBuilder() {
         initDialogControls();
     }
@@ -62,7 +67,9 @@ public class DialogBuilder {
     }
 
     public DialogBuilder addFormField(String label, String key, Control control, boolean mandatory, String msg) {
-        VBox vBox = new VBox(new Label(label), control);
+      JFXAlert alert = new JFXAlert(new Stage());
+
+      VBox vBox = new VBox(new Label(label), control);
         vBoxForm.getChildren().add(vBox);
         control.setUserData(mandatory);
         controls.put(key, control);

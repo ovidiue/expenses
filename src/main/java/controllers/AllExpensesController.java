@@ -77,8 +77,10 @@ public class AllExpensesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+      Platform.runLater(() -> {
+        rootBorderPane = (BorderPane) anchorPane.getParent();
         initMasterDetailPane();
-        Platform.runLater(() -> rootBorderPane = (BorderPane) anchorPane.getParent());
+      });
     }
 
     private void initMasterDetailPane() {
