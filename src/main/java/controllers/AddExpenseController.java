@@ -13,6 +13,7 @@ import helpers.repositories.TagRepository;
 import helpers.ui.DialogBuilder;
 import helpers.ui.ModalBuilder;
 import helpers.ui.ModalCategoryContent;
+import helpers.ui.ModalTagContent;
 import helpers.ui.Notification;
 import helpers.ui.TextUtils;
 import java.net.URL;
@@ -33,7 +34,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
@@ -245,24 +245,18 @@ public class AddExpenseController implements Initializable {
 
   @FXML
   public void displayAddTagDialog() {
-    DialogBuilder dialogBuilder = new DialogBuilder();
-    dialogBuilder.setCallerPane(rootBorderPane)
-        .setHeader("Enter at least TITLE in order to add a new tag")
-        .addFormField("Name:", "name", new TextField(), true)
-        .addFormField("Color:", "color", new ColorPicker(), false)
-        .show()
-        .ifPresent(result -> {
-          if ((ButtonType) result == dialogBuilder.getConfirmAction()) {
-            String color = ((ColorPicker) dialogBuilder.getControl("color")).getValue().toString()
-                .replace("0x", "#"),
-                name = ((TextField) dialogBuilder.getControl("name")).getText();
-            Tag tag = new Tag(name, color);
-            TAG_REPOSITORY.save(tag);
-            populateNewTags();
+    ModalTagContent tagContent = new ModalTagContent();
+    ModalBuilder modalTag = new ModalBuilder(tagContent,
+        (Stage) this.btnSave.getScene().getWindow());
 
-            Notification.create("Added new tag:\n" + tag.getName(),
-                "Success", null);
-          }
+    modalTag.show()
+        .filter(resp -> ((ButtonType) resp).getText().equals("Save"))
+        .ifPresent(e -> {
+          Tag tag = tagContent.getResult();
+          TAG_REPOSITORY.save(tag);
+          this.tagsList.add(tag);
+          Notification.create("Added new tag:\n" + tag.getName(),
+              "Success", null);
         });
   }
 
@@ -293,7 +287,7 @@ public class AddExpenseController implements Initializable {
         .addFormField("Obsevations:", "observation", new TextArea(), false)
         .show()
         .ifPresent(result -> {
-          if ((ButtonType) result == dialogBuilder.getConfirmAction()) {
+          if (result == dialogBuilder.getConfirmAction()) {
             Rate rate = new Rate(
                 Double.parseDouble(textFieldAmountRate.getText()),
                 new Date(datePicker.getEditor().getText()),
