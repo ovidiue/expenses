@@ -144,8 +144,9 @@ public class AddExpenseController implements Initializable {
     ModalBuilder modal = new ModalBuilder(cat,
         (Stage) this.btnSave.getScene().getWindow());
     modal.show()
+        .filter(resp -> ((ButtonType) resp).getText().equals("Save"))
         .ifPresent(catResponse -> {
-          Category category = (Category) catResponse;
+          Category category = cat.getResult();
           CATEGORY_REPOSITORY.save(category);
           this.categoriesList.add(category);
           Notification.create("Added category: \n" +

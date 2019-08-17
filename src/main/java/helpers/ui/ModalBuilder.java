@@ -20,6 +20,7 @@ public class ModalBuilder {
     this.modalContent = content;
 
     final JFXButton cancelButton = new JFXButton("Cancel");
+    cancelButton.setCancelButton(true);
     final JFXButton saveButton = new JFXButton("Save");
 
     cancelButton.setOnAction(event -> dialog.close());
@@ -38,8 +39,7 @@ public class ModalBuilder {
   }
 
   public Optional show() {
-    dialog.showAndWait();
-    return Optional.of(modalContent.getResult());
+    return dialog.showAndWait();
   }
 
 }

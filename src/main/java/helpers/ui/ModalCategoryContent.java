@@ -32,13 +32,9 @@ public class ModalCategoryContent implements ModalContent {
 
   @Override
   public Category getResult() {
-    log.info("GET CONTENT CATEGORY CALLED");
     if (!title.validate()) {
       return null;
     }
-    log.info("title {}", title.getText());
-    log.info("description {}", description.getText());
-    log.info("color {}", color.getValue());
     String colorValue = this.color.getValue().toString().replace("0x", "#");
     return new Category(title.getText().trim(), description.getText().trim(), colorValue);
   }
